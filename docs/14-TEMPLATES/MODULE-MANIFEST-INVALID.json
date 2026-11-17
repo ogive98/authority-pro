@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "0.1.0",
+  "version": "preview",
+  "kind": "platform-module",
+  "trust": "first-party",
+  "execution": "compiled-first-party",
+  "dependencies": [],
+  "capabilities": {
+    "provides": [
+      {
+        "id": "platform.diagnostics.snapshot",
+        "version": "0.1.0",
+        "contractType": "query"
+      }
+    ],
+    "requires": []
+  },
+  "permissions": [
+    {
+      "id": "platform.diagnostics.read",
+      "scope": "control-plane"
+    }
+  ],
+  "dataOwnership": {
+    "resources": []
+  },
+  "ui": {
+    "contributions": []
+  }
+}

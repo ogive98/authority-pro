@@ -1,0 +1,21 @@
+name: authority-pro
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME:-authority_pro}
+      POSTGRES_USER: ${DB_BOOTSTRAP_USER:-authority_bootstrap}
+      POSTGRES_PASSWORD: ${DB_BOOTSTRAP_PASSWORD:?Set an uncommitted database bootstrap password}
+    ports:
+      - "127.0.0.1:${DB_PORT:-5433}:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  db-data:

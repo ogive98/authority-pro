@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Authority Pro proposed foundation module manifest",
+  "description": "PROPOSED; capability NOT IMPLEMENTED. Draft foundation-only contract pending project owner approval. Only trusted first-party compiled platform-module descriptors are represented; validation does not establish trust, grant permissions or install code.",
+  "$comment": "Owner: proposed runtime maintainer. Purpose, scope, non-scope, ownership, semantic contracts, security, failure behavior, observability, tests and acceptance are defined in ../03-CORE/MODULE-RUNTIME.md. The template and invalid fixture are also PROPOSED / NOT IMPLEMENTED. No backend or frontend exists yet. Locked source principles remain authoritative; this supported subset is not the full future PBC manifest.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id",
+    "version",
+    "kind",
+    "trust",
+    "execution",
+    "dependencies",
+    "capabilities",
+    "permissions",
+    "dataOwnership",
+    "ui"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "0.1.0"
+    },
+    "id": {
+      "$ref": "#/$defs/moduleId"
+    },
+    "version": {
+      "$ref": "#/$defs/releaseVersion"
+    },
+    "kind": {
+      "type": "string",
+      "const": "platform-module"
+    },
+    "trust": {
+      "type": "string",
+      "const": "first-party",
+      "description": "Declaration only. Controlled source/build provenance and owner approval must independently establish trust."
+    },
+    "execution": {
+      "type": "string",
+      "const": "compiled-first-party",
+      "description": "Present only through a reviewed build, deployment and restart; no runtime package loading."
+    },
+    "dependencies": {
+      "type": "array",
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/dependency"
+      }
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provides", "requires"],
+      "properties": {
+        "provides": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/capability"
+          }
+        },
+        "requires": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/capability"
+          }
+        }
+      }
+    },
+    "permissions": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/permission"
+      }
+    },
+    "dataOwnership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resources"],
+      "properties": {
+        "resources": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/ownedResource"
+          },
+          "description": "Empty means no owned persistence. Every resource is separately classified; declarations do not grant database privileges."
+        }
+      }
+    },
+    "ui": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contributions"],
+      "properties": {
+        "contributions": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/uiContribution"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "moduleId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+    },
+    "contractId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 128,
+      "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)+$"
+    },
+    "releaseVersion": {
+      "type": "string",
+      "maxLength": 32,
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+      "description": "Exact three-part release version only; ranges, prereleases and build metadata are outside this proposed subset."
+    },
+    "dependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/moduleId"
+        },
+        "version": {
+          "$ref": "#/$defs/releaseVersion"
+        }
+      }
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "contractType"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/contractId"
+        },
+        "version": {
+          "$ref": "#/$defs/releaseVersion"
+        },
+        "contractType": {
+          "type": "string",
+          "enum": ["command", "query", "event"]
+        }
+      }
+    },
+    "permission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "scope"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/contractId"
+        },
+        "scope": {
+          "type": "string",
+          "enum": ["control-plane", "tenant", "company"]
+        }
+      }
+    },
+    "ownedResource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "scope"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 63,
+          "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$",
+          "description": "Logical owned persistence resource, not SQL or a path."
+        },
+        "scope": {
+          "type": "string",
+          "enum": ["tenant", "control-plane"]
+        }
+      }
+    },
+    "uiContribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "routeKey", "permission"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/contractId"
+        },
+        "kind": {
+          "type": "string",
+          "const": "navigation"
+        },
+        "routeKey": {
+          "$ref": "#/$defs/contractId",
+          "description": "Symbolic key of a statically compiled Angular route, not a URL or executable expression."
+        },
+        "permission": {
+          "$ref": "#/$defs/contractId",
+          "description": "Must resolve to a declared permission during semantic validation; never replaces backend authorization."
+        }
+      }
+    }
+  }
+}
