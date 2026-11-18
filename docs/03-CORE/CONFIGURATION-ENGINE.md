@@ -13,6 +13,19 @@ Scope: validated Spring Boot deployment settings, secret references, explicitly 
 
 Non-scope: arbitrary EAV data models, business settings, executable expressions, remote configuration infrastructure, secrets returned to the browser, per-user preferences, runtime package loading, license calculation, a generic feature-flag service or configuration that disables authentication, RLS or audit.
 
+### Settings, interface schemas and generated models
+
+The existing typed-settings scope changes only declared, bounded values; it does
+not define business models or provide a universal EAV store. New setting keys
+cannot grant permissions.
+Future schema-driven forms must bind existing named contracts and precompiled
+widgets under the [frontend schema boundary](../02-ARCHITECTURE/FRONTEND-ARCHITECTURE.md#deferred-schema-driven-interfaces).
+Generating runtime entities, tables, APIs or code is a separate product and N0
+decision requiring owner-managed migrations, compatibility, isolation, data
+recovery and review. Configuration or UI support does not authorize generation.
+AI output changes none of these trust boundaries. These distinctions are proposed
+requirements, not claims of implemented settings, schemas or generated models.
+
 ## 2. Ownership and dependencies
 
 `runtime` owns technical environment/bootstrap configuration and safe effective-status reporting. `tenancy` owns persisted tenant/company settings and their authorization scope. Each module owns its typed configuration definitions; it must not read another owner's tables or undocumented environment keys. `access` supplies explicit permissions, and `audit` appends critical change evidence in the same transaction.

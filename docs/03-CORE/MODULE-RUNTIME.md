@@ -1,12 +1,12 @@
 # Module Runtime
 
-**Document status: PROPOSED**  
-**Capability status: NOT IMPLEMENTED — specification and fixtures only.**  
+**Document status: Bounded L02 discovery/boundary design APPROVED; other contracts PROPOSED.**\
+**Capability status: L02 five-root/zero-edge structure IMPLEMENTED / TESTED only; functional inventory and lifecycle remain NOT IMPLEMENTED.** See [execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18).\
 **Governance: N0. Proposed owner: runtime maintainer; approval authority: project owner.**
 
 ## 1. Purpose, source and scope
 
-Define enforceable PBC boundaries and a deliberately small manifest for the Authority Pro foundation. Locked principles come from [MASTER-BLUEPRINT](../MASTER-BLUEPRINT.md), sections 2, 5, 6.1, 10, 24–27 and 29–30. Concrete discovery, lifecycle and schema choices remain pending owner approval under the [Core status convention](THUNDER-CORE.md).
+Define enforceable PBC boundaries and a deliberately small manifest for the Authority Pro foundation. Locked principles come from [MASTER-BLUEPRINT](../MASTER-BLUEPRINT.md), sections 2, 5, 6.1, 10, 24–27 and 29–30. The bounded L02 root/discovery and boundary-tool design is approved under [ADR-0002](../adr/ADR-0002-modular-monolith.md#l02-boundary-approval--2026-11-18) and has passed skeleton verification only. Manifest schema, lifecycle and functional inventory choices remain pending owner approval under the [Core status convention](THUNDER-CORE.md).
 
 Scope: trusted first-party platform modules compiled into a single Spring Boot application; static contract discovery, dependency verification, immutable inventory, and a foundation JSON manifest contract.
 
@@ -14,7 +14,7 @@ Non-scope: business modules, runtime JAR loading, remote packages, scripts, mark
 
 ## 2. Module ownership and discovery
 
-The proposed application package is **`com.authoritypro.platform`**. Its immediate module roots are:
+The [approved L02 application package](../adr/ADR-0002-modular-monolith.md#l02-boundary-approval--2026-11-18) is **`com.authoritypro.platform`**. Its five immediate module roots reserve the following ownership; the corresponding functional services are not implemented by declaring those roots:
 
 | ID | Immediate root | Owns |
 |---|---|---|
@@ -24,7 +24,7 @@ The proposed application package is **`com.authoritypro.platform`**. Its immedia
 | `audit` | `com.authoritypro.platform.audit` | Audit append/read contracts and record persistence |
 | `runtime` | `com.authoritypro.platform.runtime` | Catalogue, descriptor validation, readiness and lifecycle coordination |
 
-Spring Modulith is proposed for discovery and structural verification, subject to a compatible Spring Boot/Modulith version spike. With default direct-subpackage discovery, placing the application at `com.authoritypro` would discover `platform` rather than automatically discover the five nested roots. That layout MUST NOT be assumed to work. Any deviation requires explicit discovery configuration and a test proving exactly the expected modules.
+Modulith 2.1.2 and ArchUnit 1.4.2 are approved and tested for L02 structural verification: discovery identifies exactly the five compiled `package-info` closed roots, the dependency graph has zero edges, and positive/negative boundary fixtures are exercised. No functional API exports are implemented; later consumed contracts need explicit approval. With default direct-subpackage discovery, placing the application at `com.authoritypro` would discover `platform` rather than automatically discover the five nested roots. That layout MUST NOT be assumed to work. Any deviation requires explicit discovery configuration and a test proving exactly the expected modules.
 
 Inside each root, `domain`, `application`, `api` and `infrastructure` are layers of that module, not automatically independent modules. The domain MUST NOT depend on Spring MVC, JPA or infrastructure. An API contains named, deliberately exported interfaces, immutable DTOs and contract schemas; it does not expose JPA entities, repositories, `ApplicationContext`, security sessions, or arbitrary implementation classes.
 
@@ -128,9 +128,66 @@ Required tests include valid/invalid fixtures, unknown top-level and nested fiel
 
 ## 8. Acceptance and approval gates
 
-Acceptance requires an approved supported-subset decision, a compatible Spring Boot/Modulith version/discovery spike, a named-export map, structural and semantic validators, and executable boundary tests. Fixture parsing or schema validation alone does not satisfy semantic validation. Nothing in this document is evidence of those runtime capabilities.
+L02 has bounded compiled-root discovery and boundary-test evidence, not a functional registry. Later runtime acceptance requires an approved supported-subset decision, a named-export map, structural and semantic validators, and tests of the actual functional contracts. Fixture parsing or schema validation alone does not satisfy semantic validation. L02 evidence does not establish inventory, manifest processing or lifecycle capabilities.
 
 Owner gates: root/package layout, precise dependency DAG, ownership/resources, permission catalogue, schema versioning policy and release compatibility record. Future package categories and untrusted execution require separate ADRs, not enum additions without a threat model.
+
+## 9. Deferred workflow and automation contracts
+
+**PROPOSED / NOT IMPLEMENTED — C17/C18, L3 only.** These constraints refine future generic execution, not the L1 manifest, five module roots or current implementation authorization. Runtime execution is a proposed responsibility; its eventual component boundaries require a separate approved dependency graph. No business process, table or demonstration module is introduced.
+
+### Definition, instance and ownership
+
+| Concept | Proposed contract |
+|---|---|
+| Definition | Stable owner/key, tenant scope, immutable published version and digest, definition dialect, allowed node types, typed input/output, required capability versions and permissions |
+| Draft | Editable under an expected revision; validation and a side-effect-free preview precede an authorized publication decision tied to that exact revision/digest |
+| Instance | Unique tenant-scoped identity, pinned definition version/digest, current execution revision, bounded typed variables, initiating attribution and a non-secret correlation reference |
+| Human task | Instance/node identity, candidate assignment policy, current assignee, state/revision, pinned form schema and deadline policy; assignment is not an authorization grant |
+| Timer or subscription | Instance/node reference, durable due time or correlation identity, delivery identity, current state and recovery policy; neither callbacks nor payloads establish tenant authority |
+| Incident | Bounded failure category, affected revision, retry/reconciliation state and authorized recovery history; no raw variables or secret request bodies |
+
+Published definitions are never edited in place. Activating a new version selects it for new starts only; suspension or retirement must explicitly distinguish admission of new instances from treatment of existing ones. Existing instances remain pinned. Migration of a running instance is a separately approved operation with a state/variable mapping, compatibility checks, reviewed impact and recovery evidence; changing its definition pointer is not a migration.
+
+The execution component owns only its definitions and execution records. Referenced domain resources remain owned by their providing modules and are accessed only through declared commands/queries; this does not create business objects in the Core. Control-plane visibility grants no tenant access. Shared first-party definition templates, if selected later, need an explicit immutable publication/tenant-instantiation contract, not a nullable tenant exemption.
+
+Every tenant-owned instance, task, variable, timer, subscription and incident must be protected under the restricted runtime role. Child records require tenant-safe parent references, RLS and tenant-qualified uniqueness; an instance ID alone is not permission to access its children. Correlation keys and deduplication identities include their approved tenant and contract scope. Variables have declared types, size limits, sensitivity and retention; history is not an unrestricted copy of all inputs/outputs.
+
+### Bounded execution vocabulary
+
+A candidate first workflow slice may evaluate start/end, a human task, a registered service command, an exclusive choice and a bounded wait/timer. This is a proposal for evaluation, not a selected DSL, full BPMN support or permission to implement it. Unsupported nodes must be rejected. Parallel/inclusive joins, subprocesses, multi-instance execution and arbitrary loops require separate semantics and tests rather than an assumption that one `current_state` field models concurrent tokens.
+
+Conditions use an approved bounded declarative grammar over typed values; no class names, SQL, JavaScript or unrestricted Script Tasks. Automation references allowlisted capabilities and authenticated triggers. Validate missing targets, reachability, illegal transitions, cycles, fan-out and execution budgets before publication. A declared iteration limit is required wherever repetition is later supported; wall-clock, step and concurrency limits remain server-enforced.
+
+Definition publication, start, task claim/completion, suspension, cancellation and incident recovery are distinct guarded contracts, not existing endpoints. Every request checks current tenant/company/site authority, expected resource revision and the applicable definition invariant. A UI or agent cannot force an arbitrary transition by naming a status. Any later exceptional override needs its own approved policy, reason, authorization and audit; it cannot bypass data ownership or RLS.
+
+### Human tasks and deadlines
+
+The proposed basic task lifecycle is `offered -> claimed -> completed`, with explicitly defined release, reassignment, cancellation and expiration paths. Candidate visibility, permission to claim and permission to complete are separate checks. Group membership and delegations are revalidated when acting, not copied into permanent authority at task creation. Reassignment requires a guarded revision change and preserves attribution.
+
+Concurrent claim or completion attempts compare the current task/instance revision atomically; at most one conflicting transition may commit. A claimant whose membership or permission is revoked cannot complete using a stale form or cached grant. Release/reassignment and any claim expiry are explicit policies, not silent ownership theft. Task completion validates the pinned form and output contract server-side before changing state.
+
+Deadlines distinguish a notification/escalation threshold from actual task expiration. Store an unambiguous due instant and the approved timezone/calendar policy used to derive it; define missed-timer behavior after downtime. Timer callbacks carry a retained delivery identity and expected execution state/revision. Completion-versus-expiration races have one committed outcome under the approved policy; late or repeated callbacks cannot reopen a terminal task.
+
+Protected local transitions, task state, required critical audit and durable publication intent must commit together when that transition emits work. Human command idempotency and timer/event deduplication remain distinct contracts. Retries retain the logical operation identity, recheck current permissions and follow the retention rules in [Outbox, Inbox and Idempotency](OUTBOX-INBOX-IDEMPOTENCY.md). A timeout is an unknown outcome until resolved, not permission to execute a second transition.
+
+### Recovery, compensation and engine authority
+
+Persist execution progress and required timers/subscriptions before reporting durable acceptance. Recovery tests must cover restart, duplicate/out-of-order delivery, stale workers, unavailable providers, bounded retries and retained incidents. Jobs execute under explicitly approved current service authority; historical initiating-user metadata is attribution, not a permanent delegated credential. Neither an inbox nor a scheduler alone implements workflow state, human approval or compensation.
+
+Cancellation stops new work according to the definition; it cannot promise to undo an already committed external effect. Compensation is a separately authorized, idempotent provider action with its own completion/failure record and reconciliation path, not a database rollback or generic inverse command. Interrupted or non-compensable effects remain visible for authorized resolution. Suspension/kill controls also distinguish work prevented from effects already in flight.
+
+Before selecting an external orchestrator, document one authority for each fact: provider-owned resource state, orchestrator execution/history, and any local task index or read projection. Do not make both local instance tables and the engine independently writable authorities for the same execution state. Cross-boundary commands need durable intent, stable tenant-scoped IDs, authenticated callbacks, deduplication, versioned reconciliation and explicit unknown/pending outcomes; local SQL and a remote engine cannot be claimed to commit atomically. Read projections must expose staleness and cannot authorize transitions on their own.
+
+Temporal, Camunda or an internal bounded executor are comparison candidates only. Evaluate Java/Spring integration, required process semantics, running-version compatibility, human tasks, isolation, data exposure, recovery, operating cost, licensing and engine exit/migration costs. An adapter does not make persisted histories, timers or definitions freely portable. No additional broker, cache, server or database is selected, and no existing PostgreSQL application may be altered for this evaluation.
+
+Module updates must account for active instances pinned to capability/form versions. Stop new admission when required, preserve compatible providers until approved drain or migration, and expose blocked work rather than dropping it. Module removal never implicitly deletes definitions, execution history or retained data. A new definition version does not authorize new executable code or live module installation.
+
+### Deferred acceptance
+
+Before any workflow slice, approve the definition grammar, ownership/tenant model, assignment/deadline rules, version/migration policy, engine authority and external-effect protocol. Before automation, additionally approve trigger admission, budgets, cancellation and permitted capabilities. Agent-assisted drafts follow [agent authority contracts](../00-GOVERNANCE/SECURITY-GOVERNANCE.md#10-deferred-agent-authority-contracts); forms follow [schema-driven interfaces](../02-ARCHITECTURE/FRONTEND-ARCHITECTURE.md#deferred-schema-driven-interfaces).
+
+The [deferred capability test matrix](../11-QUALITY-AND-TESTING/TEST-STRATEGY.md#deferred-capability-acceptance) is required evidence if these slices are selected. It uses inert technical fixtures only. None of these requirements closes L1 acceptance, selects an engine or authorizes adding fields to the current foundation manifest.
 
 ## Related contracts
 

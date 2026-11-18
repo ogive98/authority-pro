@@ -1,7 +1,7 @@
 # Validation Gates
 
 **Decision status:** PROPOSED gate criteria.
-**Runtime status:** No application build, database isolation test or browser test has passed yet.
+**Runtime status:** L02 no-database build and its 69 tests passed locally, including an offline clean repeat. Full G2–G5, database isolation and browser acceptance remain open; see [execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18).
 
 ## G0 — Documentation and contracts
 
@@ -17,13 +17,13 @@ The [six foundation orientations](../00-GOVERNANCE/DECISION-MANAGEMENT.md#owner-
 
 Define password, expiry, recovery and timeout policies before their implementation. Record whether privileged MFA and additional account lifecycle controls are required before production opening; an unresolved production condition cannot be relabeled as a released feature. Secret rotation, platform-data retention and operational responsibility also need explicit slice-specific requirements.
 
-G1 records approval, never application delivery. Unrelated L3 choices do not block L02; durable-publication selection becomes mandatory before L10. See the [open-decision mapping](MVP-BOUNDARIES.md#scope-decisions-still-needed).
+G1 records approval, never application delivery. The [2026-11-18 owner selections](../00-GOVERNANCE/DECISION-MANAGEMENT.md#l02-skeleton-decisions--2026-11-18) settle the bounded L02 target JDK/build, five-root empty graph, boundary tooling and closed local HTTP design. Target-JDK/wrapper, package discovery, configuration, HTTP and packaged-launcher checks now provide bounded L02 implementation evidence, not full functional socle acceptance. All other applicable G1 decisions remain open. Unrelated L3 choices do not block L02; durable-publication selection becomes mandatory before L10. See the [open-decision mapping](MVP-BOUNDARIES.md#scope-decisions-still-needed).
 
 ## G2 — Executable skeleton
 
 Fresh local dependency installation and build succeed; application starts against its new dedicated database on the existing PostgreSQL server with approved migration/runtime roles. Verify endpoint and project names before provisioning, abort on collisions, and leave the other application's database, roles and service configuration untouched. Invalid configuration fails closed; module discovery reports the expected components and an intentional illegal dependency fails. No fake healthy status or default admin credentials.
 
-L02 exits on its bounded skeleton checks without claiming full G2. L03 supplies the actual PostgreSQL role/migration integration and completes G2; L03 does not require full G2 as an entry condition. L02/L03 evidence includes bounded requests, safe errors/logs, restricted probes and separated development/test credentials/data. Reproducible backup/restore and security checks begin with the first database-bearing slice; L08 repeats their integrated evidence rather than introducing controls at the end.
+L02 exits on the [approved no-database skeleton contract](../adr/ADR-0011-api-versioning.md#l02-local-http-approval--2026-11-18), not the integrated startup above: selected JDK/wrapper build, exact five-root empty graph, negative boundary fixtures, validated local startup, status-only probes with readiness 503 and denial elsewhere; no account, session, datasource or migration. An occupied port must not lead to stopping another service. None of this claims full G2. L03 supplies actual PostgreSQL role/migration integration and completes G2; L03 does not require full G2 as an entry condition. Both slices require safe errors/logs and bounded configuration; data/credential separation, backup/restore and database security checks begin with L03. L08 repeats their integrated evidence rather than introducing controls at the end.
 
 ## G3 — Identity and isolation
 
@@ -41,7 +41,7 @@ Backup restore is performed in an isolated destination and checked for state/aud
 
 Review the actual changes, secret/dependency scans, SBOM, third-party license obligations, lockfiles, repeatable CI checks and remaining risks. Attach only genuinely executed CI evidence; a workflow file is not a remote run. L08 closes the agreed L1 scope, not every matrix row or full production readiness.
 
-Ask separately for remote name/owner/visibility and publishing operations. No commit, remote resource, release or production deployment is authorized by the current local work. Unresolved production security, data-retention or operational requirements block production release even when bounded local L1 tests pass.
+The existing private repository and normal L02 commit/push are explicitly owner-authorized in the [decision log](../00-GOVERNANCE/DECISION-MANAGEMENT.md#l02-implementation-and-publication-authorization--2026-11-18). This does not authorize a new remote, release or production deployment. Unresolved production security, data-retention or operational requirements block production release even when bounded local tests pass.
 
 ## Extension-slice acceptance
 

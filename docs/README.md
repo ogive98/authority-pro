@@ -1,11 +1,16 @@
 # Authority Pro — Documentation
 
-English documentation; French conversation. This is a foundation design pack,
-not the complete future platform documentation or an implemented application.
+English documentation; French conversation. This foundation design pack accompanies
+the delivered and tested L02 no-database backend skeleton, not a complete platform.
 
 Decision approval and delivery status are separate. Only explicitly bounded owner
-choices are approved; technical recommendations remain PROPOSED. No backend or
-frontend exists. Local document checks are not runtime tests.
+choices are approved; other technical recommendations remain PROPOSED. See the
+[L02 execution evidence](PACK-INVENTORY.md#l02-execution-evidence--2026-11-18)
+for the clean verification of 65 unit tests and 4 packaged integration tests,
+with no failures or skips. The offline clean repeat also passed.
+No PostgreSQL was touched; no frontend, identity, audit, protected inventory or
+business feature is implemented. Local document checks are not runtime tests;
+L02 does not close the integrated foundation or deployment gates.
 
 ## Start here
 

@@ -2,8 +2,10 @@
 
 **Decision status:** PROPOSED budgets, control details and support policies;
 locked source requirements (including four languages/RTL) remain requirements.
-**Delivery status:** PLANNED / NOT IMPLEMENTED. All numeric targets are
-UNMEASURED; there is no backend/frontend code or benchmark/test evidence.
+**Delivery status:** L02 no-database backend skeleton IMPLEMENTED / TESTED;
+see [bounded execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18).
+All numeric targets below remain UNMEASURED: skeleton verification is not a
+performance benchmark, frontend test or integrated foundation acceptance.
 
 Targets below are candidates for review, not guarantees, approved service levels
 or proof that a 2 GB deployment or 500 ms login is achievable.
@@ -84,7 +86,9 @@ controls and tests. These statements are not an implemented security certificati
 
 ## 6. Maintainability
 
-- Module boundaries must be enforceable; build enforcement is PLANNED, not running.
+- L02 build tests enforce exactly five closed module roots and zero intermodule
+  edges, including negative fixtures. Later functional exports, consumers and
+  persistence boundaries require their own approved contracts and tests.
 - Public contracts must be documented and versioned; cyclic dependencies are prohibited.
 - Immutable released migrations and forward corrections with restore procedures
   are proposed policy; no released migration history exists.
@@ -102,7 +106,9 @@ controls and tests. These statements are not an implemented security certificati
 
 - Plan structured logs with correlation id and verified tenant id where applicable;
   anonymous/control-plane events must not invent a tenant or disclose secrets.
-- Plan controlled health, liveness/readiness endpoints and security audit access.
+- L02 implements only exact loopback GET liveness (200/UP) and readiness
+  (503/OUT_OF_SERVICE); other requests are denied. Integrated dependency health
+  and protected security-audit access remain planned.
 - Request latency, error rate, database pool and future queue metrics remain
   planned; the Phase 3 allocation is proposed, not a delivered monitoring system.
 

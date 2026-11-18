@@ -1,11 +1,11 @@
 # ADR-0010 — Candidate versions and compatibility evidence
 
-- **Status:** PROPOSED numeric matrix; technology orientations remain approved, but no application dependency set is owner-approved or pinned.
+- **Status:** APPROVED bounded L02 backend/tooling subset on 2026-11-18, implemented and locally qualified. Database, frontend and other candidate selections remain PROPOSED; see [L02 execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18).
 - **Evidence state:** Local tools and authoritative compatibility sources checked; disposable probe results are distinguished below from unexecuted application/database tests.
 
 - **Record reviewed:** 2026-11-17; this is not an approval date.
 - **Accountable owner / approval authority:** Project owner.
-- **Application delivery:** NOT IMPLEMENTED; application acceptance and release evidence absent. Disposable compatibility tests are recorded separately below.
+- **Application delivery:** L02 no-database skeleton implemented and locally tested; functional socle, database, frontend and release acceptance remain absent. Earlier disposable compatibility probes retain their separate historical status.
 - **Scope note:** The pinned documentation-validator dependencies are not the application version matrix.
 
 ## Local environment observed — 2026-11-17
@@ -24,8 +24,9 @@ for the separate database-bearing slice; never infer them from Compose or psql.
 
 ## Context
 
-Angular and Spring Boot are approved technologies, not approved numeric releases.
-The foundation needs a reproducible, supported combination of JDK, backend
+At the initial compatibility checkpoint, Angular and Spring Boot were approved
+technologies without numeric selections. The later bounded L02 subset is now approved
+and qualified; the remaining foundation needs a supported combination of backend
 libraries, frontend compiler/toolchain and PostgreSQL. A package existing in a
 registry proves publication at most, not stability, support or interoperability.
 Official compatibility/lifecycle documents and exact published package metadata
@@ -41,13 +42,13 @@ below; documentation evidence is not application acceptance.
 3. Copy previously asserted numeric versions or select "latest" packages —
    rejected as a reproducibility and compatibility policy.
 
-## Proposed decision and approval gate
+## Candidate matrix — 2026-11-17
 
-Recommend the following candidates for the next bounded implementation decision,
-not as an already approved production matrix. Backend versions come from the
-published Boot 4.1.2 BOM unless explicitly identified otherwise. No unrelated
-latest-version overrides are proposed. A disposable probe does not authorize
-application scaffolding, database provisioning or adoption of every optional tool.
+The following historical candidate matrix informed the later bounded L02 approval;
+it is not an approved production matrix. Backend versions come from the published
+Boot 4.1.2 BOM unless explicitly identified otherwise. Only the subset selected
+in the L02 approval section below is approved for that skeleton. A disposable
+probe does not authorize database provisioning or adoption of every optional tool.
 
 | Component | Candidate | Evidence / remaining boundary |
 | --- | --- | --- |
@@ -185,43 +186,73 @@ claim database, session/CSRF, RLS, OpenAPI endpoint, module-boundary or audit-at
 acceptance from dependency metadata or a class-loading probe. No G1/G2 completion
 or production readiness follows from this evidence.
 
-## Verification and tests before pinning
+## L02 baseline approval — 2026-11-18
 
-Remaining work below must supplement, not relabel, the bounded evidence above:
+The [owner's three questionnaire answers](../00-GOVERNANCE/DECISION-MANAGEMENT.md#l02-skeleton-decisions--2026-11-18) approve this L02 subset, not every entry in the earlier candidate matrix. That decision-only step preceded the separately authorized implementation; the [execution record](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18) now documents the verified portable JDK, wrapper, build and tests.
 
-1. Recheck candidate release/support/advisory information at the actual pinning
-   date, confirm the JDK distribution/patch and approve applicable library/tool
-   adoption. The 2026-11-17 source review is not an indefinite support guarantee.
-2. Verify Angular/CLI's required TypeScript, RxJS and Node ranges, package-manager
-   support and intended browser targets. Select a supported intersection rather
-   than installing each package's newest release independently.
-3. Resolve a minimal backend build and inspect the dependency tree/effective BOM:
-   Security, Session JDBC, Hibernate, JDBC driver, Flyway/PostgreSQL adapter,
-   servlet and JSON dependencies must not conflict. Verify Modulith/ArchUnit
-   checks and springdoc/OpenAPI behavior if those tools are selected.
-4. Against real PostgreSQL, exercise migration/validation, JDBC session lifecycle,
-   CSRF login/logout, RLS with runtime roles and transaction-local context on the
-   actual connection. Run ADR-0006's durability spike separately to select its
-   mechanism, not to enable both candidates.
-5. Build/test a minimal Angular client on the candidate Node/TypeScript versions;
-   test same-origin cookies/CSRF, API error parsing and configured health probes.
-   Include no business modules in these checks.
-6. Review vulnerability and support-lifecycle information; then record the exact
-   tested matrix, evidence and approval before pinning wrappers, lockfiles and
-   dependency management in future foundation work. This revision changes only
-   tracked documentation; disposable probe code/configuration stays outside the
-   application and is ignored by Git.
+| L02 item | Approved selection and constraint |
+|---|---|
+| JDK | Temurin 21.0.13+9, portable project-scoped distribution; compile release 21; no global PATH/JAVA_HOME or installed Microsoft JDK changes |
+| Backend | Spring Boot parent/BOM 4.1.2; MVC/validation, Security and minimal Actuator support; one executable artifact, no reactive or native-image stack |
+| Managed stack | Framework 7.0.10, Security 7.1.2, Tomcat 11.0.27, Jackson 3 BOM 3.1.7 and JUnit Jupiter 6.0.3 through Boot; no unrelated version overrides |
+| Build | Maven 3.9.16; Wrapper 3.3.4 `only-script`, exact distribution URL and `distributionSha256Sum`; compiler 3.15.0 and Surefire 3.5.6 through the parent |
+| Boundaries | Modulith 2.1.2 and ArchUnit 1.4.2 for explicit module declarations and build/test verification; no persistent publication registry, worker or optional annotation processor selected |
+| API documentation | springdoc 3.2.0, test/build classpath only; no Swagger UI or documentation endpoint in the packaged serving application; inspect the test-only Jackson 2 dependency separately |
+
+Do not add JDBC/JPA/Hibernate, pgjdbc, Flyway, Spring Session JDBC, H2 or other database dependencies to the L02 serving artifact in anticipation of future lots. Their BOM metadata is not permission to instantiate them. The Maven build must fail if unwanted persistence or documentation-server dependencies enter that artifact. Runtime module discovery is an actual test output, not a fake installed-capability catalogue.
+
+Before executing downloaded tools, verify the exact artifacts and checksums from their publishers. Keep tool caches and Maven settings scoped to this project; never import other projects' registry credentials or change global tooling. Pin processor selection explicitly; generated files must stay under the backend build directory. Downloading a newer patch instead of an approved pin requires review, not an unrecorded substitution.
+
+### Source recheck — 2026-11-18
+
+- Spring's [project metadata](https://spring.io/page-data/projects/spring-boot/page-data.json) still lists Boot 4.1.2 as current GA and the 4.1 OSS support end as July 2027. [Requirements](https://docs.spring.io/spring-boot/system-requirements.html) identify Java 17–27 and Maven 3.6.3 or later; the [exact BOM](https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-dependencies/4.1.2/spring-boot-dependencies-4.1.2.pom) confirms the managed versions above.
+- Apache's [download page](https://maven.apache.org/download.cgi) lists 3.9.16 as still maintained, although 3.10.1 is now recommended. Retain the bounded L01-tested line for L02; [Wrapper 3.3.4](https://maven.apache.org/wrapper/) documents `only-script` and SHA-256 distribution checking.
+- GitHub release metadata for [Temurin 21.0.13+9](https://github.com/adoptium/temurin21-binaries/releases/tag/jdk-21.0.13%2B9), queried with `gh api`, reports a non-draft, non-prerelease release published 2026-10-22 and a Windows x64 JDK ZIP with a publisher digest. At that metadata-only checkpoint no JDK asset had been downloaded or verified locally; default `java -version` and `javac -version` reported Microsoft 21.0.12.1. The later L02 execution verified the portable Temurin asset without replacing that global installation.
+- Exact [Modulith core](https://repo.maven.apache.org/maven2/org/springframework/modulith/spring-modulith-core/2.1.2/spring-modulith-core-2.1.2.pom) and [test POMs](https://repo.maven.apache.org/maven2/org/springframework/modulith/spring-modulith-test/2.1.2/spring-modulith-test-2.1.2.pom) confirm the Boot 4.1.2 / ArchUnit 1.4.2 alignment. Metadata does not prove module discovery or negative-boundary tests.
+
+This initial recheck covered release/compatibility metadata and local Java identity, not a fresh complete vulnerability scan or an application test. Subsequent L02 execution completed clean dependency resolution, target-JDK tests, dependency/license review and the actual skeleton checks. New findings require review; there is no approved blanket vulnerability exception.
+
+## L02 implementation verification — 2026-11-18
+
+The [execution record](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18) records publisher checksums, resolved dependencies, 69 passing tests, offline clean verification and matching local JAR hashes. All 104 resolved dependencies received a point-in-time OSV query and POM license inventory; no known advisory was returned. This is not a standardized release SBOM, perpetual vulnerability exemption or distribution-license clearance. Test-only Mockito attachment and Swagger generic warnings remain nonblocking and are not hidden by permissive JVM flags.
+
+## Slice-specific implementation verification
+
+L02 items 1–2 below have been executed for this revision and must be repeated when their inputs change. Later items remain scoped requirements: L02 does not wait for L03 database or L07 browser execution, and those checks cannot be skipped when their lots start:
+
+1. L02: recheck release/support/advisory information when materializing the approved
+   target JDK and wrapper, verify download integrity and use project-local tools.
+   The dated source reviews are not indefinite support guarantees. A necessary
+   change to the approved versions requires explicit review, not silent substitution.
+2. L02: resolve the approved minimal backend, inspect the effective BOM/dependency
+   tree and verify Modulith/ArchUnit discovery and boundary tests. Test the closed
+   local HTTP contract and OpenAPI generation separately from the serving artifact;
+   no persistence/session-store dependencies or documentation server belong in it.
+3. L03–L05: approve and verify the database-bearing dependency subset as needed,
+   then test migrations, runtime-role RLS, transaction-local context, critical audit
+   and JDBC sessions/CSRF on authorized infrastructure. Run ADR-0006's durability
+   spike separately in L10; L02 does not select either publication mechanism.
+4. L07: resolve Angular/CLI, TypeScript, RxJS and Node to a supported intersection,
+   review frontend findings and approve exact pins before use. Build/test the real
+   shell and exercise cookies/CSRF, errors, locales and RTL in a browser.
+5. For each lot, record exact versions, commands, security/license review and results
+   before claiming acceptance; include no business modules. The approved L02 pins
+   may enter its separately started implementation without waiting for later lots.
+   Approval is not passing build or application evidence.
+6. The real L02 backend, wrapper and tests are tracked application sources. Earlier
+   disposable L01 probes, portable tools, caches and generated outputs remain ignored;
+   none replaces the real application evidence.
 
 Registry metadata alone cannot complete any compatibility gate. If a candidate
 fails, choose another supported combination and repeat the relevant checks.
 
 ## Consequences
 
-Scaffolding cannot honestly advertise a verified stack yet. BOM alignment and
-frontend lockfiles should reduce accidental drift once approved, but require
-reviewed overrides and repeatable builds. Avoid open-ended version ranges or
-floating "latest" selectors. Verification effort is deliberate foundation work,
-not evidence of the owner's expertise or prior approval.
+L02 has an approved baseline and a verified target-JDK no-database skeleton build.
+BOM alignment and, later, approved frontend lockfiles reduce accidental drift but
+require reviewed overrides and repeatable builds. Avoid open-ended version ranges
+or floating "latest" selectors. Verification effort is deliberate foundation work,
+not evidence of the owner's expertise or blanket approval.
 
 ## Security considerations
 
@@ -232,9 +263,9 @@ registry credentials; no secrets belong in manifests or sample configuration.
 
 ## Migration implications
 
-There is no existing Authority Pro application to upgrade. The other application
-using PostgreSQL is outside this operation and must remain untouched. Establish
-and test the first approved matrix before production scaffolding. Later upgrades require compatibility tests,
+Authority Pro now has only the no-database L02 skeleton, not a deployed application or
+schema to migrate. The other application using PostgreSQL remains outside this operation
+and untouched. Qualify the database/frontend subsets in their own lots. Later upgrades require compatibility tests,
 release-note review and schema/session serialization checks, with an application
 rollback plan that respects migration compatibility. Do not silently relabel an
 unverified combination as approved.

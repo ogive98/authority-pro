@@ -1,17 +1,18 @@
 # ADR-0004 — Monorepo for documentation and foundation
 
-- **Status:** APPROVED — one independent Authority Pro monorepo; concrete build and CI mechanisms are PROPOSED.
+- **Status:** APPROVED — one independent Authority Pro monorepo; the bounded L02 backend build is approved under ADR-0010. Other build aggregation and CI mechanisms remain PROPOSED.
 - **Approval basis:** Explicit user direction for `C:/Users/admin/Documents/authority-pro`, separate from other projects.
 
 - **Record reviewed:** 2026-11-17; this is not an approval date for proposed details.
 - **Accountable owner / approval authority:** Project owner.
-- **Delivery:** Local Git initialized on main; no commit or remote. Application NOT IMPLEMENTED.
+- **Delivery:** Local monorepo with the L02 no-database backend skeleton IMPLEMENTED / TESTED; see [execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18). The private repository already contains the initial published baseline. The latest owner authorization lifts the subsequent review hold for verified L02 publication, but does not authorize automatic L03 or deployment; publication outcomes require separate remote evidence.
 
 ## Context
 
-Authority Pro is a greenfield documentation and technical-foundation effort.
-There is no application code. Documentation, backend contracts and frontend
-consumers should evolve together. Business modules are outside the authorized
+Authority Pro began as a greenfield documentation and technical-foundation
+effort with no application code at the initial decision. The L02 backend skeleton
+now exists; documentation, backend contracts and future frontend consumers should
+evolve together. Business modules are outside the authorized
 scope. This decision does not authorize changes to another project or location.
 
 ## Options considered
@@ -25,8 +26,8 @@ scope. This decision does not authorize changes to another project or location.
 ## Decision and approval boundary
 
 Keep the independent Authority Pro project in one monorepo rooted at
-`C:/Users/admin/Documents/authority-pro`. Documentation and future backend and
-frontend foundation belong together.
+`C:/Users/admin/Documents/authority-pro`. Documentation, the L02 backend skeleton
+and future frontend foundation belong together.
 
 `docs/`, `backend/` and `frontend/` are the proposed top-level organization.
 Build aggregation, CI provider, path filters, release automation and branch
@@ -34,8 +35,9 @@ policies are not approved by this ADR. A monorepo does not require lockstep
 frontend/backend releases or allow imports across component boundaries.
 
 This documentation revision neither creates code nor initializes Git, changes
-configuration, permissions or other files. Repository tooling is future work,
-not an existing capability asserted by this record.
+configuration or permissions. The L02 Maven Wrapper/build and local structural
+checks now exist; frontend build aggregation and remote CI execution are not
+established by that evidence.
 
 ## Consequences
 
@@ -55,10 +57,11 @@ A shared repository does not grant its components unrestricted data access.
 
 ## Validation and tests
 
-Planned, not executed: verify repository layout and documentation links; ensure
-shared-contract changes trigger both frontend and backend checks; confirm
-component-boundary checks and secret scanning cover the relevant paths. Test
-reproducible builds only after versions and build tools have been verified.
+The initial decision called for layout, documentation and reproducible-build
+verification. L02 now has a clean backend build and component-boundary evidence
+on its approved tools, linked above. Future shared-contract frontend/backend CI
+triggers, broader secret scanning and release reproducibility still need their
+own evidence; no remote workflow execution is inferred from local checks.
 
 ## Migration implications
 

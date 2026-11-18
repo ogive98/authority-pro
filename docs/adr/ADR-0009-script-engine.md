@@ -4,15 +4,16 @@
 
 - **Record reviewed:** 2026-11-17; this is not an approval date.
 - **Accountable owner / approval authority:** Project owner.
-- **Application delivery:** NOT IMPLEMENTED; test and release evidence absent.
+- **Script/DSL delivery:** NOT IMPLEMENTED; script-execution tests and release evidence remain absent. The separate [L02 no-database skeleton is implemented/tested](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18) and contains no script engine.
 
 ## Context
 
 User-authored conditions or automation may be useful later, but they are not a
 requirement to implement in the current documentation and technical foundation.
-No application code or business modules exist. A graph or declarative expression
-can still execute expensive or unsafe work; a visual representation is not a
-security boundary.
+At the initial decision, no application code existed. The current L02 skeleton
+includes neither user-authored execution nor business modules. A graph or
+declarative expression can still execute expensive or unsafe work; a visual
+representation is not a security boundary.
 
 ## Options considered
 

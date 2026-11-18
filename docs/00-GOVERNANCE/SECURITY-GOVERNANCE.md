@@ -4,8 +4,13 @@
 [owner-confirmed foundation orientations](DECISION-MANAGEMENT.md#owner-confirmation-of-foundation-orientations)
 are binding. Detailed controls and operating policies remain PROPOSED unless
 explicitly approved; this is not blanket approval of this document.
-**Delivery status:** PLANNED / NOT IMPLEMENTED. No backend/frontend code,
-security tests or production-readiness evidence exists.
+**Delivery status:** L02 no-database backend skeleton IMPLEMENTED / TESTED only;
+see [execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18).
+Its local HTTP boundary allows only exact GET liveness (200/UP) and readiness
+(503/OUT_OF_SERVICE), denies other requests, retains CSRF, creates no session or
+default user and returns sanitized RFC 9457 errors. This is not implemented
+identity, tenant isolation or audit, nor production-readiness certification.
+No PostgreSQL was touched and no frontend is implemented.
 
 ## 1. Principles
 
@@ -19,10 +24,12 @@ security tests or production-readiness evidence exists.
 6. Security-relevant actions require audit; implementation must not silently
    swallow audit failures.
 
-## 2. Socle controls (proposals, not implementations)
+## 2. Integrated socle controls (future scope)
 
-Approved orientations are identified below; remaining details are PROPOSED
-and all controls are NOT IMPLEMENTED.
+Approved orientations are identified below; remaining details are PROPOSED.
+These integrated controls remain NOT IMPLEMENTED beyond the bounded L02
+HTTP/CSRF/error behavior noted above; that skeleton provides no authentication,
+session store, permission model, database isolation or durable audit.
 
 | Control | Decision boundary / design and validation needed |
 |---|---|
@@ -139,6 +146,57 @@ review. Security acceptance requires an identified reviewer and findings record.
   CSRF merely because the application uses cookies or is same-origin.
 - Silently allowing sensitive writes after durable audit failure.
 - Sharing production credentials through chat or tickets.
+
+## 10. Deferred agent authority contracts
+
+**PROPOSED / NOT IMPLEMENTED — L3, C55–C57.** These requirements add no L1
+scope and select no agent framework or provider. Contract names below are
+conceptual, not current endpoints; existing approved principles still apply.
+
+Tools must have typed, versioned, allowlisted contracts with bounded inputs and
+outputs and declared effects: read-only, protected mutation or external effect,
+with sensitivity classified separately. Each invocation must identify the invoking
+actor, agent and full delegator chain. Effective authority is the intersection of
+CURRENT human/service grants throughout that chain, explicit delegated scope and
+tool policy; no agent may self-grant. Subdelegation must be narrower, expiring and
+revocable. Revalidate authority at execution and replay, including tenant,
+company/site ancestry and scope; queued work must not preserve revoked grants.
+
+Human approval for sensitive actions must bind the canonical exact action, tool
+version, parameters digest, tenant, actor/delegation chain, resource revision,
+expiry and finite-use decision. Changed arguments, version, scope or revision
+invalidate approval. Approval never bypasses current authorization, durable audit
+or owning transition invariants. Model confidence must never waive human approval
+for sensitive publication, security, code or data actions.
+
+Approval consumption must be durably traceable and coordinated with the owning
+API's protected mutation and audit, preserving their commit/rollback invariant
+and preventing concurrent over-consumption. Unknown outcomes must be resolved
+using the same idempotency/operation identity, not by repeating the effect under
+a new identity. External effects require a durable intent, dispatch and outcome
+reconciliation protocol; SQL atomicity must not be claimed across an external
+system. Apply the [outbox/inbox and idempotency contract](../03-CORE/OUTBOX-INBOX-IDEMPOTENCY.md).
+
+Progression must be gated: read-only proposals, then validated drafts, then
+human-approved bounded execution. Production assistants must call the same
+owning APIs as other callers, with no raw database or shell access. Generated
+code belongs only in an isolated, reviewed build/release process, never runtime
+hot-loading; preserve [module runtime boundaries](../03-CORE/MODULE-RUNTIME.md)
+and [frontend boundaries](../02-ARCHITECTURE/FRONTEND-ARCHITECTURE.md).
+
+Prompts, documents and tool results are untrusted data, not authority. Retrieved
+instructions cannot expand tool policy or delegation. Tenant memory and retrieval
+must be isolated, support revocation and recheck current permissions before use;
+revoked or cross-tenant material must not be reused as retained context. Provider
+export requires explicit approval for the data and destination; access to a tool
+or document is not permission to export it. Record provenance references and
+minimal decision evidence, not full secret-bearing prompts or sensitive payloads.
+Set enforceable cost, time, concurrency and delegation-depth limits.
+
+Dry-run must mean isolated execution with no effectful tools; its success is not
+a production security guarantee. An emergency stop must prevent new work and
+further dispatch, but cannot magically undo already committed or external effects;
+resolve in-flight outcomes through the durable operation protocol.
 
 ## Related documents
 

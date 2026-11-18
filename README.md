@@ -3,8 +3,9 @@
 Independent Angular + Spring Boot platform foundation. Business-neutral Thunder Core,
 modular monolith, DDD, hexagonal architecture and Plugin-Based Components.
 
-**Current state: Phase 0 documentation and validation tooling. No backend, frontend,
-business module, application test or release exists yet.**
+**Current state: L02 backend skeleton implemented and locally tested, plus documentation
+and validation tooling. No database integration, identity, audit service, frontend,
+business module, release or deployment exists yet.**
 
 ## Decisions
 
@@ -13,8 +14,9 @@ shared PostgreSQL with `tenant_id` and RLS, documentation plus platform socle on
 The owner subsequently approved cookie/JDBC sessions with CSRF, local operator
 provisioning, restricted database runtime with verified transaction-local context,
 critical-change/audit atomicity, compiled first-party contracts and `/api/v1` with
-controlled tenant selection and standardized errors. Detailed policies, SQL/grants,
-framework integration and numeric versions still require validation and scoped approval.
+controlled tenant selection and standardized errors. The bounded L02 toolchain and
+closed HTTP boundary are approved and tested; detailed database/identity policies,
+SQL/grants, integration and frontend versions remain separately gated.
 
 PostgreSQL already serves another application. Authority Pro must use a NEW dedicated
 database on that server, with separate project roles; never modify or overwrite the
@@ -45,11 +47,51 @@ records the observed tools, supported release constraints and completed disposab
 checks. Java 21 / Spring Boot 4.1.2 passed five narrow tests, including an offline
 rerun. Angular 22 strict dependency resolution failed; an Angular 21 LTS compiler
 probe passed but development-tool advisories remain open. These findings do not
-approve application pins or prove backend/database/browser acceptance. The L01
-compatibility investigation is recorded; the full G1 decision gate remains open.
-The next implementation decision is the bounded L02 backend skeleton after its
-applicable approvals, not an automatic start. PostgreSQL remains untouched and the
-frontend toolchain must be reviewed again before L07.
+by themselves approve application pins or prove backend/database/browser acceptance.
+The subsequent L02 approval and implementation are recorded below; the remaining G1
+decisions stay open. PostgreSQL is untouched and frontend findings require review before L07.
+
+## L02 backend skeleton — 2026-11-18
+
+[Execution evidence](docs/PACK-INVENTORY.md#l02-execution-evidence--2026-11-18) records
+65 unit/HTTP/architecture/contract tests and four packaged-JAR integration tests,
+all passing both a clean build and an offline clean repeat with the same JAR hash.
+This is a closed technical skeleton, not a usable tenant application.
+
+Requirements: Node.js 24 and publisher-verified **Temurin 21.0.13+9** (release 21).
+Use a portable JDK and a process-local `JAVA_HOME`, not a system-wide Java change.
+The wrapper verifies Maven 3.9.16 against its pinned SHA-256. Maven settings,
+repository and wrapper cache are project-local; the first run downloads dependencies.
+Run from the repository root in PowerShell after obtaining the approved portable JDK:
+
+```powershell
+$env:JAVA_HOME = 'C:\Users\admin\Documents\authority-pro\tmp\l02\tooling\jdk-21.0.13+9'
+npm run check:backend
+npm run check:backend -- --offline
+```
+
+Adjust the JDK path for another checkout. The offline repeat requires a populated
+wrapper/dependency cache. Port 8080 must be free for packaged tests; do not stop an
+existing service to satisfy this requirement. Test servers are stopped by the tests.
+
+For an explicit manual local run, in a clean shell without another project's Spring
+configuration or JVM options, set the portable `JAVA_HOME` and run:
+
+```powershell
+$env:AUTHORITY_PRO_MODE = 'skeleton-local'
+& "$env:JAVA_HOME\bin\java.exe" -Xmx256m -jar backend/target/authority-pro-backend-0.0.1-SNAPSHOT.jar
+```
+
+Only exact GET `/actuator/health/liveness` (200/UP) and
+`/actuator/health/readiness` (503/OUT_OF_SERVICE) are permitted on `127.0.0.1:8080`.
+Readiness deliberately stays unavailable until later capabilities exist. Other
+requests are denied, CSRF stays enabled, and no account or HTTP session is created.
+There is no login, Swagger UI, datasource or migration. Stop this manual foreground
+process normally when finished; do not expose it beyond loopback.
+
+The next lot is L03 database design/provisioning on a **new dedicated database**,
+only after endpoint/version, unused names, roles and safe operator authority are
+established. Completing L02 does not authorize connecting to the existing server.
 
 ## Current files
 
@@ -72,6 +114,7 @@ The [source blueprint](docs/MASTER-BLUEPRINT.md) retains its original AUTHORITY 
 title unchanged. The owner renamed this independent project **Authority Pro** on
 2026-11-17. New identifiers use `authority-pro`. The initial documentation commit
 `f5d2914` was pushed to the private repository `ogive98/authority-pro` on `main`.
-The owner separately authorized committing and pushing the verified L01 documentation
-checkpoint. That authorization does not extend to future lots, releases, deployments
+The owner's subsequent L02 instruction authorizes committing and pushing the verified
+skeleton together with pending documentation and the L01 checkpoint. This lifts the
+intermediate review hold, not the restrictions on future lots, releases, deployments
 or database operations; no application release or deployment is claimed.

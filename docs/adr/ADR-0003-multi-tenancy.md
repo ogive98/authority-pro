@@ -5,13 +5,15 @@
 
 - **Record reviewed:** 2026-11-17; this is not an approval date for proposed details.
 - **Accountable owner / approval authority:** Project owner.
-- **Application delivery:** NOT IMPLEMENTED; test and release evidence absent.
+- **Tenancy delivery:** NOT IMPLEMENTED; PostgreSQL isolation tests and release evidence remain absent. The separate [L02 no-database skeleton is implemented/tested](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18); no PostgreSQL was touched.
 
 ## Context
 
-Authority Pro needs tenant isolation in a shared database. No application code
-exists, and only the technical foundation is in scope. Authentication must work
-before a tenant is selected without creating a platform-wide tenant-data bypass.
+Authority Pro needs tenant isolation in a shared database. At the initial
+decision, no application code existed; the current L02 skeleton deliberately has
+no database or tenancy implementation. Only the technical foundation is in scope.
+Future authentication must work before a tenant is selected without creating a
+platform-wide tenant-data bypass.
 
 ## Options considered
 

@@ -6,15 +6,16 @@
 
 - **Record reviewed:** 2026-11-17; this is not an approval date.
 - **Accountable owner / approval authority:** Project owner.
-- **Application delivery:** NOT IMPLEMENTED; test and release evidence absent.
+- **Identity/session delivery:** NOT IMPLEMENTED; integrated authentication/session tests and release evidence remain absent. The separate [L02 no-database skeleton is implemented/tested](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18), with CSRF retained but no session store, user or login.
 
 ## Context
 
 A user may belong to multiple tenants. Browser sessions need expiration,
 revocation, safe credential handling and per-request membership validation.
-Authority Pro has no application code; custom bearer-token storage is not an
-existing constraint. Authentication must operate before tenant selection without
-opening a global tenant-data path.
+At the initial decision, Authority Pro had no application code; custom bearer-token
+storage was not an existing constraint. The current L02 skeleton still has no
+identity/session implementation. Future authentication must operate before tenant
+selection without opening a global tenant-data path.
 
 ## Options considered
 

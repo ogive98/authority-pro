@@ -1,16 +1,17 @@
 # ADR-0001 — Angular and Spring Boot stack
 
-- **Status:** APPROVED — Angular frontend and Spring Boot backend only; supporting libraries and numeric versions are PROPOSED and UNVERIFIED.
+- **Status:** APPROVED — Angular frontend and Spring Boot backend; the bounded L02 backend/tool subset is approved in ADR-0010. Other numeric/library selections remain PROPOSED, and frontend/database/session integration remains unverified.
 - **Approval basis:** Explicit user direction for an independent Authority Pro documentation and foundation project in `C:/Users/admin/Documents/authority-pro`.
 
 - **Record reviewed:** 2026-11-17; this is not an approval date for proposed details.
 - **Accountable owner / approval authority:** Project owner.
-- **Application delivery:** NOT IMPLEMENTED; test and release evidence absent.
+- **Application delivery:** L02 no-database backend skeleton IMPLEMENTED / TESTED only; see [execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18). Frontend and database-bearing integration remain unimplemented; no release is claimed.
 
 ## Context
 
-Authority Pro is a greenfield platform with no application code. The authorized
-scope is documentation and a technical foundation, not business modules. The
+At the initial decision, Authority Pro was a greenfield platform with no
+application code. The authorized scope remains documentation and a technical
+foundation, not business modules; current L02 delivery is recorded above. The
 user explicitly selected Angular and Spring Boot; this record makes no claim
 about the owner's prior experience or approval of implementation mechanisms.
 
@@ -28,11 +29,7 @@ Use Angular for the frontend and Spring Boot for the backend. Shared PostgreSQL
 is approved separately in ADR-0003. The approved architecture direction is a
 modular monolith with DDD, hexagonal boundaries and Plugin-Based Components (PBC).
 
-TypeScript, Java 21 as an initial baseline, Spring Security, Spring Session JDBC,
-JPA, Spring Modulith and ArchUnit are implementation recommendations, not an
-approved dependency set. Exact Angular, Java, Spring Boot and supporting versions
-remain unverified pending ADR-0010's compatibility spike. No release number or
-"latest" version is pinned by this record.
+The [L02 subset in ADR-0010](ADR-0010-java-spring-versions.md#l02-baseline-approval--2026-11-18) now approves the project-local Java 21 target, Boot/Maven baseline and boundary tooling. Those L02 pins and target-JDK skeleton tests now have bounded passing evidence. Angular/TypeScript, persistence/JPA, database and session-store integration remain separate slice decisions; do not import the whole candidate matrix into L02. No floating "latest" policy is approved.
 
 ## Consequences
 
@@ -53,16 +50,19 @@ application code are introduced by this ADR revision.
 
 ## Validation and tests
 
-Planned, not executed: verify the compatibility matrix in ADR-0010; compile a
-minimal Angular/Spring Boot foundation; run backend and frontend tests, a
-PostgreSQL connectivity check, and dependency/security checks. A successful
-registry lookup is not a compatibility test.
+L02 clean verification passed 65 unit tests and 4 packaged integration tests with
+no failures or skips on the approved project-portable toolchain. See the canonical
+evidence above and ADR-0010; the offline clean repeat also passed.
+Frontend, PostgreSQL connectivity/migration, session-store and broader dependency/
+security acceptance remain separately gated and unverified. No PostgreSQL was
+touched. A registry lookup alone is not a compatibility test.
 
 ## Migration implications
 
-There is no existing code or deployed system to migrate. Establish the verified
-baseline before generating application scaffolding. Later major upgrades need
-release-note review, integration tests and a rollback plan.
+The initial greenfield decision required no existing application migration. The
+approved L02 baseline is now built and tested without a database or data migration.
+Later major upgrades need release-note review, integration tests and a rollback
+plan; L03 facts/design and approval precede any database implementation.
 
 ## Related
 

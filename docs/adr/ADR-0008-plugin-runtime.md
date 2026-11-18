@@ -1,19 +1,20 @@
 # ADR-0008 — Plugin-Based Components and extension trust
 
-- **Status:** APPROVED — compiled first-party components and explicit contracts, without arbitrary hot-loaded plugins. Packaging/tooling details remain PROPOSED; third-party execution is deferred.
+- **Status:** APPROVED — compiled first-party components and explicit contracts, without arbitrary hot-loaded plugins; single-artifact L02 packaging and boundary tooling approved under ADR-0002. Descriptor lifecycle/distribution details remain PROPOSED; third-party execution is deferred.
 - **Approval basis:** [Bounded owner confirmation](../00-GOVERNANCE/DECISION-MANAGEMENT.md#owner-confirmation-of-foundation-orientations); this is not permission to execute third-party packages or restart unrelated services.
 - **Approved context:** DDD/hexagonal modular monolith with Plugin-Based Components (PBC), not a dynamic plugin runtime.
 
 - **Record reviewed:** 2026-11-17; this is not an approval date.
 - **Accountable owner / approval authority:** Project owner.
-- **Application delivery:** NOT IMPLEMENTED; test and release evidence absent.
+- **Application delivery:** L02 single-artifact no-database skeleton and structural boundaries IMPLEMENTED / TESTED only; see [execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18). Functional inventory, lifecycle, frontend and extension execution remain unimplemented; no release is claimed.
 
 ## Context
 
 PBC needs a clear distinction between trusted application components and
-untrusted extensions. No code or business modules exist. The current foundation
-must not become a marketplace runtime or gain arbitrary code installation just
-because the architecture uses the word "plugin".
+untrusted extensions. No application code existed at the initial decision; L02
+now provides only a tested compiled skeleton, with no business modules. The
+foundation must not become a marketplace runtime or gain arbitrary code
+installation just because the architecture uses the word "plugin".
 
 ## Options considered
 
@@ -33,7 +34,7 @@ because the architecture uses the word "plugin".
 
 ## Proposed decision
 
-Option 1 is approved as the foundation's execution orientation. First-party components are explicitly trusted, compiled and reviewed as part of the application. Concrete discovery, packaging and dependency/contract-check tooling under ADR-0002 remain proposals requiring validation. Installing/upgrading code requires a backend
+Option 1 is approved as the foundation's execution orientation. First-party components are explicitly trusted, compiled and reviewed as part of the application. The [bounded L02 single-artifact graph and tooling](ADR-0002-modular-monolith.md#l02-boundary-approval--2026-11-18) are approved and implemented/tested for the skeleton only; later functional exports, descriptors and lifecycle operations remain gated. Installing/upgrading code requires a backend
 build and restart/redeployment. Angular uses a statically known route registry
 and lazy routes pointing to bundled first-party code; lazy loading is a loading
 optimization, not runtime trust or installation. No remote JavaScript, runtime
@@ -74,8 +75,9 @@ and unapproved executable content; never infer safe trust from a label or signat
 
 ## Validation and tests
 
-Planned, not executed: verify first-party dependency boundaries, static route
-registration, unauthorized endpoint denial and tenant isolation. Test manifest
+L02 first-party root/dependency boundaries and the closed local HTTP denial
+surface have passing skeleton evidence. Still planned, not executed: functional
+exports, static Angular route registration and tenant isolation. Test manifest
 rejection for executable SQL/JS, remote imports, undeclared capabilities and
 malformed data before any declarative installer is considered. A later execution
 spike must prove process termination, resource limits, credential separation,

@@ -4,9 +4,12 @@
 [approval record](DECISION-MANAGEMENT.md#approval-basis), including the
 [owner-confirmed foundation orientations](DECISION-MANAGEMENT.md#owner-confirmation-of-foundation-orientations), are binding; additional
 policy and implementation details below remain PROPOSED.
-**Delivery status:** PLANNED / NOT IMPLEMENTED. No application backend/frontend,
-application acceptance or release is present; Phase 0 is in progress. Documentation
-checks and disposable compatibility probes do not establish application delivery.
+**Delivery status:** L02 no-database backend skeleton IMPLEMENTED / TESTED; see
+[bounded execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18).
+The integrated foundation remains incomplete: no PostgreSQL operations, frontend,
+identity, audit, protected inventory or business feature is delivered. No release
+or deployment is claimed. Phase-0 documentation and disposable compatibility
+probes alone did not establish application delivery.
 **Scope:** Every developer, AI agent, module, plugin and extension of Authority Pro.
 **Authority:** Locked [blueprint](../MASTER-BLUEPRINT.md) principles and explicit
 owner approvals prevail. This document does not approve its own proposals.
@@ -36,8 +39,9 @@ initialized repository or runnable foundation.
 Numeric versions remain PROPOSED until compatibility review and approval.
 
 2.2 Locked backend baseline: Java, Spring Boot, Spring Security, Spring Data
-where appropriate. Java 21 and Spring Boot 4.1 are candidates, not approvals.
-Spring Modulith, ArchUnit and exact persistence tooling remain PROPOSED.
+where appropriate. The bounded L02 toolchain and Modulith/ArchUnit pins are
+approved and tested under [ADR-0010](../adr/ADR-0010-java-spring-versions.md).
+Persistence tooling remains separately gated and is excluded from L02.
 
 2.3 Approved data strategy: shared PostgreSQL with `tenant_id` and RLS.
 Database versions, Flyway and migration mechanics remain PROPOSED; versioned
@@ -45,7 +49,8 @@ safe migrations and module ownership remain source requirements.
 
 2.4 Locked contracts: REST, versioned public APIs and OpenAPI documentation.
 Approved orientation: `/api/v1`, controlled tenant selection and standardized
-errors. Exact selector/header and error-field contracts remain PROPOSED.
+errors. The bounded L02 RFC 9457 envelope is approved and tested; later
+selector/header and integrated error contracts remain PROPOSED.
 
 2.5 Locked architecture: modular monolith, DDD, hexagonal architecture and
 Plugin-Based Components. Approved foundation orientation: compiled first-party
@@ -73,11 +78,12 @@ entities. Cross-module communication uses published contracts (commands,
 queries, events, capability interfaces).
 
 4.3 Module dependencies must be explicit and verified in CI when implemented.
-No CI verification exists yet. Circular module dependencies are prohibited.
+L02 local build tests verify the exact five closed module roots and zero edges;
+this is not evidence of remote CI execution. Circular dependencies are prohibited.
 
-4.4 Private implementation must not be imported across modules. The specific
-`api` package convention is PROPOSED; published contracts are the only supported
-cross-module interface.
+4.4 Private implementation must not be imported across modules. L02 exports no
+functional APIs. Later cross-module contracts require named exports and explicitly
+approved consumers; the root declarations do not grant access to internals.
 
 ## Article 5 — Contracts and compatibility
 
@@ -111,8 +117,9 @@ Control-plane administration grants no universal RLS bypass.
 
 ## Article 7 — Security by default
 
-7.1 Authorization must be enforced on the backend for every request. No
-implemented authorization checks are claimed.
+7.1 Authorization must be enforced on the backend for every request. L02 tests
+its closed local HTTP allowlist and denial boundary only; user, membership and
+permission-based authorization remain unimplemented.
 
 7.2 Secrets never appear in source code, committed configuration or frontend
 bundles.

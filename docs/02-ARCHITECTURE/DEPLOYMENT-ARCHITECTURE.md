@@ -1,13 +1,21 @@
 # Deployment Architecture
 
-**Decision status:** APPROVED direction: a new dedicated Authority Pro database on the existing PostgreSQL server, with the other application untouched. Endpoint, compatibility and provisioning details remain unverified/PROPOSED.
-**Implementation status:** NOT IMPLEMENTED. No database connection, creation, migration or restart has been performed for this decision.
+**Decision status:** APPROVED bounded L02 local/no-database design ([2026-11-18 approval](../00-GOVERNANCE/DECISION-MANAGEMENT.md#l02-skeleton-decisions--2026-11-18)), not deployment or database-operation authorization. The later approved database direction is a new dedicated Authority Pro database on the existing PostgreSQL server, with the other application untouched; endpoint, compatibility and provisioning details remain unverified/PROPOSED.
+**Implementation status:** L02 local/no-database backend skeleton IMPLEMENTED / TESTED; see [execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18). No PostgreSQL was touched: no database connection, creation, migration or restart. Integrated deployment remains unimplemented and unauthorized by L02 verification.
 
 ## Modes and current scope
 
 Lite (local), Standard (hosted) and Hybrid are blueprint targets. LITE/STANDARD/POWER/ADAPTIVE are separate resource profiles. The foundation first validates a local development topology; no hosted environment or production release is created automatically.
 
-## Proposed local topology
+## Approved bounded L02 mode (implemented and tested locally)
+
+Explicit `skeleton-local` mode binds only `127.0.0.1`, using port `8080` only if free; otherwise stop the attempted startup, never another service. Typed, validated configuration must reject invalid values and omit secrets from diagnostics. The only allowed HTTP requests are the two status-only GET probes in [API architecture](API-ARCHITECTURE.md#bounded-l02-http-design): live process `UP`, readiness `503 OUT_OF_SERVICE` while the nucleus is incomplete; every other request is denied, with CSRF retained and no sessions provisioned.
+
+No datasource, JDBC, JPA, Flyway, database/driver (including embedded DB), session store, credentials, account/login, broker, containers or external calls belong to the L02 application. Project-portable Temurin `21.0.13+9`, Boot `4.1.2` BOM and Maven `3.9.16` / Wrapper `3.3.4` are the installed and tested bounded L02 baseline; Microsoft `21.0.12.1` was only the historical L01 probe runtime. [ADR-0010](../adr/ADR-0010-java-spring-versions.md) owns the detailed matrix. This documentation update performs no startup, download or deployment.
+
+DB/Flyway/RLS belong to proposed L03, audit to L04, identity to L05, protected inventory to L06 and Angular to L07, each subject to its own gates. Next is qualified L03 facts/design and approval, not automatic database operations. The following database-bearing topology and operational sections are later integration targets, not L02 actions.
+
+## Proposed integrated local topology
 
 Angular development server on loopback proxies API requests to Spring Boot on loopback; their candidate ports 4200/8080 must be checked before startup. Do not stop unrelated services to free a port. The owner reports an existing PostgreSQL server serving another application and requires a NEW database for Authority Pro on that server. Never reuse that application's database, schemas, credentials or tables as the new foundation.
 
@@ -33,7 +41,7 @@ Deliver secrets through a protected prompt or approved secret mechanism, not sou
 
 ## Delivery and operations
 
-After version validation: Maven Wrapper builds the backend; a locked npm dependency tree builds Angular. Exact application startup commands belong in the README only after runnable files exist and have been verified. The PostgreSQL client version does not establish the server version or compatibility.
+The approved Maven Wrapper now builds the L02 backend on its verified portable toolchain. Angular and its locked frontend build remain future work. Exact verified skeleton startup commands belong in the root README; they do not authorize integrated or hosted deployment. The PostgreSQL client version does not establish the server version or compatibility.
 
 TLS is required outside explicitly local development. Production frontend/API should be same-origin, probes restricted and database exposure controlled. Multiple instances require additional verified resource/session/execution behavior, not an assumption based on a shared database.
 
@@ -43,7 +51,9 @@ The first database-bearing slice requires backup and restoration of Authority Pr
 
 ## Acceptance
 
-Verify approved target identity, non-colliding names, effective roles, bounded resource use, clean project startup, missing-secret/invalid-config refusal, migration target checks and an isolated restore drill. Record no secrets. No runtime gate is claimed passed; the existing application remains outside the operation's mutation boundary.
+**L02 bounded verification passed:** clean verify on the approved project-portable toolchain completed 65 unit tests and 4 packaged integration tests with no failures or skips. This includes real loopback port-8080 main startup with valid configuration, invalid-config and occupied-port refusal, exact compiled five-root/zero-edge discovery with negative fixtures, only exact GET liveness 200/UP and readiness 503/OUT_OF_SERVICE, and denial elsewhere. CSRF is retained; there is no session/default user, database/driver or external-call path, and test-only OpenAPI is excluded from the production JAR. See the canonical execution evidence above; the offline clean repeat also passed.
+
+**Later database-bearing acceptance:** verify approved target identity, non-colliding names, effective roles, bounded resource use, clean integrated startup, missing-secret/invalid-config refusal, migration target checks and an isolated restore drill. Record no secrets. Full G2 and later integrated/runtime-readiness gates remain open; L02 does not authorize database access, provisioning or deployment. The existing application remains outside the operation's mutation boundary.
 
 ## Related
 

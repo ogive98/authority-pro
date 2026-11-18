@@ -8,6 +8,7 @@
   },
   "scripts": {
     "check:docs": "node tools/validate-docs.mjs",
+    "check:backend": "node tools/check-backend.mjs",
     "test": "node --test tools/validate-docs.test.mjs"
   },
   "devDependencies": {

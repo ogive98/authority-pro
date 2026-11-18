@@ -37,6 +37,42 @@ French, English, Italian and Arabic plus RTL are source requirements. No reduced
 
 Soft Glass D161 is a visual direction, not an existing imported design system. Specify both light and dark tokens, table density, focus indicators and reduced-transparency behavior. No old-project assets or preferences are imported.
 
+## Deferred schema-driven interfaces
+
+**PROPOSED / NOT IMPLEMENTED.** C38/C39 schemas remain L2/L11; visual and AI
+builders remain L3. The static L1 frontend scope is unchanged.
+
+Every schema must declare its owner, stable id, version and target contract
+revision/digest. Separate the data schema, UI layout and instance values: none
+confers authority on the others. Allow only bounded declared fields and a registry
+of reviewed, precompiled Angular widgets. Labels and validation errors must support
+French, English, Italian and Arabic with RTL. Backend input/output validation
+remains authoritative; client validation is only a usability aid.
+
+References must be bounded, local and preapproved, with no automatic network
+schema-reference resolution. Schemas must not supply remote executable JavaScript,
+templates, SQL or class names; no eval or generated-template compilation is allowed.
+Servers must omit inaccessible fields and data, not merely hide them in the UI,
+and reject crafted attempts to mutate read-only fields.
+
+Versioned drafts must pass validation, preview and review before publication.
+Approval must bind the exact revision; conflicts, stale revisions and target
+contract revision/digest mismatches must be rejected before effects. Current server
+permissions remain necessary at publication and use. Schema changes cannot create
+database models or tables; preserve the [configuration boundary](../03-CORE/CONFIGURATION-ENGINE.md).
+AI proposals must never publish automatically and remain subject to the
+[deferred agent authority contracts](../00-GOVERNANCE/SECURITY-GOVERNANCE.md#10-deferred-agent-authority-contracts).
+
+Future workflow task forms must send guarded commands with expected revisions,
+not direct state edits. Reject stale ownership or revoked authority; for an unknown
+result, reconcile the same operation identity rather than blindly repeat effects.
+Discard responses from a previous tenant context, even if the schema is shared.
+
+Schema-driven forms must preserve keyboard access, focus, labels and accessible
+errors in all four locales, including RTL. Distinguish unavailable, denied, stale,
+loading, empty and error states honestly; schemas do not justify fake operational
+screens or claims that deferred capabilities are implemented.
+
 ## Failure, performance and tests
 
 Every data view distinguishes loading, empty, error and denied states. Abort stale requests, bound table pagination and avoid unsafe HTML rendering. Propose bundle budgets after measuring an actual Angular production build.

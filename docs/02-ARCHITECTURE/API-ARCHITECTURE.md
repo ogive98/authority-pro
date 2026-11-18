@@ -1,13 +1,21 @@
 # API Architecture
 
-**Decision status:** `/api/v1`, controlled tenant selection and standardized errors are [owner-approved orientations](../00-GOVERNANCE/DECISION-MANAGEMENT.md#owner-confirmation-of-foundation-orientations); exact transport and error contracts remain PROPOSED. Versioned REST/OpenAPI are required by the blueprint.
-**Implementation status:** NOT IMPLEMENTED. All routes below are proposed contracts.
+**Decision status:** `/api/v1`, controlled tenant selection and standardized errors are [owner-approved orientations](../00-GOVERNANCE/DECISION-MANAGEMENT.md#owner-confirmation-of-foundation-orientations). Bounded L02 HTTP/error and test/build-only OpenAPI design is [APPROVED on 2026-11-18](../00-GOVERNANCE/DECISION-MANAGEMENT.md#l02-skeleton-decisions--2026-11-18); tenant/session route details remain PROPOSED. Versioned REST/OpenAPI remain blueprint requirements.
+**Implementation status:** NOT IMPLEMENTED. Approval is design only; no route is available or tested.
 
 ## Conventions
 
-Approved orientations: `/api/v1` APIs and Spring Security/JDBC-backed browser cookie sessions with CSRF protection; credentials never enter JavaScript storage. Tenant selection must be independently authorized by the backend. JSON, UUID identifiers, ISO-8601 UTC timestamps and `X-Tenant-Id` as the selector remain PROPOSED contract details, as do exact session/CSRF integration and configuration (ADR-0005). Request identifiers are proposed to be server-generated or strictly bounded and validated before logging.
+Approved integrated orientations: `/api/v1` APIs and Spring Security/JDBC-backed browser cookie sessions with CSRF protection; credentials never enter JavaScript storage. These are not L02 session or tenant capabilities. Tenant selection must be independently authorized by the backend. JSON, UUID identifiers, ISO-8601 UTC timestamps and `X-Tenant-Id` as the selector remain PROPOSED tenant/session contract details, as do exact session/CSRF integration and configuration (ADR-0005). L02 uses sanitized errors with server-generated trace identifiers; broader request-correlation transport remains proposed.
 
-## Planned foundation routes
+## Bounded L02 HTTP design
+
+The [canonical L02 approval](../00-GOVERNANCE/DECISION-MANAGEMENT.md#l02-skeleton-decisions--2026-11-18) and [ADR-0011](../adr/ADR-0011-api-versioning.md) bound explicit `skeleton-local` mode to `127.0.0.1:8080`, only if the port is free; never stop another service.
+
+- Allow only `GET /actuator/health/liveness` (process `UP` when live) and `GET /actuator/health/readiness` (`503 OUT_OF_SERVICE` while the nucleus is incomplete), with status-only bodies and no infrastructure details.
+- Deny every other request, including other methods and wildcard Actuator/docs access. Retain CSRF without provisioning sessions; no credentials, account or login capability is introduced.
+- Springdoc 3.2.0 is TEST/BUILD ONLY and excluded from the production artifact; no Swagger UI or published OpenAPI endpoint. Pins and toolchain scope belong to [ADR-0010](../adr/ADR-0010-java-spring-versions.md).
+
+## Planned integrated foundation routes (not L02)
 
 | Method | Full path | Scope and behavior |
 |---|---|---|
@@ -17,14 +25,12 @@ Approved orientations: `/api/v1` APIs and Spring Security/JDBC-backed browser co
 | GET | `/api/v1/auth/me` | Authenticated user and own authorized scopes only |
 | GET | `/api/v1/platform/info` | Authenticated minimal platform version and real component state |
 | GET | `/api/v1/audit-events` | Active tenant and `platform.audit.read`; paginated tenant records |
-| GET | `/actuator/health/liveness` | Restricted deployment probe, minimal status |
-| GET | `/actuator/health/readiness` | Restricted deployment probe, no public infrastructure details |
 
 No public `/auth/bootstrap` route. Initial first-administrator provisioning through a local operator CLI is approved; its guard and workflow details remain PROPOSED. No registration, support impersonation, business resource, marketplace or package-execution route belongs to the first slice.
 
 ## Errors
 
-Standardized errors are an approved orientation. PROPOSED format: `application/problem+json` with RFC 9457 fields and stable `code`/`traceId` extensions; exact fields, status mappings and filter/controller integration remain unapproved details. Example only:
+L02 approves `application/problem+json` errors with the RFC 9457 shape (`type`, `title`, `status`, `detail`, `instance`) and stable `code`/opaque `traceId` extensions, sanitized without secrets. Denial/validation handling must preserve HTTP/body status agreement across applicable filter/controller paths. Health probes retain status-only health bodies, including readiness 503, not this error envelope. Tenant/session codes, mappings and integration remain PROPOSED; the following tenant example is not an L02 endpoint:
 
 ```json
 {
@@ -38,21 +44,23 @@ Standardized errors are an approved orientation. PROPOSED format: `application/p
 }
 ```
 
-400 covers invalid input/context; 401 unauthenticated session; 403 authorization or CSRF failure; 404 non-visible resources where enumeration must be prevented; 409 optimistic concurrency; 429 throttling with retry guidance; 503 unavailable dependency. Security-filter failures must use the same format as controller failures. Never return SQL, stack traces, credentials or a confirmation that a login email exists.
+For later integrated routes, proposed mappings are: 400 invalid input/context; 401 unauthenticated session; 403 authorization or CSRF failure; 404 non-visible resources where enumeration must be prevented; 409 optimistic concurrency; 429 throttling with retry guidance; 503 unavailable dependency. Security-filter failures must use the same error format as controller failures. Never return SQL, stack traces, credentials or a confirmation that a login email exists.
 
 ## Pagination and compatibility
 
 Proposal: limit default 25/max 100; nonnegative offset with a bounded maximum; stable `(occurred_at desc, id desc)` ordering for audit. Response includes `items`, `total`, `limit`, `offset`. Reject unsupported sort fields via allowlist. Consider cursors before large offsets become operationally costly.
 
-API versions change only for breaking contracts. Deprecation windows are proposed in governance, not a current service commitment. OpenAPI documents request, response, authorization, CSRF and error contracts; generator/library compatibility needs verification before selecting a version.
+API versions change only for breaking contracts. Deprecation windows remain proposed, not a current service commitment. The approved Springdoc 3.2.0 selection is L02 test/build-only tooling, not a runtime API or proof of generation compatibility. Generated contracts must describe only real surfaces; no invented login, tenant or service API makes the skeleton appear implemented. Later OpenAPI contracts will document approved request, response, authorization, CSRF and error behavior.
 
 ## Security and operational behavior
 
-Prefer same-origin frontend/proxy deployment rather than permissive CORS. If cross-origin hosting is approved later, exact origin allowlists and credential handling need review. Rate limiting and bounded request bodies are required for any externally accessible login, not deferred behind a production label. Swagger and detailed Actuator output are not anonymous production APIs.
+Prefer same-origin frontend/proxy deployment rather than permissive CORS. If cross-origin hosting is approved later, exact origin allowlists and credential handling need review. Rate limiting and bounded request bodies are required for any externally accessible login, not deferred behind a production label. L02 has no login, Swagger or published OpenAPI endpoint; detailed Actuator output remains unavailable.
 
 ## Tests and acceptance
 
-Contract fixtures cover valid and malformed UUIDs, membership revocation, permission denials, CSRF rejection, expired session, all pagination bounds and stable error media type. Confirm cookie flags and that logout invalidates the server session. No route is documented as available until an integration test proves it.
+L02 requires evidence for the exact probe/method allowlist, status-only bodies, readiness 503, all-other-request denial, retained CSRF without sessions, sanitized error shape and build-only OpenAPI tooling exclusion from the production artifact. No such application tests have run.
+
+Later integrated contract fixtures cover valid/malformed UUIDs, membership revocation, permission denials, CSRF rejection, expired sessions, pagination bounds and stable error media type. Confirm cookie flags and server-session invalidation on logout. No route is documented as available until an integration test proves it.
 
 ## Related
 

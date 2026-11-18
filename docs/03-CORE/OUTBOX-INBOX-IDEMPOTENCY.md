@@ -84,6 +84,14 @@ Do not mark the inbox complete before the effect commits or use an independent t
 
 Delivery is **at least once**. The inbox can make a defined transactional database effect occur once within its retained deduplication scope; this is not an exactly-once delivery guarantee and does not cover an email, remote API or file write outside the transaction. Future external effects must use an idempotent destination or an additional explicitly owned delivery workflow with reconciliation.
 
+### Boundary with future workflow engines
+
+The [deferred workflow contracts](MODULE-RUNTIME.md#9-deferred-workflow-and-automation-contracts) build on these delivery guarantees; they do not turn an inbox, outbox or worker into a process engine. Definition versions, human tasks, timers, cancellation and compensation require their own state and ownership rules.
+
+If an external engine is later selected, provider state and outgoing command intent commit locally before dispatch; authenticated engine notifications return through duplicate-safe owning contracts. Specify which system owns each execution fact and which local records are projections. A lost acknowledgement requires reconciliation under the same operation identity, not a second start or unreviewed compensation. The engine's history and a local read model are not two independent authorities for the same transition. This does not select a distributed transaction or introduce a second competing publication mechanism for one event path.
+
+Engine/task identifiers, callback authentication, current worker authority, retention and recovery must preserve tenant boundaries. External completion cannot be inferred from local queue acceptance, and an external side effect cannot be rolled back by deleting a local record. The engine adapter and its recovery protocol need a separately approved spike using isolated technical fixtures; no additional service or database connection is authorized here.
+
 ## 6. Retry, lease recovery and ordering
 
 The exact mechanism may differ by selected option, but required behavior is:

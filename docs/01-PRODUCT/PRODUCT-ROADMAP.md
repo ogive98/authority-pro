@@ -1,7 +1,7 @@
 # Product Roadmap
 
 **Decision status:** PROPOSED sequencing within the owner-approved socle-only scope.
-**Delivery status:** Phase 0 documentation exists; application code NOT IMPLEMENTED.
+**Delivery status:** Phase-0 documentation exists and the L02 no-database backend skeleton is IMPLEMENTED / TESTED; see [execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18). The remaining L1 capabilities and later levels are not delivered.
 **Boundary:** Build the foundation to receive future modules, never business modules or their tables, rules, screens or demonstrations in this mission.
 
 ## Delivery map
@@ -17,19 +17,19 @@ The [implementation lots](../13-IMPLEMENTATION/IMPLEMENTATION-PHASES.md) define 
 
 These levels are distinct from governance N0/N1/N2. Four languages (FR, EN, IT, AR with RTL) remain required; no reduced language rollout is approved.
 
-## Phase 0 — Foundation (current, IN PROGRESS)
+## Phase 0 — Foundation (historical baseline; review remains distinct)
 
-Scope: monorepo organization, normative documentation, coverage/ownership map, ADRs, build strategy and documentation CI. No application build has been delivered.
+Historical scope: monorepo organization, normative documentation, coverage/ownership map, ADRs, build strategy and documentation CI. The no-application-build statement applied at that stage; L02 now has a delivered and tested backend skeleton.
 
-Proposed exit: review contradictions, separate approvals from proposals and link actual local documentation-test evidence. A local CI definition is not an executed remote workflow. Application compatibility spikes and G1 decisions precede application baseline pinning; they are not evidence that the socle has shipped.
+Proposed documentary exit: review contradictions, separate approvals from proposals and link actual local documentation-test evidence. A local CI definition is not an executed remote workflow. Compatibility spikes and G1 decisions preceded L02 baseline pinning; neither those steps nor L02 alone establish delivery of the whole socle.
 
-## Phase 1 — Platform socle (PLANNED / NOT IMPLEMENTED)
+## Phase 1 — Platform socle (L02 skeleton tested; integrated L1 incomplete)
 
 L1 proposed scope: backend skeleton, validated configuration and probes, separate database roles/migrations, verified tenant/company/site context, audit atomicity, closed operator provisioning, sessions/CSRF, permissions, minimal compiled registry and Angular technical shell. Audit protection is integrated before provisioning or sensitive writes are exposed. No public setup endpoint.
 
 Minimal logs, health, security controls, data/secret lifecycle requirements and backup/restore accompany their first affected slices. FR/EN/IT/AR, RTL, keyboard access and themes are tested with the shell. Phase 3 cannot be used to postpone mandatory baseline controls.
 
-Proposed exit: G1 is an approval gate only; implemented L1 requires evidence for [G2–G4](../13-IMPLEMENTATION/VALIDATION-GATES.md) and a bounded G5 readiness review. No application gate is claimed passed. Account recovery, privileged MFA and other open deployment requirements must be resolved before any production-opening decision.
+Proposed exit: G1 is an approval gate only; implemented L1 requires evidence for [G2–G4](../13-IMPLEMENTATION/VALIDATION-GATES.md) and a bounded G5 readiness review. L02 skeleton verification passed, but full G2 remains open until the database-bearing slice and no integrated L1 acceptance is claimed. The next step is bounded L03 facts/design and approval, not automatic database implementation or access. Account recovery, privileged MFA and other open deployment requirements must be resolved before any production-opening decision.
 
 ## Later phases — vision only, not authorized
 

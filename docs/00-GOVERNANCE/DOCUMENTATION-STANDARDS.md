@@ -3,7 +3,9 @@
 **Decision status:** PROPOSED conventions except requirements inherited from
 [MASTER-BLUEPRINT](../MASTER-BLUEPRINT.md), notably truthful status reporting.
 **Validation status:** Review in progress; this document does not certify pack
-completeness or approval. Platform delivery is PLANNED / NOT IMPLEMENTED.
+completeness or approval. Delivery is bounded to the IMPLEMENTED / TESTED L02
+no-database backend skeleton, not the complete platform; see
+[execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18).
 
 ## 1. Language and format
 
@@ -59,9 +61,11 @@ bounded approval and record the provenance gap; see the
 approvals, implementation, expert review or successful tests. Authors, reviewers
 and approvers are distinct roles; ownership alone proves no technical expertise.
 
-A documented feature is not an implemented feature. Current platform delivery is
-PLANNED / NOT IMPLEMENTED: no backend/frontend code exists, and Phase 0 remains
-in progress. A documentation review cannot mark a runtime gate complete.
+A documented feature is not an implemented feature. The earlier Phase-0
+no-application status is historical: L02 now has bounded backend build and test
+evidence. Frontend and integrated identity, tenancy, audit and inventory remain
+PLANNED / NOT IMPLEMENTED. Neither a documentation review nor L02 skeleton
+verification can close later integration or deployment gates.
 
 ## 4. Writing rules
 

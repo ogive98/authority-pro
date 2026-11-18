@@ -32,7 +32,7 @@ Complete these fields in an actual authorized ADR. The guidance cells are requir
 
 ## 1. Context and problem
 
-Describe the current verified state, the concrete problem, who is affected and why a decision is needed now. For this foundation, explicitly state that no backend/frontend exists until verified evidence changes that fact. Separate the source's long-term vision from the authorized documentation-then-runnable-socle scope.
+Describe the current verified state, the concrete problem, who is affected and why a decision is needed now. For this foundation, distinguish the [implemented/tested L02 no-database backend skeleton](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18) from the unimplemented frontend and integrated capabilities. Preserve earlier no-code context as historical rather than repeating it as current status. Separate the source's long-term vision from the authorized technical-socle scope.
 
 Identify locked constraints: independent Authority Pro identity, Angular/Spring Boot, modular monolith with DDD/hexagonal/PBC boundaries, monorepo, PostgreSQL `tenant_id` plus RLS and no business modules in this increment. If a proposal would change a locked constraint, state that it cannot proceed without explicit owner approval; do not disguise it as an implementation detail.
 
