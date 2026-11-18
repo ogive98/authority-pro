@@ -1,6 +1,6 @@
 # Thunder Core
 
-**Document status: PROPOSED**  
+**Document status: Approved high-level orientations; detailed contracts remain PROPOSED.**\
 **Capability status: NOT IMPLEMENTED — no backend or frontend exists yet.**  
 **Governance: N0. Proposed owner: platform architecture lead; approval authority: project owner.**
 
@@ -10,7 +10,7 @@ Thunder Core is the business-neutral technical foundation of **Authority Pro**, 
 
 Source principles in [MASTER-BLUEPRINT](../MASTER-BLUEPRINT.md), sections 2, 5–8, 10, 22–27 and 30–32, remain locked. The owner-confirmed baseline is the independent Authority Pro name, Angular and Spring Boot, a modular monolith using DDD, hexagonal architecture and Plugin-Based Components (PBC), a monorepo, and PostgreSQL `tenant_id` plus row-level security (RLS). The current scope is documentation first, then the runnable technical socle only, with **no business modules**. The archive's historical name and wider roadmap do not change that scope.
 
-All mechanisms below are **PROPOSED, pending owner approval**. MUST, MUST NOT and SHOULD express normative requirements of this proposal, not evidence that the requirements are implemented. This status convention also applies to every contract and JSON fixture linked from this set.
+The [owner-confirmed foundation orientations](../00-GOVERNANCE/DECISION-MANAGEMENT.md#owner-confirmation-of-foundation-orientations) approve Spring Security/JDBC-backed cookie sessions with CSRF; first-administrator provisioning through a local operator CLI, not a public page; restricted PostgreSQL runtime privileges with RLS and verified transaction-local tenant context; atomic commit/rollback of critical sensitive changes and audit; compiled first-party components with explicit contracts, not arbitrary hot-loaded plugins; and `/api/v1` with controlled tenant selection and standardized errors. Remaining mechanisms and linked contract/JSON details are **PROPOSED**, including numeric versions, exact schema/grants, expiry, selector/error fields, bootstrap guards, session/audit integration and tooling. MUST, MUST NOT and SHOULD express normative requirements, not implementation evidence; no blanket approval of this document or linked contracts is implied.
 
 ## 2. Scope and non-scope
 
@@ -84,7 +84,7 @@ A failed migration is a failed deployment, not a signal to continue with a parti
 - Global identity/session records are control-plane data. They are not made readable through a global tenant-table exemption. A platform owner receives **no automatic tenant access**.
 - Tenant operations use transaction-local tenant and user context derived from authenticated membership; absence, mismatch or expiration fails closed. There is **no `app.platform_scope` bypass**.
 - Every tenant table requires non-null `tenant_id`, forced RLS, read/write policies, tenant-safe constraints and tests under the actual runtime role. RLS does not replace permission checks or same-tenant company/site restrictions.
-- Browser authentication is proposed to use Spring Security and Spring Session JDBC with HttpOnly, Secure, SameSite cookies and same-origin CSRF protection. Custom bearer tokens and browser `sessionStorage` credentials are excluded.
+- Approved browser authentication orientation: Spring Security/JDBC-backed cookie sessions with CSRF. Spring Session JDBC integration, exact cookie settings, expiry and same-origin configuration remain PROPOSED. Custom bearer tokens and browser `sessionStorage` credentials are excluded.
 - Critical audit and protected writes commit together. Audit failure MUST NOT be swallowed. Administrative screens use the same guarded APIs as any other caller.
 
 ## 7. Failure and observability contracts
@@ -117,7 +117,7 @@ Acceptance requires named owners, approved N0 ADRs, reproducible tests and opera
 
 Before implementation, the owner must approve the concrete identity/session and provisioning design, membership/control-plane policy, module/package/export graph, configuration scopes, audit taxonomy/retention, and the precise socle acceptance slice. Durable event implementation additionally requires the spike in [Outbox, Inbox and Idempotency](OUTBOX-INBOX-IDEMPOTENCY.md).
 
-[ADR-0003](../adr/ADR-0003-multi-tenancy.md), [ADR-0005](../adr/ADR-0005-sessions.md) and [ADR-0006](../adr/ADR-0006-outbox.md) separate approved high-level choices from proposed mechanisms. The RLS role/context design, framework browser sessions and single durable-publication selection still require owner approval and test evidence; drafting them does not authorize implementation.
+[ADR-0003](../adr/ADR-0003-multi-tenancy.md), [ADR-0005](../adr/ADR-0005-sessions.md) and [ADR-0006](../adr/ADR-0006-outbox.md) separate approved high-level choices from proposed mechanisms. Restricted runtime/RLS with verified transaction-local tenant context and framework JDBC-backed cookie sessions with CSRF are approved orientations. Exact role/grant/context and session/audit integration details, and the single durable-publication selection, remain PROPOSED and require approval and test evidence; orientation approval does not establish implementation or acceptance.
 
 ## Related contracts
 

@@ -13,7 +13,7 @@ Passing G0 proves document/fixture checks only. It is not approval of N0 mechani
 
 ## G1 — Approved foundation design
 
-Before each implementation slice, obtain approval of its applicable N0 decisions. For L1 as a whole these include browser session/CSRF and initial provisioning, membership/tenant context and role separation, critical audit behavior, HTTP/probe exposure and compiled component boundaries. Resolve supported Java/Spring/session/OpenAPI/Angular/TypeScript/Node/PostgreSQL versions with compatibility evidence, not merely registry publication. Approve optional Modulith/ArchUnit/Flyway selections only if adopted.
+The [six foundation orientations](../00-GOVERNANCE/DECISION-MANAGEMENT.md#owner-confirmation-of-foundation-orientations) are owner-approved. Before each implementation slice, obtain approval of its remaining detailed N0 contracts: session/CSRF configuration and provisioning guards, membership policy and exact role grants/context integration, audit taxonomy and transaction integration, HTTP/probe exposure and component export graph. Resolve supported Java/Spring/session/OpenAPI/Angular/TypeScript/Node/PostgreSQL versions with compatibility evidence, not merely registry publication. Approve optional Modulith/ArchUnit/Flyway selections only if adopted.
 
 Define password, expiry, recovery and timeout policies before their implementation. Record whether privileged MFA and additional account lifecycle controls are required before production opening; an unresolved production condition cannot be relabeled as a released feature. Secret rotation, platform-data retention and operational responsibility also need explicit slice-specific requirements.
 
@@ -21,7 +21,7 @@ G1 records approval, never application delivery. Unrelated L3 choices do not blo
 
 ## G2 — Executable skeleton
 
-Fresh local dependency installation and build succeed; application starts against isolated PostgreSQL with approved migration/runtime roles; invalid configuration fails closed; module discovery reports the expected components and an intentional illegal dependency fails. No fake healthy status or default admin credentials.
+Fresh local dependency installation and build succeed; application starts against its new dedicated database on the existing PostgreSQL server with approved migration/runtime roles. Verify endpoint and project names before provisioning, abort on collisions, and leave the other application's database, roles and service configuration untouched. Invalid configuration fails closed; module discovery reports the expected components and an intentional illegal dependency fails. No fake healthy status or default admin credentials.
 
 L02 exits on its bounded skeleton checks without claiming full G2. L03 supplies the actual PostgreSQL role/migration integration and completes G2; L03 does not require full G2 as an entry condition. L02/L03 evidence includes bounded requests, safe errors/logs, restricted probes and separated development/test credentials/data. Reproducible backup/restore and security checks begin with the first database-bearing slice; L08 repeats their integrated evidence rather than introducing controls at the end.
 

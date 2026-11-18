@@ -1,11 +1,11 @@
 # API Architecture
 
-**Decision status:** PROPOSED transport and error conventions; versioned REST/OpenAPI required by blueprint.
+**Decision status:** `/api/v1`, controlled tenant selection and standardized errors are [owner-approved orientations](../00-GOVERNANCE/DECISION-MANAGEMENT.md#owner-confirmation-of-foundation-orientations); exact transport and error contracts remain PROPOSED. Versioned REST/OpenAPI are required by the blueprint.
 **Implementation status:** NOT IMPLEMENTED. All routes below are proposed contracts.
 
 ## Conventions
 
-Use `/api/v1` JSON APIs, UUID identifiers and ISO-8601 UTC timestamps. Browser authentication uses the ADR-0005 session-cookie proposal with CSRF protection; credentials never enter JavaScript storage. `X-Tenant-Id` selects a scope that the backend independently authorizes. Request identifiers are server-generated or strictly bounded and validated before logging.
+Approved orientations: `/api/v1` APIs and Spring Security/JDBC-backed browser cookie sessions with CSRF protection; credentials never enter JavaScript storage. Tenant selection must be independently authorized by the backend. JSON, UUID identifiers, ISO-8601 UTC timestamps and `X-Tenant-Id` as the selector remain PROPOSED contract details, as do exact session/CSRF integration and configuration (ADR-0005). Request identifiers are proposed to be server-generated or strictly bounded and validated before logging.
 
 ## Planned foundation routes
 
@@ -20,11 +20,11 @@ Use `/api/v1` JSON APIs, UUID identifiers and ISO-8601 UTC timestamps. Browser a
 | GET | `/actuator/health/liveness` | Restricted deployment probe, minimal status |
 | GET | `/actuator/health/readiness` | Restricted deployment probe, no public infrastructure details |
 
-No public `/auth/bootstrap` route. Initial provisioning is a separate operator procedure. No registration, support impersonation, business resource, marketplace or package-execution route belongs to the first slice.
+No public `/auth/bootstrap` route. Initial first-administrator provisioning through a local operator CLI is approved; its guard and workflow details remain PROPOSED. No registration, support impersonation, business resource, marketplace or package-execution route belongs to the first slice.
 
 ## Errors
 
-Use `application/problem+json` with RFC 9457 fields and stable `code`/`traceId` extensions. Example only:
+Standardized errors are an approved orientation. PROPOSED format: `application/problem+json` with RFC 9457 fields and stable `code`/`traceId` extensions; exact fields, status mappings and filter/controller integration remain unapproved details. Example only:
 
 ```json
 {

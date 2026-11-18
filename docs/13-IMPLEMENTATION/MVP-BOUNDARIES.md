@@ -7,7 +7,7 @@
 
 Independent Authority Pro monorepo under Documents, immutable source archive, normative documentation, explicit decisions and risks, machine-readable foundation contracts, local validation tooling and preparation for an Angular/Spring Boot executable foundation.
 
-The owner's latest instruction authorizes consolidating the technical coverage matrix, delivery levels, lots and validation criteria. It explicitly reaffirms that this project builds the socle to receive future modules, not those modules or their business functionality. No legacy assets or choices are imported.
+The owner authorized consolidation and subsequently [approved six high-level foundation orientations](../00-GOVERNANCE/DECISION-MANAGEMENT.md#owner-confirmation-of-foundation-orientations). The mission remains only the socle to receive future modules, not business functionality. PostgreSQL already serves another application: use a NEW dedicated Authority Pro database on that server without modifying the old database or restarting/reconfiguring the service. The endpoint, compatibility, unused database/role names and operator connection method remain to be verified before creation. No legacy assets, credentials or choices are imported.
 
 ## Foundation implementation after N0 approval
 
@@ -33,14 +33,14 @@ No remote repository, commit, push, release, deployment, modification of unrelat
 
 ## Scope decisions still needed
 
-The [decision log](../00-GOVERNANCE/DECISION-MANAGEMENT.md#4-open-decisions) remains the source of approval status. The following recommendations identify when a decision blocks a slice; none records new owner approval.
+The [decision log](../00-GOVERNANCE/DECISION-MANAGEMENT.md#4-open-decisions) remains the source of approval status. Its subsequent owner confirmation approves the six high-level orientations; the table below now identifies remaining detailed contracts and evidence, not a request to reapprove those same principles. Numeric versions and implementation-specific policies remain open. Database provisioning additionally requires the verified existing-server endpoint, non-colliding project names and authorized operator access, with no changes to the old application.
 
 | Decision | Proposed recommendation and alternative | Blocking point / evidence needed |
 |---|---|---|
 | O8 — Versions and tooling | Verify a supported Java/Spring/Angular/PostgreSQL intersection and reproducible wrappers; evaluate Modulith/ArchUnit and Flyway rather than selecting independent latest versions | L01/L02: authoritative support evidence, scoped compatibility builds and approved pins under ADR-0010; documentation-tool pins are not the application matrix |
 | O9 — Browser identity and provisioning | Framework-managed same-origin cookie sessions, CSRF and explicitly enabled local one-time provisioning; evaluate OIDC if needed, never public admin bootstrap or browser-stored session credentials | L05: approve ADR-0005, password/MFA/recovery readiness, expiry/revocation, initial grants and provisioning ownership; no open production rollout with unresolved account-recovery requirements |
 | O10 — Tenant scope and DB roles | Non-owner restricted runtime, separate migration/provisioning identities and verified transaction-local tenant/user context; no universal platform bypass | L03: approve ADR-0003 mechanics and membership/company/site contract; test actual connection lifecycle and all DML |
-| O11 — Audit and resource/retention rules | Sensitive state and critical audit commit together; anonymous failures use a distinct bounded path; specify retention and measured limits, not catch-and-ignore | L04/L05: approve atomicity and session integration; L08: defined retention, response/runbook ownership and tested budgets |
+| O11 — Audit and resource/retention rules | Sensitive state and critical audit commit together; anonymous failures use a distinct bounded path; specify retention and measured limits, not catch-and-ignore | L04/L05: approve the detailed transaction/session integration of the approved atomicity invariant; L08: defined retention, response/runbook ownership and tested budgets |
 | HTTP and probe contract | URI versioning, validated tenant selector, RFC 9457 errors and restricted independent health probes; alternatives require explicit contract changes | L02/L05: approve applicable ADR-0011 conventions, exact OpenAPI schemas, CSRF/error behavior and production exposure |
 | First-party execution and boundaries | Compiled reviewed components with explicit exports and static UI contributions; no arbitrary remote code or trust inferred from a signature | L02/L06: approve applicable ADR-0002/0008 implementation; genuine module-discovery and negative-boundary tests |
 | Durable publication | Compare the persistent Modulith registry with an explicit transactional outbox and select one producer mechanism | L10 only: ADR-0006 spike and approval; not a reason to block the unrelated L1 skeleton |

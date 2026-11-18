@@ -1,7 +1,7 @@
 # ADR-0003 — Shared PostgreSQL, tenant_id and RLS
 
-- **Status:** APPROVED — shared PostgreSQL with `tenant_id` and row-level security (RLS); all implementation mechanisms below are PROPOSED and require validation.
-- **Approval basis:** Explicit user selection of the tenancy strategy; no implemented isolation guarantee is claimed.
+- **Status:** APPROVED — shared tenant_id/RLS strategy, restricted runtime and verified transaction-local tenant context; exact SQL/grants/policy integration below remain PROPOSED.
+- **Approval basis:** Initial tenancy selection plus the [subsequent owner confirmation](../00-GOVERNANCE/DECISION-MANAGEMENT.md#owner-confirmation-of-foundation-orientations). Authority Pro requires a new dedicated database on the existing server without touching the other application; no implemented isolation guarantee is claimed.
 
 - **Record reviewed:** 2026-11-17; this is not an approval date for proposed details.
 - **Accountable owner / approval authority:** Project owner.
@@ -22,8 +22,7 @@ before a tenant is selected without creating a platform-wide tenant-data bypass.
 
 ## Decision and approval boundary
 
-Use option 1. The following is the recommended implementation, not a claim that
-the user approved its SQL, roles, transaction integration or policy design.
+Use option 1 in Authority Pro's new dedicated database, not the other application's database. Restricted runtime access and verified transaction-local tenant context are approved orientations. Exact SQL, role/grant definitions, connection integration and policy design below still require validation and scoped approval.
 
 ### Tenant data plane and database privileges
 
@@ -119,8 +118,7 @@ Check that no global read or support bypass exists.
 
 ## Migration implications
 
-No schema or production data exists. Build roles, grants, constraints and policies
-through the proposed migration process in ADR-0007 and validate them before use.
+No Authority Pro schema or production data exists; the owner reports another application already using the PostgreSQL server. Create a new project database only after verifying the endpoint and unused names; never migrate or restore into the old database. Build project roles, grants, constraints and policies through a reviewed provisioning plan and ADR-0007's proposed migration process. Roles are cluster-wide: do not alter existing roles, global defaults, server configuration or the other application's permissions.
 Future tables need the same checks. A later move to per-tenant databases requires
 a separate data migration and isolation review.
 

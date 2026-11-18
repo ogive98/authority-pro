@@ -1,12 +1,12 @@
 # Audit Engine
 
-**Document status: PROPOSED**  
+**Document status: Approved critical-change/audit atomicity; detailed contracts remain PROPOSED.**\
 **Capability status: NOT IMPLEMENTED — no audit store, writer or reader exists yet.**  
 **Governance: N0. Proposed owners: audit maintainer and security lead; approval authority: project owner.**
 
 ## 1. Purpose, source, scope and non-scope
 
-Provide durable evidence of protected platform changes without creating a cross-tenant information channel or copying sensitive payloads into logs. Locked principles derive from [MASTER-BLUEPRINT](../MASTER-BLUEPRINT.md), sections 5, 6, 8, 20, 23–26 and 30. These mechanisms are proposals awaiting owner approval under the [Core status convention](../03-CORE/THUNDER-CORE.md).
+Provide durable evidence of protected platform changes without creating a cross-tenant information channel or copying sensitive payloads into logs. Locked principles derive from [MASTER-BLUEPRINT](../MASTER-BLUEPRINT.md), sections 5, 6, 8, 20, 23–26 and 30. The [owner-confirmed foundation orientations](../00-GOVERNANCE/DECISION-MANAGEMENT.md#owner-confirmation-of-foundation-orientations) approve the invariant that critical sensitive changes and their durable audit both commit or both roll back. Detailed transaction/session integration, schemas, grants, taxonomy, retention and failed-attempt handling remain **PROPOSED** under the [Core status convention](../03-CORE/THUNDER-CORE.md); approval of the invariant is not approval or delivery of every mechanism below.
 
 Scope: atomic audit of critical identity/access, tenant settings and runtime administrative changes; scoped audit reading; and a distinct bounded path for failed authentication/security attempts.
 

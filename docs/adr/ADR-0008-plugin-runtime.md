@@ -1,6 +1,7 @@
 # ADR-0008 — Plugin-Based Components and extension trust
 
-- **Status:** PROPOSED — execution, packaging and trust mechanisms are recommendations; third-party execution is deferred.
+- **Status:** APPROVED — compiled first-party components and explicit contracts, without arbitrary hot-loaded plugins. Packaging/tooling details remain PROPOSED; third-party execution is deferred.
+- **Approval basis:** [Bounded owner confirmation](../00-GOVERNANCE/DECISION-MANAGEMENT.md#owner-confirmation-of-foundation-orientations); this is not permission to execute third-party packages or restart unrelated services.
 - **Approved context:** DDD/hexagonal modular monolith with Plugin-Based Components (PBC), not a dynamic plugin runtime.
 
 - **Record reviewed:** 2026-11-17; this is not an approval date.
@@ -32,9 +33,7 @@ because the architecture uses the word "plugin".
 
 ## Proposed decision
 
-Recommend option 1 for the foundation. First-party components are explicitly
-trusted, compiled and reviewed as part of the application, with dependency and
-contract checks under ADR-0002. Installing/upgrading code requires a backend
+Option 1 is approved as the foundation's execution orientation. First-party components are explicitly trusted, compiled and reviewed as part of the application. Concrete discovery, packaging and dependency/contract-check tooling under ADR-0002 remain proposals requiring validation. Installing/upgrading code requires a backend
 build and restart/redeployment. Angular uses a statically known route registry
 and lazy routes pointing to bundled first-party code; lazy loading is a loading
 optimization, not runtime trust or installation. No remote JavaScript, runtime

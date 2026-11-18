@@ -1,7 +1,15 @@
 # Database Architecture
 
-**Decision status:** Shared PostgreSQL with tenant_id and RLS APPROVED; schema and role design PROPOSED.
+**Decision status:** Shared tenant_id/RLS strategy, restricted runtime and verified transaction-local tenant context APPROVED as orientations; exact schema/grants/integration PROPOSED.
 **Implementation status:** NOT IMPLEMENTED. Table names below are conceptual.
+
+## Existing server and new project database
+
+The owner requires a new Authority Pro database on PostgreSQL already used by another application. "Shared" means Authority Pro tenants share THEIR project database; it never means sharing the other application's database or tables. `authority_pro` is only a candidate name pending verification. Existing database contents, users, service configuration, data directories and volumes must remain untouched.
+
+Follow the [safe provisioning boundary](DEPLOYMENT-ARCHITECTURE.md#safe-provisioning-boundary): confirm endpoint/version and operator authority, abort on database/role name collisions, and positively verify the target before any migration. PostgreSQL roles are cluster-wide; create only separately approved dedicated roles, never alter existing roles or global privileges. Review inherited/PUBLIC access without mutating the old application's security; if stronger isolation needs existing changes, stop for approval. Separate database names alone do not prove workload or privilege isolation.
+
+No connection, database creation or migration is performed by this specification. Do not start the draft Compose server or upgrade/restart the existing PostgreSQL service.
 
 ## Ownership and data boundaries
 

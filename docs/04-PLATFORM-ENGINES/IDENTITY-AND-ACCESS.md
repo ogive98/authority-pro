@@ -1,12 +1,12 @@
 # Identity and Access
 
-**Document status: PROPOSED**  
+**Document status: Approved high-level orientations; detailed contracts remain PROPOSED.**\
 **Capability status: NOT IMPLEMENTED — no identity service, session store or tenant policy is deployed.**  
 **Governance: N0. Proposed owners: identity/access maintainers and security lead; approval authority: project owner.**
 
 ## 1. Purpose, source, scope and non-scope
 
-Establish authenticated, revocable and scope-aware access to the Authority Pro technical socle without granting platform administrators implicit access to tenants. Locked source principles are [MASTER-BLUEPRINT](../MASTER-BLUEPRINT.md), sections 2, 5, 8, 23–26 and 30–32. The owner-approved baseline includes Angular/Spring Boot and PostgreSQL `tenant_id` plus RLS. Concrete session, provisioning and policy mechanisms below are **PROPOSED, pending owner approval**, under the [Core status convention](../03-CORE/THUNDER-CORE.md).
+Establish authenticated, revocable and scope-aware access to the Authority Pro technical socle without granting platform administrators implicit access to tenants. Locked source principles are [MASTER-BLUEPRINT](../MASTER-BLUEPRINT.md), sections 2, 5, 8, 23–26 and 30–32. The owner-approved baseline includes Angular/Spring Boot and PostgreSQL `tenant_id` plus RLS. The [owner-confirmed foundation orientations](../00-GOVERNANCE/DECISION-MANAGEMENT.md#owner-confirmation-of-foundation-orientations) also approve Spring Security/JDBC-backed cookie sessions with CSRF, first-administrator provisioning through a local operator CLI rather than a public page, restricted PostgreSQL runtime privileges with RLS and verified transaction-local tenant context, and critical-change/audit atomicity. Detailed session configuration/expiry, bootstrap guards, schema/grants, policy and session/audit integration remain **PROPOSED**, under the [Core status convention](../03-CORE/THUNDER-CORE.md).
 
 Proposed initial scope: controlled initial operator provisioning, login/logout, server-side session expiry/revocation, own-membership discovery, validated tenant/company selection, explicit RBAC permissions and isolated application transactions.
 
@@ -30,7 +30,7 @@ A global user may have memberships in multiple tenants with distinct company/sit
 
 ### Recommendation and alternatives
 
-Recommend **Spring Security plus Spring Session JDBC**, same-origin Angular and backend, and framework-managed cookie sessions. This reuses session lifecycle and CSRF primitives instead of writing a token protocol. Custom bearer tokens duplicate lifecycle/security work and encourage browser storage of credentials; JWT introduces revocation and key/refresh complexity that the initial socle does not require. Neither alternative is authorized by this proposal.
+Approved orientation: **Spring Security with JDBC-backed cookie sessions and CSRF protection**. Spring Session JDBC integration, same-origin deployment and exact lifecycle/cookie configuration remain PROPOSED. This direction reuses framework session lifecycle and CSRF primitives instead of writing a token protocol. Custom bearer tokens duplicate lifecycle/security work and encourage browser storage of credentials; JWT introduces revocation and key/refresh complexity that the initial socle does not require. Neither alternative is authorized by this proposal.
 
 The application must use framework session identifiers, not invent its own opaque bearer scheme or assume that Spring Session hashes session IDs at rest. Session tables are sensitive credential material and require restricted database access, encrypted backups and retention controls.
 
@@ -46,7 +46,7 @@ The application must use framework session identifiers, not invent its own opaqu
 
 ## 4. Controlled initial operator provisioning
 
-Provisioning is proposed as a **local, deployment-controlled CLI operation**, disabled by default. It is not a public unauthenticated HTTP route, a default account, a startup side effect, or a reusable bootstrap token.
+First-administrator provisioning is approved as a **local operator CLI operation**, not a public page or unauthenticated setup route. Detailed deployment controls, disabled-default enablement and the single-use guard below remain PROPOSED. It is not a default account, a startup side effect, or a reusable bootstrap token.
 
 The operator must explicitly enable the one-shot provisioning profile/process through an authorized deployment procedure. Credentials are supplied through a protected interactive input or approved secret source, never command-line plaintext arguments, source files or logs. Provisioning uses a narrowly scoped runtime/provisioning identity role, not the migration/superuser role and not a tenant RLS bypass.
 
@@ -135,7 +135,7 @@ Acceptance requires owner-approved session/provisioning/RLS decisions, reviewed 
 
 ## 9. Approval gates and related contracts
 
-Approve session/cookie/CSRF configuration, timeout and revocation policy, password policy/throttling, initial-operator workflow, membership-directory policy, permission catalogue, production MFA/recovery requirements and any future service/support identities. [ADR-0003](../adr/ADR-0003-multi-tenancy.md) and [ADR-0005](../adr/ADR-0005-sessions.md) distinguish the approved isolation strategy from these proposed mechanisms; owner approval remains required before implementation.
+Approve session/cookie/CSRF configuration, timeout and revocation policy, password policy/throttling, initial-operator workflow, membership-directory policy, permission catalogue, production MFA/recovery requirements and any future service/support identities. [ADR-0003](../adr/ADR-0003-multi-tenancy.md) and [ADR-0005](../adr/ADR-0005-sessions.md) distinguish approved high-level session, local CLI provisioning and restricted-runtime/RLS/context orientations from these proposed details; the remaining detailed decisions still require owner approval before implementation.
 
 - [Thunder Core](../03-CORE/THUNDER-CORE.md)
 - [Thunder Control](../03-CORE/THUNDER-CONTROL.md)

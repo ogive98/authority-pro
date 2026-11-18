@@ -38,7 +38,7 @@ current pack cannot claim the blueprint's full final acceptance criteria have be
 
 This is a requirements map, not 58 engines to create. C01–C42 preserve the source engine catalogue; C43–C58 capture cross-cutting gaps and product boundaries identified by the conversation audit. No business catalogue entry is a delivery item. Levels and lots are defined in [implementation phases](13-IMPLEMENTATION/IMPLEMENTATION-PHASES.md).
 
-**Status legend:** P = partial specification or principles exist; D = explicitly deferred detail; G = identified gap without a sufficient contract. These are documentation states, never test results. All row-level mechanisms and allocations remain **PROPOSED**, subject to the bounded approvals in the decision log. All application capabilities are **NOT IMPLEMENTED; runtime evidence absent**, including rows with executable JSON documentation fixtures. L1 means a bounded baseline; L2/L3 entries are subsequent candidates, not implementation authorization.
+**Status legend:** P = partial specification or principles exist; D = explicitly deferred detail; G = identified gap without a sufficient contract. These are documentation states, never test results. Detailed row-level mechanisms and allocations remain **PROPOSED** except the six high-level orientations explicitly approved in the [updated decision log](00-GOVERNANCE/DECISION-MANAGEMENT.md#owner-confirmation-of-foundation-orientations). All application capabilities are **NOT IMPLEMENTED; runtime evidence absent**, including rows with executable JSON documentation fixtures. L1 means a bounded baseline; L2/L3 entries are subsequent candidates, not implementation authorization.
 
 **Ownership:** Identity owns accounts/sessions; Tenancy owns organization/company/site and memberships; Access owns grant decisions; Audit owns audit contracts/data; Runtime owns technical descriptors and lifecycle. UI, API, Data, Developer, Security and Operations below are proposed responsibility areas, not automatically new modules or assigned people. Shared standards do not grant those areas access to another component's private data. Lead owners remain accountable for their row; participants retain their own contracts.
 
@@ -117,8 +117,13 @@ For each implemented slice, record row IDs, lot, decision reference, tested revi
 
 The renamed product, independent Documents folder, monorepo, stack principles,
 shared tenant_id/RLS strategy and socle-only scope are explicit owner decisions.
-Session/provisioning, runtime database-role mechanics, critical audit integration,
-exact versions and subsequent feature phases remain proposals or verification gates.
+The owner subsequently approved the six high-level session/provisioning, restricted
+runtime/context, critical-audit atomicity, compiled-contract and API orientations.
+Exact mechanisms, schema/grants, framework integration, numeric versions and subsequent
+feature phases remain proposals or verification gates. PostgreSQL already serves another
+application; the new dedicated project database must not overwrite or alter its database,
+roles or service configuration. Host/port, server version and name availability remain
+unverified. The old Compose draft must not be started for this selected topology.
 
 ## Verification boundaries
 
@@ -155,12 +160,42 @@ Historical snapshot from the initial pack validation, before the coverage-matrix
 
 These are documentation and scope-review results, not runtime acceptance. The automated validator does not establish architectural completeness or security.
 
+## L01 compatibility checkpoint — 2026-11-17
+
+The [version ADR](adr/ADR-0010-java-spring-versions.md#compatibility-evidence--2026-11-17)
+records the exact candidate matrix, sources, executed commands and bounded outcomes:
+
+- Java 21 / Boot 4.1.2: five disposable tests passed, including an offline rerun;
+  effective POM and resolved dependency tree inspected. No application context,
+  server, database connection or migration was started.
+- Angular 22: strict npm resolution rejected an upstream optional WASM peer conflict.
+  Angular 21 LTS: strict install, AOT/reactivity assertions and a negative compiler
+  case passed; 16 moderate development-graph entries represent two advisory roots.
+  No production-graph findings were reported by `npm audit --omit=dev`; no application
+  build or browser acceptance is inferred.
+- Probes, generated reports and downloaded tools remain Git-ignored scratch inputs,
+  not versioned application fixtures. No root dependency, CI or Compose change.
+- Documentation recheck for this working-tree checkpoint based on `f5d2914`:
+  `npm test` passed 18 tests; `npm run check:docs` reported 53 documents/fixtures,
+  50 Markdown files, 387 links, nine diagrams and zero errors. Link checks do not
+  fetch external sources; Mermaid parsing is not a visual review.
+- The 58 contiguous capability identifiers remain intact. The archive still matches
+  the original attachment's SHA-256 recorded above. No application directory exists.
+- The compatibility investigation is recorded; remaining numeric/tool approvals,
+  security contracts and integration tests keep full G1/G2 open. No capability row
+  is promoted to IMPLEMENTED or TESTED on this basis.
+
 ## Next gate
 
-Review the proposed levels, lots and remaining contract gaps; approve the applicable
-N0 mechanisms and verify the version matrix before implementing the first executable
-platform slice. Deferred L3 product decisions need not block unrelated nucleus work.
-No remote repository creation or push has occurred.
+The six high-level orientations are approved. Use the recorded compatibility findings
+to resolve the remaining N0 decisions applicable to the L02 backend skeleton before
+implementation. Before L03, establish the existing PostgreSQL endpoint and safe
+new-database provisioning plan without altering the other application. Review the
+frontend findings again before L07. Deferred L3 product decisions need not block
+unrelated nucleus work. Initial commit `f5d2914` was pushed to the private repository
+`ogive98/authority-pro`; the owner separately authorized committing and pushing this
+verified L01 checkpoint. That permission does not authorize future lots, releases,
+deployment or database operations.
 
 - [Validation gates](13-IMPLEMENTATION/VALIDATION-GATES.md)
 - [Decision log](00-GOVERNANCE/DECISION-MANAGEMENT.md)

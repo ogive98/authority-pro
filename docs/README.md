@@ -77,13 +77,13 @@ marketplace installer. JSON validity does not establish trust or grant permissio
 - [0002 — Approved modular monolith; tooling proposed](adr/ADR-0002-modular-monolith.md)
 - [0003 — Approved shared RLS strategy; policies proposed](adr/ADR-0003-multi-tenancy.md)
 - [0004 — Approved monorepo](adr/ADR-0004-monorepo.md)
-- [0005 — Proposed sessions and provisioning](adr/ADR-0005-sessions.md)
+- [0005 — Approved session/provisioning orientations; details proposed](adr/ADR-0005-sessions.md)
 - [0006 — Proposed durable-publication selection](adr/ADR-0006-outbox.md)
 - [0007 — Proposed Flyway migrations](adr/ADR-0007-flyway.md)
-- [0008 — Proposed extension execution model](adr/ADR-0008-plugin-runtime.md)
+- [0008 — Approved first-party execution; tooling proposed](adr/ADR-0008-plugin-runtime.md)
 - [0009 — Proposed scripting boundary](adr/ADR-0009-script-engine.md)
-- [0010 — Proposed version verification](adr/ADR-0010-java-spring-versions.md)
-- [0011 — Proposed API conventions](adr/ADR-0011-api-versioning.md)
+- [0010 — Candidate versions and bounded compatibility evidence](adr/ADR-0010-java-spring-versions.md)
+- [0011 — Approved API orientations; detailed contracts proposed](adr/ADR-0011-api-versioning.md)
 
 ## Reference
 

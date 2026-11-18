@@ -1,10 +1,12 @@
 # Platform Constitution
 
 **Decision status:** Source principles and the explicit decisions in the
-[approval record](DECISION-MANAGEMENT.md#approval-basis) are binding; additional
-policy and implementation details below are PROPOSED.
-**Delivery status:** PLANNED / NOT IMPLEMENTED. No backend or frontend code,
-test evidence or release is present; Phase 0 is in progress.
+[approval record](DECISION-MANAGEMENT.md#approval-basis), including the
+[owner-confirmed foundation orientations](DECISION-MANAGEMENT.md#owner-confirmation-of-foundation-orientations), are binding; additional
+policy and implementation details below remain PROPOSED.
+**Delivery status:** PLANNED / NOT IMPLEMENTED. No application backend/frontend,
+application acceptance or release is present; Phase 0 is in progress. Documentation
+checks and disposable compatibility probes do not establish application delivery.
 **Scope:** Every developer, AI agent, module, plugin and extension of Authority Pro.
 **Authority:** Locked [blueprint](../MASTER-BLUEPRINT.md) principles and explicit
 owner approvals prevail. This document does not approve its own proposals.
@@ -42,12 +44,14 @@ Database versions, Flyway and migration mechanics remain PROPOSED; versioned
 safe migrations and module ownership remain source requirements.
 
 2.4 Locked contracts: REST, versioned public APIs and OpenAPI documentation.
-The `/api/v1` convention and tenant selection contract remain PROPOSED.
+Approved orientation: `/api/v1`, controlled tenant selection and standardized
+errors. Exact selector/header and error-field contracts remain PROPOSED.
 
 2.5 Locked architecture: modular monolith, DDD, hexagonal architecture and
-Plugin-Based Components. Replacing this baseline or adopting microservices as
-the default requires explicit approval with an RFC and ADR. Tool recommendations
-must not be treated as already locked decisions.
+Plugin-Based Components. Approved foundation orientation: compiled first-party
+components with explicit contracts, not arbitrary hot-loaded plugins. Replacing
+this baseline or adopting microservices as the default requires explicit approval
+with an RFC and ADR. Tool recommendations remain PROPOSED.
 
 ## Article 3 — Business-neutral core
 
@@ -98,11 +102,12 @@ security control.
 data. Any future support access must be explicit, scoped, time-limited, audited
 and revocable.
 
-6.4 PROPOSED implementation: tenant = organization with a company/site hierarchy;
-control-plane administration is separate from tenant-plane access and grants no
-universal RLS bypass. Use a non-superuser, non-owner, NOBYPASSRLS runtime role,
-separate migration credentials and transaction-local context derived from verified
-tenant/user authorization. Exact schema, policies and grants require review.
+6.4 Approved orientation: restricted PostgreSQL runtime privileges, RLS and
+transaction-local tenant context derived from verified tenant/user authorization.
+PROPOSED details: tenant = organization with a company/site hierarchy, exact
+schema, policies and grants, and role/credential separation using a non-superuser,
+non-owner, NOBYPASSRLS runtime role distinct from migration credentials.
+Control-plane administration grants no universal RLS bypass.
 
 ## Article 7 — Security by default
 
@@ -117,14 +122,16 @@ documented sandbox. Arbitrary server-privileged execution is prohibited.
 
 7.4 Authentication, authorization and tenant-isolation changes are N0 changes.
 
-7.5 PROPOSED foundation design: Spring Security + Spring Session JDBC,
-same-origin HttpOnly browser session cookies and CSRF protection; closed-default
-one-time operator CLI bootstrap, with no public setup endpoint. No custom bearer
-session credentials stored in browser JavaScript.
+7.5 Approved orientations: Spring Security/JDBC-backed cookie sessions with CSRF,
+and first-administrator provisioning through a local operator CLI, not a public
+page or setup endpoint. Exact Spring Session JDBC integration, same-origin/cookie
+configuration, expiry and closed-default single-use bootstrap guards remain
+PROPOSED. No custom bearer session credentials stored in browser JavaScript.
 
-7.6 PROPOSED audit policy: sensitive writes must commit atomically with durable
-security audit or be rejected. Anonymous failures use separate bounded audit
-transactions without secrets. A blanket swallow-audit-failure policy is excluded.
+7.6 Approved invariant: critical sensitive changes and their durable security
+audit both commit or both roll back. Exact transaction/session integration and
+separate bounded audit transactions for anonymous failures remain PROPOSED.
+Secrets and a blanket swallow-audit-failure policy are excluded.
 
 ## Article 8 — Data ownership and integrity
 

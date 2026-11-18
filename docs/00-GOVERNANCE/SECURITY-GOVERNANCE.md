@@ -1,8 +1,9 @@
 # Security Governance
 
-**Decision status:** PROPOSED controls and operating policies; source security
-principles and the approved shared PostgreSQL `tenant_id` + RLS strategy remain
-binding. See the [approval record](DECISION-MANAGEMENT.md#approval-basis).
+**Decision status:** Source security principles and the
+[owner-confirmed foundation orientations](DECISION-MANAGEMENT.md#owner-confirmation-of-foundation-orientations)
+are binding. Detailed controls and operating policies remain PROPOSED unless
+explicitly approved; this is not blanket approval of this document.
 **Delivery status:** PLANNED / NOT IMPLEMENTED. No backend/frontend code,
 security tests or production-readiness evidence exists.
 
@@ -20,18 +21,21 @@ security tests or production-readiness evidence exists.
 
 ## 2. Socle controls (proposals, not implementations)
 
-| Control | PROPOSED design / validation needed |
+Approved orientations are identified below; remaining details are PROPOSED
+and all controls are NOT IMPLEMENTED.
+
+| Control | Decision boundary / design and validation needed |
 |---|---|
 | Password storage | Spring Security BCrypt; cost 12 is a candidate only, pending reproducible CPU/concurrency benchmarks |
-| Browser sessions | Spring Security + Spring Session JDBC; same-origin session cookies with HttpOnly, Secure outside localhost, and reviewed SameSite policy; CSRF protection for state-changing requests, including login/logout |
-| Session lifecycle | Session fixation protection, expiry, logout and administrative revocation; timeout and concurrency policies remain open |
-| Bootstrap | Closed by default; explicitly enabled one-time operator CLI, atomic single-use guard and durable audit; no public setup route or browser bootstrap form |
+| Browser sessions | APPROVED orientation: Spring Security/JDBC-backed cookie sessions with CSRF. PROPOSED details: Spring Session JDBC integration, same-origin deployment, HttpOnly/Secure/SameSite configuration and login/logout CSRF flow |
+| Session lifecycle | PROPOSED: session fixation protection, expiry, logout and administrative revocation; timeout and concurrency policies remain open |
+| Bootstrap | APPROVED orientation: first administrator through a local operator CLI, not a public setup route or browser form. PROPOSED details: closed-default enablement, atomic single-use guard and provisioning/audit integration |
 | Transport | HTTPS outside localhost; exact deployment/termination details proposed |
 | Authorization | Explicit memberships and permissions; OWNER/ADMIN/MEMBER are candidate names, not approved roles or delivered behavior |
 | Tenant model | Business-neutral tenant = organization; companies belong to an organization and sites to a company; company/site authorization must not be flattened into a single tenant role |
-| Tenant isolation | `tenant_id` + RLS strategy approved; FORCE RLS and policy mechanics proposed; non-superuser, non-owner, NOBYPASSRLS runtime role separate from migration role |
-| Context | Set transaction-local tenant/user context only from authenticated, verified membership and authorization; deny missing/invalid context; test cleanup with pooled connections |
-| Audit | Sensitive writes and their durable security audit atomically commit together or the write is rejected; bounded separate transactions for anonymous failures, without secrets |
+| Tenant isolation | APPROVED orientation: restricted PostgreSQL runtime + `tenant_id` + RLS. PROPOSED details: exact schema/grants, FORCE RLS/policy mechanics and non-superuser, non-owner, NOBYPASSRLS runtime/migration role separation |
+| Context | APPROVED orientation: verified transaction-local tenant context. PROPOSED details: context settings/integration and pooled-connection cleanup checks; missing/invalid context must deny |
+| Audit | APPROVED orientation: critical sensitive changes and durable audit both commit or both roll back. PROPOSED details: transaction/session integration and bounded separate transactions for anonymous failures, without secrets |
 | Headers | Spring Security defaults, HSTS outside development and sanitized errors; exact header policy to review |
 | Rate limiting | Authentication throttling and abuse controls must be designed and tested before exposure beyond controlled development; no production deferral implied |
 | Secrets | Runtime environment or secret store; development examples must contain only labelled non-production values |
@@ -67,8 +71,9 @@ must remain explicit, scoped, time-limited, audited and revocable under RLS.
   runtime role. Assert it cannot own protected tables, become a migration role,
   bypass RLS or disable the protection.
 - **Application** — repositories and services must reject absent or mismatched
-  context. Proposed context is transaction-local and based on verified identity,
-  not a client-supplied user id or unchecked tenant header.
+  context. Approved context orientation is transaction-local and based on verified
+  identity, not a client-supplied user id or unchecked tenant header; exact
+  context-setting and integration mechanisms remain PROPOSED.
 - **API** — validate tenant selection against current authorized memberships;
   proposed header/route details are not an approved contract.
 - **Cache/search/files** — prove tenant isolation when these capabilities are
@@ -83,13 +88,15 @@ test suite currently exists.
 
 ## 5. Audit and secrets
 
-PROPOSED durability policy: a sensitive state change must commit with its durable
-security audit in the same transaction, or fail without the change. Optional
+APPROVED invariant: a critical sensitive state change and its durable security
+audit both commit or both roll back. The same-transaction design and exact
+session/audit integration remain PROPOSED and require validation. Optional
 external audit export must not replace this durable record. Test audit storage
 failure, rollback and retry; no blanket catch-and-continue policy is acceptable.
 
-Anonymous login failures and rejected unauthenticated requests have no successful
-state-change transaction. Record them in a separate bounded transaction with
+PROPOSED failed-attempt handling: anonymous login failures and rejected
+unauthenticated requests have no successful state-change transaction. Record
+them in a separate bounded transaction with
 sanitized, minimal data; define rate limits and observable storage-failure handling.
 Never upgrade a denial to success if that audit fails. Do not record passwords,
 session credentials, CSRF secrets or raw sensitive request bodies. Retention,

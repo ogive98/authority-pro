@@ -1,6 +1,7 @@
 # ADR-0005 — Browser authentication, sessions and initial provisioning
 
-- **Status:** PROPOSED — recommendation only; no authentication mechanism has owner approval or an implementation.
+- **Status:** APPROVED — Spring Security/JDBC browser cookie sessions with CSRF and local operator CLI initial provisioning, never a public setup page. Exact policies, guards, grants and framework integration remain PROPOSED; no implementation exists.
+- **Approval basis:** [Bounded owner confirmation](../00-GOVERNANCE/DECISION-MANAGEMENT.md#owner-confirmation-of-foundation-orientations), not blanket approval of every recommendation below.
 - **Scope:** Browser access to the technical foundation. Machine-to-machine authentication is separately deferred.
 
 - **Record reviewed:** 2026-11-17; this is not an approval date.
@@ -34,11 +35,7 @@ opening a global tenant-data path.
 
 ## Proposed decision
 
-Use Spring Security for authentication/authorization and Spring Session JDBC
-for server-side browser sessions, with Angular and the backend served through
-one origin. This is a proposal, not a selection approved by the owner. Revisit
-external OIDC if federation or identity-service requirements justify it before
-implementation; an OIDC adapter can retain the same browser session contract.
+Spring Security with JDBC-backed browser cookie sessions and CSRF, plus local operator CLI provisioning, are approved orientations. The recommended Spring Session JDBC implementation, same-origin deployment, detailed cookie/expiry/guard behavior and framework integration must still be verified against the selected versions. External OIDC remains a possible separately reviewed extension; its addition must preserve the browser session/security contract rather than silently replace the approved orientation.
 
 - Send the opaque session identifier only in an `HttpOnly`, `Secure`, host-only
   cookie with an explicit `SameSite` policy (propose `Lax`, subject to login-flow

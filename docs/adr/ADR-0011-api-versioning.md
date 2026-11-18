@@ -1,6 +1,7 @@
-# ADR-0011 — Proposed API versioning, tenant header and problem details
+# ADR-0011 — API versioning, tenant header and problem details
 
-- **Status:** PROPOSED — URI scheme, tenant header, errors and probe configuration are recommendations, not owner-approved or implemented contracts.
+- **Status:** APPROVED — /api/v1, controlled tenant selection and standardized errors as orientations. Exact tenant header, RFC 9457 fields/codes, routes and probe exposure remain PROPOSED; nothing is implemented.
+- **Approval basis:** [Bounded owner confirmation](../00-GOVERNANCE/DECISION-MANAGEMENT.md#owner-confirmation-of-foundation-orientations), not blanket approval of the detailed contracts below.
 
 - **Record reviewed:** 2026-11-17; this is not an approval date.
 - **Accountable owner / approval authority:** Project owner.
@@ -29,6 +30,8 @@ For errors, prefer RFC 9457 Problem Details to a bespoke
 `code/message/details/traceId` envelope; stable application codes remain extensions.
 
 ## Proposed decision
+
+The owner approved `/api/v1`, controlled tenant selection and standardized errors. The remaining recommendations here refine those orientations; the approval does not select `X-Tenant-Id`, a specific UUID/error schema or probe exposure policy.
 
 ### Application API and browser security
 
