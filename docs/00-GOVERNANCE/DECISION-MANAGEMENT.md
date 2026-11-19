@@ -2,9 +2,9 @@
 
 **Decision status:** PROPOSED process details; locked blueprint principles and
 explicit approvals are recorded separately below.
-**Delivery status:** PLANNED / NOT IMPLEMENTED. Phase 0 is in progress; no
-application backend/frontend code, application acceptance or release evidence exists.
-Documentation-validator tests and disposable compatibility probes are separate evidence.
+**Delivery status:** L02 no-database backend skeleton IMPLEMENTED / TESTED; local
+PostgreSQL environment preparation is separately authorized below. Functional data
+integration, identity, audit, frontend and releases remain undelivered.
 
 ## 1. Decision types
 
@@ -78,7 +78,7 @@ The owner's subsequent conversational response explicitly validated the six pres
 5. Compiled first-party components with explicit contracts; no arbitrary hot-loaded plugins.
 6. Application APIs under `/api/v1`, controlled tenant selection and standardized errors.
 
-**Database constraint:** PostgreSQL already serves another application, according to the owner. Authority Pro must use a newly created dedicated database, not that application's database or schemas. A separate database on the existing server is the intended deployment; database name `authority_pro` is a candidate pending a collision check. No existing database, role, service configuration, data directory or volume may be overwritten or repurposed. No restart, server upgrade, drop/recreate, restore over existing data or global privilege change is authorized. Dedicated project roles need their own approved names and narrowly scoped creation plan because PostgreSQL roles are cluster-wide.
+**Historical database constraint:** PostgreSQL already serves another application, according to the owner. Authority Pro must use a newly created dedicated database, not that application's database or schemas. The original same-server direction and candidate name `authority_pro` were subsequently reviewed; the [dedicated local instance decision](#l03-local-environment-authorization--2026-11-18) now governs environment preparation. No existing database, role, service configuration, data directory or volume may be overwritten or repurposed. No restart, server upgrade, drop/recreate, restore over existing data or global privilege change is authorized. Dedicated project roles need their own approved names and narrowly scoped creation plan because PostgreSQL roles are cluster-wide.
 
 This authorizes the new-database direction, not execution against an unidentified endpoint or elevation of privileges. Host/port, actual server version, unused database/role names, operator authority and safe secret handling must be established before provisioning. A collision or need to alter the other application's security/configuration stops the operation for owner review. No database connection, creation or migration is claimed by this record.
 
@@ -122,6 +122,45 @@ The owner subsequently instructed: “continue seule , enchaine avec le lot proc
 
 The bounded work includes project-local tools/build configuration, startup/security adapters, architecture and artifact tests, repeatable qualification commands and the corresponding CI checks. Only the project's own loopback test processes may be started and stopped; an occupied port must not be freed by terminating another service. No business module, PostgreSQL connection/provisioning/migration, other-application change, deployment or automatic L03 implementation follows from this instruction.
 
+### L03 local environment authorization — 2026-11-18
+
+**Decision status: APPROVED for local environment preparation only.** The owner
+requested: “prepare tout l'envirenemment authority pro sans toucher a authority”.
+The authorized read-only preflight observed PostgreSQL 16.15 in `authority-postgres`,
+Windows port 5433, and PUBLIC CONNECT/TEMPORARY privileges on the existing
+`authority` database. These privileges do not prove access to application tables,
+but cannot be denied to one new role without changing existing permissions.
+No application data or password was read, and no existing privileges were changed.
+
+After this finding, the owner explicitly selected **“Instance dédiée (Recommandé)”**
+in answer to permission to create a separate PostgreSQL alongside the existing
+container. This replaces the earlier same-server local topology, not the shared
+`tenant_id`/RLS strategy inside Authority Pro. The owner also reaffirmed that all
+other concurrent projects, Docker resources and pgAdmin connections stay untouched.
+No separate human technical reviewer or conversation URL is invented.
+
+The bounded preparation uses a new `authority-pro-postgres` container, separate
+`authority-pro-pgdata` and `authority-pro-pgsecrets` volumes, and
+`authority-pro-network`; only loopback port 5434 is published. PostgreSQL 16.15
+uses the already available digest pinned in [Compose](../../compose.yaml), with
+256 MiB memory and 0.5 CPU limits. A temporary project-owned, networkless secret
+writer is removed only after success; failed resources are retained for inspection.
+No existing container is restarted, renamed, attached, removed or reconfigured.
+
+New identities are `authority_pro_operator` (local setup only),
+`authority_pro_owner` (NOLOGIN), `authority_pro_migrator` (explicit SET ROLE to
+owner) and `authority_pro_runtime` (restricted LOGIN without owner membership).
+Only this new cluster's database/schema ACLs are changed. Generated passwords
+never enter source, chat, command arguments or logs: Windows CurrentUser DPAPI
+protects the project-local credential file, and a dedicated read-only Docker
+secret volume supplies bootstrap material. Application migration credentials
+must remain separate from runtime credentials.
+
+The [execution evidence](../PACK-INVENTORY.md#l03-local-environment-evidence--2026-11-18)
+records what was actually verified. This is not approval or delivery of Flyway,
+JDBC application integration, tenant schemas/RLS, identity, audit, Angular,
+backup/restore, G2 completion, deployment or publication of this new work.
+
 ## 4. Open decisions
 
 These questions are explicitly open. Recommendations must not be implemented
@@ -138,7 +177,7 @@ silently as though approved. Phase references are planning suggestions only.
 | O7 | AI providers and data-sharing policy | Compliance, cost | Future vision |
 | O8 | L02 JDK/build and Modulith/ArchUnit subset approved and locally qualified. Migration/data selections and frontend findings remain open | Compatibility and maintenance; bounded L02 evidence cannot qualify other stacks | Data decisions before L03 and frontend review before L07; repeat L02 checks when inputs change |
 | O9 | Sessions/CSRF and local operator CLI approved as orientations; exact cookie/expiry/recovery/MFA policies, guard, role model and grants remain open | Security, authorization | Before corresponding implementation or production readiness |
-| O10 | Restricted runtime and verified transaction-local context approved; endpoint/version, new database/role names, operator authority, exact SQL/grants and connection integration remain open; old application untouched | Data isolation and coexistence | Before provisioning and tenancy implementation |
+| O10 | Dedicated local environment, endpoint/version and bounded setup roles/grants have separate approval and evidence below; tenant schema/grants, transaction-local context, application connection integration and recovery remain open; all other projects untouched | Data isolation and coexistence | Before application persistence and tenancy implementation |
 | O11 | Critical sensitive-state/audit atomicity approved; action taxonomy, framework integration, retention and measurable budgets including password-hash cost remain open | Integrity, capacity | Before corresponding implementation and acceptance |
 | O12 | Which bounded workflow dialect/engine, definition/instance ownership, task/deadline rules and running-version/external-effect protocol satisfy the deferred execution contracts? | Durability, tenant isolation, operating and migration cost | Before any selected L3 workflow/automation slice; not an L02 blocker |
 | O13 | What agent/service identity, attenuated delegation, exact-action approval, memory/provenance and execution-budget policies apply, alongside O7 provider/export decisions? | Authority, privacy, audit and human control | Before selected L3 agent tools or memory; no approval through model confidence |

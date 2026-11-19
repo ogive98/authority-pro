@@ -125,10 +125,59 @@ The [2026-11-18 L02 decisions](00-GOVERNANCE/DECISION-MANAGEMENT.md#l02-skeleton
 also approve the bounded build/tool subset, five-root empty graph and closed local
 HTTP/configuration design; target-tool and application verification remain pending.
 Other mechanisms, schema/grants, framework integration, numeric versions and subsequent
-feature phases remain proposals or verification gates. PostgreSQL already serves another
-application; the new dedicated project database must not overwrite or alter its database,
-roles or service configuration. Host/port, server version and name availability remain
-unverified. The old Compose draft must not be started for this selected topology.
+feature phases remain proposals or verification gates. The subsequent
+[dedicated local environment approval](00-GOVERNANCE/DECISION-MANAGEMENT.md#l03-local-environment-authorization--2026-11-18)
+replaces the earlier same-server topology after a read-only PUBLIC privilege check.
+Only new Authority Pro resources may be provisioned; all other projects' databases,
+roles, containers, volumes and pgAdmin settings remain untouched. Current bounded
+provisioning evidence is recorded below, separately from application acceptance.
+
+## L03 local environment evidence — 2026-11-18
+
+Initial preparation completed at `2026-11-18T13:06:31.316Z`; repeated preparation
+and explicit verification passed at `2026-11-19T04:56:16.022Z` and
+`2026-11-19T04:56:22.102Z`, preserving the same environment/container identities.
+This is local working-tree evidence, not a new commit, remote CI result or release.
+
+- Approved topology: a separate PostgreSQL 16.15 container, not another database
+  inside the existing Authority server. Only `127.0.0.1:5434` is published.
+- Resources: `authority-pro-postgres`, `authority-pro-pgdata`,
+  `authority-pro-pgsecrets`, `authority-pro-network`. No existing resources adopted,
+  reconfigured, restarted or removed; the successful project-owned secret writer
+  alone was removed after its job completed.
+- Local image digest: `sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685`.
+  Actual SQL server version: 16.15; this is not PostgreSQL/JDBC/Flyway integration
+  or complete container vulnerability/support certification.
+- Container budget asserted: 256 MiB memory, no additional container swap, 0.5 CPU,
+  128 processes, isolated bridge membership, dedicated mount names and read-only
+  secret mount. No other workload was stopped for capacity.
+- Setup administrator is separate from NOLOGIN owner, explicit-role migrator and
+  restricted runtime. Runtime has no elevated flags, owner membership, DDL or
+  temporary-table privilege. PUBLIC access is restricted only within this NEW cluster.
+- `npm run environment:prepare` and `npm run environment:verify` passed actual
+  host-port authentication with matching cluster identity, SCRAM-only HBA checks,
+  wrong-password rejection, 11 negative privilege checks, and a migrator DDL probe
+  rolled back completely. The application schema remains empty.
+- The three pre-existing containers retained their identities, start times,
+  restart counts and mounts during preparation and repeated checks. This is a
+  bounded lifecycle observation, not a claim to have inspected their data or
+  proved application performance; their credentials and pgAdmin settings were not read.
+- Windows CurrentUser DPAPI protects generated project credentials locally;
+  bootstrap input uses stdin, not command arguments or logs. The dedicated secret
+  volume remains accessible to Docker administrators; no production vault or
+  rotation/recovery certification is claimed.
+- `npm run test:environment`: 22 pure tooling tests passed, covering SCRAM format,
+  identity/manifest checks, name and Compose-label collisions, preservation of
+  unrelated names and rejection of unsupported/destructive command arguments.
+- Development-only `pg` 8.23.1 (MIT) is pinned in the npm lockfile for actual host
+  authentication. Installation with scripts disabled reported zero known npm
+  advisories for 164 packages at that observation; this is point-in-time evidence.
+
+L02 Java sources/artifact contracts remain unchanged. No application datasource,
+Flyway migration, RLS/tenant schema, session, identity, audit, Angular, business
+module or backup/restore drill is delivered by these environment checks. G2 stays
+open. Future application processes must receive only their own restricted secret,
+never the multi-role operator credential bundle.
 
 ## Verification boundaries
 

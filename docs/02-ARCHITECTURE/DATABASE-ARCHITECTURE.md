@@ -1,15 +1,15 @@
 # Database Architecture
 
 **Decision status:** Shared tenant_id/RLS strategy, restricted runtime and verified transaction-local tenant context APPROVED as orientations; exact schema/grants/integration PROPOSED.
-**Implementation status:** NOT IMPLEMENTED. Table names below are conceptual.
+**Implementation status:** Empty dedicated local database and bounded setup roles verified; application tables, migrations, transaction context and RLS NOT IMPLEMENTED. Table names below are conceptual.
 
-## Existing server and new project database
+## Dedicated server and new project database
 
-The owner requires a new Authority Pro database on PostgreSQL already used by another application. "Shared" means Authority Pro tenants share THEIR project database; it never means sharing the other application's database or tables. `authority_pro` is only a candidate name pending verification. Existing database contents, users, service configuration, data directories and volumes must remain untouched.
+The owner explicitly [approved a separate local instance](../00-GOVERNANCE/DECISION-MANAGEMENT.md#l03-local-environment-authorization--2026-11-18) after the shared-server preflight found PUBLIC CONNECT/TEMPORARY privileges on the old database. "Shared" still means Authority Pro tenants share THEIR project database, not another application's server, database or tables. The empty `authority_pro` database now exists on its own PostgreSQL 16.15 container, exposed only at `127.0.0.1:5434`; see [environment evidence](../PACK-INVENTORY.md#l03-local-environment-evidence--2026-11-18). All pre-existing databases, users, service configuration, data directories, volumes and concurrent projects remain outside the mutation boundary.
 
 Follow the [safe provisioning boundary](DEPLOYMENT-ARCHITECTURE.md#safe-provisioning-boundary): confirm endpoint/version and operator authority, abort on database/role name collisions, and positively verify the target before any migration. PostgreSQL roles are cluster-wide; create only separately approved dedicated roles, never alter existing roles or global privileges. Review inherited/PUBLIC access without mutating the old application's security; if stronger isolation needs existing changes, stop for approval. Separate database names alone do not prove workload or privilege isolation.
 
-No connection, database creation or migration is performed by this specification. Do not start the draft Compose server or upgrade/restart the existing PostgreSQL service.
+Only the new cluster's ACLs were restricted during environment setup; no existing server was changed or restarted. The guarded Compose preparation does not introduce application migrations or alter the L02 no-database backend. Do not start or configure another project's services.
 
 ## Ownership and data boundaries
 

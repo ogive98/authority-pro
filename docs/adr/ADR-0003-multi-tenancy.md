@@ -1,11 +1,11 @@
 # ADR-0003 — Shared PostgreSQL, tenant_id and RLS
 
 - **Status:** APPROVED — shared tenant_id/RLS strategy, restricted runtime and verified transaction-local tenant context; exact SQL/grants/policy integration below remain PROPOSED.
-- **Approval basis:** Initial tenancy selection plus the [subsequent owner confirmation](../00-GOVERNANCE/DECISION-MANAGEMENT.md#owner-confirmation-of-foundation-orientations). Authority Pro requires a new dedicated database on the existing server without touching the other application; no implemented isolation guarantee is claimed.
+- **Approval basis:** Initial tenancy selection plus the [subsequent owner confirmation](../00-GOVERNANCE/DECISION-MANAGEMENT.md#owner-confirmation-of-foundation-orientations). The [L03 local-environment authorization](../00-GOVERNANCE/DECISION-MANAGEMENT.md#l03-local-environment-authorization--2026-11-18) supersedes only the earlier existing-server topology: Authority Pro will use a new dedicated PostgreSQL instance and database, leaving the other application and concurrent project untouched. Shared tenants within Authority Pro's database remain approved; no implemented isolation guarantee is claimed.
 
 - **Record reviewed:** 2026-11-17; this is not an approval date for proposed details.
 - **Accountable owner / approval authority:** Project owner.
-- **Tenancy delivery:** NOT IMPLEMENTED; PostgreSQL isolation tests and release evidence remain absent. The separate [L02 no-database skeleton is implemented/tested](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18); no PostgreSQL was touched.
+- **Tenancy delivery:** NOT IMPLEMENTED; PostgreSQL isolation tests and release evidence remain absent. The separate [L02 no-database skeleton is implemented/tested](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18); no PostgreSQL was touched in L01/L02. The [empty dedicated environment and role checks](../PACK-INVENTORY.md#l03-local-environment-evidence--2026-11-18) now have passing evidence; this is not tenant isolation. Application migrations, RLS, JDBC integration, identity, audit, Angular and backup remain unimplemented; G2 is open.
 
 ## Context
 
@@ -24,7 +24,9 @@ platform-wide tenant-data bypass.
 
 ## Decision and approval boundary
 
-Use option 1 in Authority Pro's new dedicated database, not the other application's database. Restricted runtime access and verified transaction-local tenant context are approved orientations. Exact SQL, role/grant definitions, connection integration and policy design below still require validation and scoped approval.
+Use option 1 for shared tenants in Authority Pro's new dedicated database and instance, not the other application's database or server. Restricted runtime access and verified transaction-local tenant context are approved orientations. The bounded local-environment approval includes separate operator/owner/migrator/runtime identities; the application SQL, role/grant mechanics, connection integration and policy design below still require validation and scoped approval.
+
+The owner selected the dedicated-instance option after the existing `authority` database's `PUBLIC CONNECT/TEMP` privileges were explained: strict separation on that server would require changing its ACLs. The authorized replacement topology is PostgreSQL 16.15 in a new `authority-pro-postgres` container on `127.0.0.1:5434`, new data/secrets volumes, its own network and limits of 256 MiB / 0.5 CPU. This is environment initialization only, not Flyway approval or implemented tenant logic; the no-business-modules boundary is unchanged.
 
 ### Tenant data plane and database privileges
 
@@ -120,7 +122,7 @@ Check that no global read or support bypass exists.
 
 ## Migration implications
 
-No Authority Pro schema or production data exists; the owner reports another application already using the PostgreSQL server. Create a new project database only after verifying the endpoint and unused names; never migrate or restore into the old database. Build project roles, grants, constraints and policies through a reviewed provisioning plan and ADR-0007's proposed migration process. Roles are cluster-wide: do not alter existing roles, global defaults, server configuration or the other application's permissions.
+Authority Pro application migrations remain unimplemented; the empty local environment and bounded setup-role checks have passed. Initialize the new project database and environment identities only in the authorized dedicated instance after verifying the endpoint and unused names; abort on collisions. Never migrate or restore into the old database, alter its ACLs, reuse its cluster-wide roles or change its server configuration. Leave the other application and concurrent project untouched. Application migrations, constraints and RLS policies still require scoped approval and validation under ADR-0007's proposed migration process; environment initialization does not approve Flyway.
 Future tables need the same checks. A later move to per-tenant databases requires
 a separate data migration and isolation review.
 

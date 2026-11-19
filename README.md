@@ -3,9 +3,9 @@
 Independent Angular + Spring Boot platform foundation. Business-neutral Thunder Core,
 modular monolith, DDD, hexagonal architecture and Plugin-Based Components.
 
-**Current state: L02 backend skeleton implemented and locally tested, plus documentation
-and validation tooling. No database integration, identity, audit service, frontend,
-business module, release or deployment exists yet.**
+**Current state: L02 backend skeleton and an independent local PostgreSQL environment
+implemented and tested. No application database integration, identity, audit service,
+frontend, business module, release or hosted deployment exists yet.**
 
 ## Decisions
 
@@ -18,11 +18,12 @@ controlled tenant selection and standardized errors. The bounded L02 toolchain a
 closed HTTP boundary are approved and tested; detailed database/identity policies,
 SQL/grants, integration and frontend versions remain separately gated.
 
-PostgreSQL already serves another application. Authority Pro must use a NEW dedicated
-database on that server, with separate project roles; never modify or overwrite the
-other application's database, credentials or service configuration. Endpoint/version
-and name collisions must be verified before provisioning. No restart or database
-operation has occurred as part of recording this decision.
+PostgreSQL already serves another application. After a read-only privilege preflight,
+the owner explicitly approved a **separate PostgreSQL instance** for Authority Pro,
+replacing the earlier same-server local topology. The dedicated database, accounts,
+network and volumes share no application objects with other projects. Their existing
+containers, databases, credentials, pgAdmin registrations and settings remain untouched.
+The shared-tenancy design still applies within Authority Pro's own database.
 
 The project does not import legacy AUTHORITY code, assets or assumptions.
 
@@ -49,7 +50,8 @@ rerun. Angular 22 strict dependency resolution failed; an Angular 21 LTS compile
 probe passed but development-tool advisories remain open. These findings do not
 by themselves approve application pins or prove backend/database/browser acceptance.
 The subsequent L02 approval and implementation are recorded below; the remaining G1
-decisions stay open. PostgreSQL is untouched and frontend findings require review before L07.
+decisions stay open. PostgreSQL was untouched during L01/L02; the later environment
+preparation below is separate evidence. Frontend findings require review before L07.
 
 ## L02 backend skeleton — 2026-11-18
 
@@ -89,9 +91,54 @@ requests are denied, CSRF stays enabled, and no account or HTTP session is creat
 There is no login, Swagger UI, datasource or migration. Stop this manual foreground
 process normally when finished; do not expose it beyond loopback.
 
-The next lot is L03 database design/provisioning on a **new dedicated database**,
-only after endpoint/version, unused names, roles and safe operator authority are
-established. Completing L02 does not authorize connecting to the existing server.
+## Dedicated local PostgreSQL environment
+
+The [separate environment authorization](docs/00-GOVERNANCE/DECISION-MANAGEMENT.md#l03-local-environment-authorization--2026-11-18)
+and [executed checks](docs/PACK-INVENTORY.md#l03-local-environment-evidence--2026-11-18)
+cover only an empty development database, not completed L03 application persistence.
+
+| Item | Dedicated Authority Pro setting |
+|---|---|
+| Container / server | `authority-pro-postgres`, PostgreSQL 16.15 pinned by image digest |
+| Windows endpoint | `127.0.0.1:5434`, database `authority_pro` |
+| Runtime identity | `authority_pro_runtime`, no DDL, ownership, elevated role or maintenance database access |
+| Migration identity | `authority_pro_migrator`, explicit `SET ROLE authority_pro_owner`; never a runtime credential |
+| Storage / network | `authority-pro-pgdata`, `authority-pro-pgsecrets`, `authority-pro-network` |
+| Budgets | 256 MiB, 0.5 CPU, 20 server connections; runtime 5, migrator 2 |
+
+From this checkout, with Windows Docker Desktop running and Node.js 24:
+
+```powershell
+npm run test:environment
+npm run environment:prepare
+npm run environment:verify
+```
+
+Preparation requires the pinned image already present locally, available port 5434
+and unused dedicated names. It rejects name/Compose-label collisions and remote Docker
+daemons; it never adopts or deletes another project's resources. Repeating preparation
+on the verified environment runs checks without reinitialization or password rotation.
+A partial setup stops for inspection; do not delete state files or run `down -v` to
+bypass the guard. Do not restart Docker or another project's service to free resources.
+
+Generated passwords are stored only in a Windows CurrentUser DPAPI-encrypted file at
+`tmp/l03/credentials.dpapi`; they are not printed or committed. The bootstrap secret
+volume is mounted read-only by PostgreSQL, with restricted Linux permissions; Docker
+administrators can still access it. The current Windows user can decrypt the DPAPI
+file, which contains setup and migration credentials and must never be provided to
+an application runtime. Loss of that Windows profile/file requires a separately
+reviewed credential recovery, not automatic re-creation. No production secret vault,
+rotation or backup/restore guarantee is claimed.
+
+Verification authenticates through the actual Windows endpoint, checks the database
+cluster identity and role grants, rejects bad credentials and forbidden operations,
+and rolls back its technical DDL probe. It leaves no application tables. The ignored
+`tmp/l03/verification.json` contains non-secret results. The pinned `pg` Node client
+is local development tooling, not a backend JDBC dependency.
+
+pgAdmin and its existing server registrations remain unchanged. The environment
+commands do not start Java/Angular or change L02 readiness; migrations, transaction
+context, RLS and recovery qualification are the next separately scoped L03 work.
 
 ## Current files
 
@@ -101,12 +148,12 @@ established. Completing L02 does not authorize connecting to the existing server
 - [Validation gates](docs/13-IMPLEMENTATION/VALIDATION-GATES.md)
 - [Local validator](tools/validate-docs.mjs) and [tests](tools/validate-docs.test.mjs)
 - [CI definition](.github/workflows/foundation.yml); remote results require separate verification
-- [Unused Compose alternative](compose.yaml): draft separate server, not the selected existing-server topology
+- [Dedicated Compose environment](compose.yaml), guarded by [local preparation](tools/local-environment.mjs)
+- [Local bootstrap SQL](tools/local-postgres-init.sql) and [environment guard tests](tools/local-environment.test.mjs)
 
-Do not start Compose for the selected topology. Its image/port/database defaults
-are not the existing server's verified settings. Follow the [safe provisioning boundary](docs/02-ARCHITECTURE/DEPLOYMENT-ARCHITECTURE.md#safe-provisioning-boundary)
-for the new dedicated database; no backend may use the operator's elevated
-credential. Documentation checks do not start a database or run migrations.
+Follow the [safe provisioning boundary](docs/02-ARCHITECTURE/DEPLOYMENT-ARCHITECTURE.md#safe-provisioning-boundary);
+no backend may use the operator's elevated credential. `npm test` and documentation
+checks do not start a database or run migrations.
 
 ## Name and source
 

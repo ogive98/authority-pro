@@ -1,8 +1,9 @@
 # Versioning and Compatibility
 
 **Decision status:** PROPOSED policy except the bounded L02 pins approved in
-[ADR-0010](../adr/ADR-0010-java-spring-versions.md). Public contract versioning,
-compatibility governance and safe migrations remain source requirements.
+[ADR-0010](../adr/ADR-0010-java-spring-versions.md) and PostgreSQL 16.15 for the
+[authorized L03 local environment](DECISION-MANAGEMENT.md#l03-local-environment-authorization--2026-11-18).
+Public contract versioning, compatibility governance and safe migrations remain source requirements.
 **Delivery status:** L02 no-database backend skeleton IMPLEMENTED / TESTED;
 [execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18)
 is not a complete backend/frontend/database compatibility matrix or a release.
@@ -79,15 +80,19 @@ Spring Security + Spring Session JDBC and HttpOnly cookies with CSRF protection.
 |---|---|
 | Java | Project-portable Temurin 21.0.13+9; approved and tested for L02 only |
 | Spring Boot / build | Boot 4.1.2, Maven 3.9.16 and Wrapper 3.3.4; approved and tested for L02 only |
-| PostgreSQL | Exact existing-server version and compatibility remain unverified; no PostgreSQL operation occurred in L02 |
+| PostgreSQL | 16.15 approved for the bounded L03 dedicated local instance, replacing the earlier existing-server topology; [provisioning checks passed](../PACK-INVENTORY.md#l03-local-environment-evidence--2026-11-18), while application compatibility remains unverified. No PostgreSQL operation occurred in L01/L02 |
 | Angular | Exact supported release to select; do not use a floating "current LTS" build baseline |
 | Node.js | 24 candidate for frontend builds only; verify against the selected Angular release |
 
-[ADR-0010](../adr/ADR-0010-java-spring-versions.md) owns the exact approval and
-compatibility matrix. The runnable L02 build and clean verification do not prove
-frontend, database/migration, session-store integration or production support.
-Those slices still require approved pins and reproducible evidence; offline
-clean verification also passed as recorded in the execution evidence.
+[ADR-0010](../adr/ADR-0010-java-spring-versions.md) owns the version approval and
+compatibility matrix; the L03 authorization above bounds the local PostgreSQL pin.
+The runnable L02 build and clean verification do not prove frontend,
+database/migration, session-store integration or production support. Those slices
+still require remaining version selections and reproducible compatibility evidence;
+offline L02 clean verification also passed as recorded in the execution evidence.
+The dedicated-instance approval is environment initialization only, not Flyway
+approval or implemented tenant logic. Application migrations, RLS, JDBC integration,
+identity, audit, Angular and backup remain unimplemented; G2 is open.
 
 ## 8. Deprecation policy
 

@@ -1,7 +1,7 @@
 # Deployment Architecture
 
-**Decision status:** APPROVED bounded L02 local/no-database design ([2026-11-18 approval](../00-GOVERNANCE/DECISION-MANAGEMENT.md#l02-skeleton-decisions--2026-11-18)), not deployment or database-operation authorization. The later approved database direction is a new dedicated Authority Pro database on the existing PostgreSQL server, with the other application untouched; endpoint, compatibility and provisioning details remain unverified/PROPOSED.
-**Implementation status:** L02 local/no-database backend skeleton IMPLEMENTED / TESTED; see [execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18). No PostgreSQL was touched: no database connection, creation, migration or restart. Integrated deployment remains unimplemented and unauthorized by L02 verification.
+**Decision status:** APPROVED bounded L02 local/no-database design and subsequently a [dedicated local PostgreSQL environment](../00-GOVERNANCE/DECISION-MANAGEMENT.md#l03-local-environment-authorization--2026-11-18), replacing the earlier same-server local topology. Other projects remain outside the mutation boundary.
+**Implementation status:** L02 skeleton and the separate empty local PostgreSQL environment are IMPLEMENTED / TESTED within their [respective evidence boundaries](../PACK-INVENTORY.md#l03-local-environment-evidence--2026-11-18). Application database integration, migrations, RLS and hosted deployment remain unimplemented.
 
 ## Modes and current scope
 
@@ -17,19 +17,21 @@ DB/Flyway/RLS belong to proposed L03, audit to L04, identity to L05, protected i
 
 ## Proposed integrated local topology
 
-Angular development server on loopback proxies API requests to Spring Boot on loopback; their candidate ports 4200/8080 must be checked before startup. Do not stop unrelated services to free a port. The owner reports an existing PostgreSQL server serving another application and requires a NEW database for Authority Pro on that server. Never reuse that application's database, schemas, credentials or tables as the new foundation.
+Future Angular development on loopback will proxy API requests to Spring Boot on loopback; candidate ports 4200/8080 must be checked before startup. Neither is started by environment preparation. Never stop unrelated services to free ports or reuse their database, schemas, credentials, tables or Docker resources.
 
-The existing server's host, port and version are not established. `authority_pro` is a proposed new database name, not a database whose existence or ownership has been verified. The old Compose mapping `127.0.0.1:5433` and `postgres:16-alpine` are draft values, not evidence about this server. Leave Compose unused; do not start an additional instance or reconfigure the running service to match those defaults.
+The separate approved local server is `authority-pro-postgres`, PostgreSQL 16.15 pinned by image digest, with `authority_pro` on `127.0.0.1:5434`. It owns its data/secrets volumes and bridge network, with 256 MiB memory, no additional container swap, 0.5 CPU and 20 database connections maximum. Runtime and migrator roles have limits of five and two connections respectively. This bounds the new workload but does not prove host-wide performance isolation.
+
+The old `authority-postgres` server on host port 5433 was inspected only through authorized system metadata; PUBLIC CONNECT/TEMPORARY on its database led to the explicit separate-instance choice. Its ACLs, configuration, data, volumes and lifecycle are unchanged. pgAdmin settings and all concurrent projects remain untouched. Use the guarded [environment commands](../../README.md#dedicated-local-postgresql-environment), not an unreviewed Compose invocation.
 
 ## Safe provisioning boundary
 
-1. Obtain the existing server's host/port and an authorized operator connection method without requesting secrets in chat or putting passwords in command arguments.
+1. Positively identify the approved local Docker daemon, checkout, pinned image and loopback port without requesting secrets in chat or putting passwords in command arguments. Existing databases are not provisioning targets.
 2. Perform only a separately scoped read-only metadata preflight: server identity/version, candidate database/role collisions and effective privileges. Do not read the other application's tables or export its configuration/data.
 3. Confirm database and dedicated project-role names. Abort if a candidate already exists; never silently adopt, drop/recreate or overwrite it. PostgreSQL roles are cluster-wide, so creation must be limited to approved NEW project roles; no existing role alteration, global grants/defaults or service configuration edits.
 4. Provision only the new database and agreed roles with narrowly scoped privileges. Use an appropriate maintenance connection, never apply migrations to the old application database. Creating a database cannot be treated as an ordinary rollbackable migration; report partial creation and stop on failure rather than deleting objects automatically.
 5. Before migrations, positively verify the connected database, project owner/runtime identities and expected project state. Migrations, tests, cleanup and restoration must target only dedicated project destinations; collision or target mismatch stops execution.
 
-No `DROP DATABASE`, recreation, cluster initialization, existing data-directory/volume reuse, server upgrade, service/container restart, session termination or shared configuration change is authorized. If compatibility or isolation requires such a change, stop and present alternatives; do not fix it by changing the existing application.
+Only first initialization of the new Authority Pro cluster is authorized by the dedicated-instance approval. No `DROP DATABASE`, recreation, existing data-directory/volume reuse, other-server upgrade/restart, session termination or shared configuration change is authorized. Name or Compose-label collisions stop execution; partial setup is retained, never deleted or silently adopted. If compatibility or isolation requires altering another project, stop rather than changing it.
 
 A separate database shares server resources and cluster administration. It is not proof of resource or privilege isolation. Validate effective project-role access, including inherited and PUBLIC privileges; if restricting cross-application access would require altering existing database/global permissions, stop for approval instead of applying revokes to the other application. Bound new connection pools/jobs to protect the existing workload.
 

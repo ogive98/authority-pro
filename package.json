@@ -9,11 +9,15 @@
   "scripts": {
     "check:docs": "node tools/validate-docs.mjs",
     "check:backend": "node tools/check-backend.mjs",
-    "test": "node --test tools/validate-docs.test.mjs"
+    "environment:prepare": "node tools/local-environment.mjs prepare",
+    "environment:verify": "node tools/local-environment.mjs verify",
+    "test:environment": "node --test tools/local-environment.test.mjs",
+    "test": "node --test tools/validate-docs.test.mjs tools/local-environment.test.mjs"
   },
   "devDependencies": {
     "ajv": "8.20.0",
     "jsdom": "31.0.1",
-    "mermaid": "12.3.0"
+    "mermaid": "12.3.0",
+    "pg": "8.23.1"
   }
 }

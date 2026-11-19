@@ -2,20 +2,66 @@ name: authority-pro
 
 services:
   db:
-    image: postgres:16-alpine
+    image: postgres@sha256:cf78e76683b9ca8c5733cbbdce6c9262b45b6767934dd0a95e671f9a0fc20685
+    pull_policy: never
+    container_name: authority-pro-postgres
+    labels:
+      com.authoritypro.environment: ${AUTHORITY_PRO_ENVIRONMENT_ID:?Use npm run environment:prepare}
     environment:
-      POSTGRES_DB: ${DB_NAME:-authority_pro}
-      POSTGRES_USER: ${DB_BOOTSTRAP_USER:-authority_bootstrap}
-      POSTGRES_PASSWORD: ${DB_BOOTSTRAP_PASSWORD:?Set an uncommitted database bootstrap password}
+      POSTGRES_DB: postgres
+      POSTGRES_USER: authority_pro_operator
+      POSTGRES_PASSWORD_FILE: /run/authority-pro-secrets/operator-password
+      POSTGRES_INITDB_ARGS: --auth-local=scram-sha-256 --auth-host=scram-sha-256
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
     ports:
-      - "127.0.0.1:${DB_PORT:-5433}:5432"
+      - "127.0.0.1:5434:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
+      - db-secrets:/run/authority-pro-secrets:ro
+      - ./tools/local-postgres-init.sql:/docker-entrypoint-initdb.d/10-authority-pro.sql:ro
+    command:
+      - postgres
+      - -c
+      - max_connections=20
+      - -c
+      - shared_buffers=32MB
+      - -c
+      - work_mem=2MB
+      - -c
+      - maintenance_work_mem=16MB
+      - -c
+      - idle_in_transaction_session_timeout=60s
+      - -c
+      - log_statement=none
+      - -c
+      - log_min_error_statement=panic
+    mem_limit: 256m
+    memswap_limit: 256m
+    cpus: 0.5
+    pids_limit: 128
+    shm_size: 64m
+    restart: "no"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      test: ["CMD", "pg_isready", "-h", "127.0.0.1", "-p", "5432", "-U", "authority_pro_operator", "-d", "postgres"]
       interval: 5s
       timeout: 3s
-      retries: 10
+      retries: 12
+      start_period: 5s
+    logging:
+      driver: json-file
+      options:
+        max-size: 5m
+        max-file: "2"
 
 volumes:
   db-data:
+    external: true
+    name: authority-pro-pgdata
+  db-secrets:
+    external: true
+    name: authority-pro-pgsecrets
+
+networks:
+  default:
+    external: true
+    name: authority-pro-network
