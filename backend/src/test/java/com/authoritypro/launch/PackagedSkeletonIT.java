@@ -21,23 +21,56 @@ import static org.awaitility.Awaitility.await;
 
 class PackagedSkeletonIT {
     private static final Path JAR = Path.of(System.getProperty("skeleton.jar")).toAbsolutePath();
-    private static final List<String> FORBIDDEN = List.of("spring-jdbc-", "spring-data-", "spring-session-",
-            "hibernate-core-", "hibernate-envers-", "hibernate-spatial-", "postgresql-", "flyway-", "h2-",
+    private static final List<String> REQUIRED = List.of("spring-jdbc-7.0.10.jar", "HikariCP-7.0.2.jar",
+            "postgresql-42.7.14.jar", "flyway-core-12.4.0.jar", "flyway-database-postgresql-12.4.0.jar");
+    private static final List<String> FORBIDDEN = List.of("spring-data-", "spring-session-",
+            "spring-boot-jdbc-", "spring-boot-flyway-", "spring-boot-data-jpa-",
+            "hibernate-core-", "hibernate-envers-", "hibernate-spatial-", "h2-",
             "hsqldb-", "mysql-", "mariadb-", "r2dbc-",
             "jakarta.persistence-", "springdoc-", "swagger-", "archunit-", "spring-modulith-core-",
             "spring-modulith-events-", "junit-", "spring-boot-test-");
 
     @Test
-    void servingArtifactContainsNoDatabaseDocumentationOrTestEngine() throws Exception {
+    void servingArtifactPinsExplicitDatabaseLibrariesWithoutAutoconfigurationOrExcludedEngines() throws Exception {
         assertThat(JAR).isRegularFile();
         try (var archive = new JarFile(JAR.toFile())) {
             var names = archive.stream().map(entry -> entry.getName()).toList();
             assertThat(names).anyMatch(name -> name.equals("BOOT-INF/classes/com/authoritypro/platform/AuthorityProApplication.class"));
+            for (String library : REQUIRED) {
+                assertThat(names).contains("BOOT-INF/lib/" + library);
+            }
+            for (String prefix : List.of("spring-jdbc-", "HikariCP-", "postgresql-", "flyway-")) {
+                assertThat(names.stream().filter(name -> name.startsWith("BOOT-INF/lib/" + prefix)))
+                        .allMatch(name -> REQUIRED.contains(name.substring("BOOT-INF/lib/".length())));
+            }
             for (String prefix : FORBIDDEN) {
                 assertThat(names).noneMatch(name -> name.startsWith("BOOT-INF/lib/" + prefix));
             }
             assertThat(names).noneMatch(name -> name.contains("boundaryfixtures") || name.contains("com/authoritypro/http/"));
         }
+    }
+
+    @Test
+    void packagedContentMatchesCompiledClassesAndRecordsItsDigest() throws Exception {
+        Path classes = JAR.getParent().resolve("classes");
+        try (var archive = new JarFile(JAR.toFile()); var files = Files.walk(classes)) {
+            var compiled = files.filter(Files::isRegularFile).toList();
+            var expected = compiled.stream().map(path -> "BOOT-INF/classes/"
+                    + classes.relativize(path).toString().replace('\\', '/')).toList();
+            assertThat(archive.stream().filter(entry -> !entry.isDirectory())
+                    .map(entry -> entry.getName()).filter(name -> name.startsWith("BOOT-INF/classes/")))
+                    .containsExactlyInAnyOrderElementsOf(expected);
+            for (Path path : compiled) {
+                String name = "BOOT-INF/classes/" + classes.relativize(path).toString().replace('\\', '/');
+                try (var input = archive.getInputStream(archive.getJarEntry(name))) {
+                    assertThat(input.readAllBytes()).as(name).isEqualTo(Files.readAllBytes(path));
+                }
+            }
+        }
+        String digest = java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256")
+                .digest(Files.readAllBytes(JAR)));
+        Files.writeString(JAR.getParent().resolve("packaged-artifact.sha256"), digest + "\n",
+                java.nio.file.StandardOpenOption.CREATE_NEW);
     }
 
     @Test
@@ -50,6 +83,44 @@ class PackagedSkeletonIT {
                 List.of(), "SYSTEM_OVERRIDE_FORBIDDEN");
         assertRefused(Map.of("AUTHORITY_PRO_MODE", "skeleton-local"), List.of(),
                 List.of("--server.address=private-input"), "COMMAND_LINE_DISABLED");
+    }
+
+    @Test
+    void databaseModesRefuseTargetAndPasswordOverridesWithoutEchoingValues() throws Exception {
+        for (String mode : List.of("data-local", "migrate-local")) {
+            for (String key : List.of("AUTHORITY_PRO_DATABASE", "AUTHORITY_PRO_PASSWORD", "PGPASSWORD",
+                    "PGHOST", "DATABASE_URL", "SPRING_DATASOURCE_URL", "FLYWAY_URL")) {
+                assertRefused(Map.of("AUTHORITY_PRO_MODE", mode, key, "private-input"),
+                        List.of(), List.of(), "ENVIRONMENT_OVERRIDE_FORBIDDEN");
+            }
+            assertRefused(Map.of("AUTHORITY_PRO_MODE", mode), List.of("-Djdbc.url=private-input"),
+                    List.of(), "SYSTEM_OVERRIDE_FORBIDDEN");
+            assertRefused(Map.of("AUTHORITY_PRO_MODE", mode), List.of(),
+                    List.of("--password=private-input"), "COMMAND_LINE_DISABLED");
+        }
+    }
+
+    @Test
+    void databaseModesRefuseMalformedStdinBeforeAnyConnectionOrServlet() throws Exception {
+        try (var socket = reservePort()) {
+            for (String mode : List.of("data-local", "migrate-local")) {
+                for (String input : List.of("", "\n", "private-input", "x".repeat(257) + "\n",
+                        "private-input\nextra\n", "private-input\rwrong\n")) {
+                    var run = start(Map.of("AUTHORITY_PRO_MODE", mode), List.of(), List.of(), false);
+                    try {
+                        try (var stdin = run.process().getOutputStream()) {
+                            stdin.write(input.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                        }
+                        assertThat(run.process().waitFor(15, TimeUnit.SECONDS)).isTrue();
+                        assertThat(run.process().exitValue()).isEqualTo(2);
+                        assertThat(Files.readString(run.log()).strip()).isEqualTo("DATABASE_STARTUP_REFUSED");
+                        assertThat(socket.isClosed()).isFalse();
+                    } finally {
+                        stop(run.process());
+                    }
+                }
+            }
+        }
     }
 
     @Test
@@ -74,6 +145,8 @@ class PackagedSkeletonIT {
             assertThat(reservation.isBound()).isTrue();
         }
         var run = start(Map.of("AUTHORITY_PRO_MODE", "skeleton-local"), List.of(), List.of(), true);
+        run.process().getOutputStream().write("private-input-without-newline".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        run.process().getOutputStream().flush();
         try (var client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(1))
                 .followRedirects(HttpClient.Redirect.NEVER).build()) {
             await().atMost(Duration.ofSeconds(35)).pollInterval(Duration.ofMillis(150)).until(() -> {

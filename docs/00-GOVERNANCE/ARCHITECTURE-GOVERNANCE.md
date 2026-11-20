@@ -4,17 +4,16 @@
 ([2026-11-18 approval](DECISION-MANAGEMENT.md#l02-skeleton-decisions--2026-11-18)); future business rules remain PROPOSED. Modular monolith,
 DDD, hexagonal architecture, Plugin-Based Components and strict ownership remain
 binding source principles; see the [approval basis](DECISION-MANAGEMENT.md#approval-basis).
-**Delivery status:** PLANNED / NOT IMPLEMENTED. Approved design is not an existing
-package tree, CI enforcement or passing application tests.
+**Delivery status:** Bounded L02 package discovery and local boundary enforcement IMPLEMENTED / TESTED; see [execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18). Functional module contracts and integrated foundation remain incomplete. L03 is in progress; this documentation review runs no application tests or remote CI.
 **Scope:** Structural rules for the backend, frontend and module ecosystem.
 
 ## 1. Package model (APPROVED for bounded L02)
 
 One artifact has application root `com.authoritypro.platform.AuthorityProApplication`.
 Exactly `identity`, `tenancy`, `access`, `audit` and `runtime` are its immediate
-module roots. No packages exist yet. Assert exact discovery from real application
-classes/metadata before boundary verification; empty directories, a hard-coded
-module list or an incorrectly nested model are not evidence.
+module roots. L02 verifies their discovery from real application classes/metadata
+before boundary verification; empty directories, a hard-coded module list or an
+incorrectly nested model are not evidence. Preserve this check as L03 evolves.
 
 L02 has ZERO intermodule edges. Introduce named `api` exports only when later
 needed and explicitly approved, with separately declared and approved consumption;
@@ -43,7 +42,7 @@ and consumption need explicit approval; the business-module rows are proposals o
 Rules that are not expressible as package rules are documented in an ADR; this
 must not weaken strict ownership or authorize an L02 edge.
 
-## 3. Enforcement (PLANNED / NOT IMPLEMENTED)
+## 3. Enforcement (bounded L02 locally verified)
 
 1. Approved L02 tools: Spring Modulith 2.1.2 and ArchUnit 1.4.2
    ([ADR-0010 pins](../adr/ADR-0010-java-spring-versions.md)); no event registry.
@@ -54,9 +53,10 @@ must not weaken strict ownership or authorize an L02 edge.
    and no domain dependence on infrastructure/frameworks as capabilities arrive.
    Versioned test-only negative fixtures must demonstrate incorrect discovery and
    forbidden edges/imports fail; never add fake production services to exercise rules.
-3. A boundary violation must fail the build. Nothing runs in CI yet: link actual
-   application discovery, positive checks and deliberately failing fixture evidence
-   before marking enforcement implemented or tested. Approval is design only.
+3. A boundary violation fails the local build. The linked L02 evidence records actual
+   discovery, positive checks and deliberately invalid fixtures. Preserve those tests;
+   local evidence and a CI definition do not prove a remote run or qualify later
+   functional boundaries. This documentation consolidation reruns neither.
 
 ## 4. Adding a module (proposed future procedure)
 

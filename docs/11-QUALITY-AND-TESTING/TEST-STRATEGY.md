@@ -1,7 +1,7 @@
 # Test Strategy
 
 **Decision status:** PROPOSED acceptance policy derived from blueprint security/quality requirements.
-**Application test status:** L02 passed 65 unit/HTTP/architecture/contract tests and four packaged-JAR integration tests, including an offline clean repeat. Database, identity, audit, browser and recovery acceptance remains NOT RUN; see [execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18).
+**Application test status:** L02 passed 65 unit/HTTP/architecture/contract tests and four packaged-JAR integration tests, including an offline clean repeat. The separate [L03 isolated qualification](../PACK-INVENTORY.md#l03-isolated-qualification-evidence--2026-11-19) passed 71 technical JDBC/Flyway/RLS checks and 50 restored-target checks. The subsequent [application checkpoint](../PACK-INVENTORY.md#l03-application-qualification-checkpoint--2026-11-20) passed 75 unit tests, seven packaged tests, 111 actual application persistence checks and 24 restored-target checks; 55 pure tooling tests also passed. Closed L03 remains IN PROGRESS: the main `authority_pro` database is not migrated and valid credential-bearing packaged database launches are not tested. Identity, audit, browser and production recovery acceptance remains NOT RUN; see also [L02 execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18). These later technical results are separate from the earlier documentation-only consolidation.
 
 ## Levels and evidence
 
@@ -53,6 +53,75 @@ Mermaid parsing verifies syntax only, not layout or architectural correctness. M
 | Dynamic-interface browser paths | Verify task forms, draft/diff/approval, revision conflicts and unknown outcomes; slow old-tenant responses are discarded. Exercise keyboard/screen-reader paths, FR/EN/IT/AR with RTL, both themes and loading/empty/denied/error states |
 
 Use inert technical definitions, synthetic scoped identities and test-only providers, not accounting, HR, sales or other business demonstrations. Future persistence/engine tests must positively verify dedicated project test destinations; never use the other application's PostgreSQL database or modify its roles/services. Record actual engine/tool versions, commands, fault windows and outcomes. Documentation validation cannot close any row of this matrix.
+
+## Deployment and distribution acceptance
+
+**PROPOSED / NOT RUN.** The [deployment capability matrix](../02-ARCHITECTURE/DEPLOYMENT-ARCHITECTURE.md#deployment-capability-matrix) defines the deployment contract; the cases below require evidence for each explicitly selected profile and capability, not implied support for every topology. These are future acceptance requirements, not implementation or test-execution claims.
+
+| Area | Required positive and negative evidence |
+|---|---|
+| Profile and manifest compatibility | A supported profile/manifest combination is accepted; incompatible versions, unavailable required capabilities and unknown capabilities are rejected before activation or mutation. Schema validity alone cannot establish runtime compatibility |
+| Multi-instance authority and capacity | Across alternating nodes, verify session continuity, CSRF enforcement and session/grant revocation, including cached stale grants. Lose a node and prove bounded recovery without unauthorized retries; measure total database pools across all instances and background workers against the shared connection budget, and prove bounded queues, backpressure and explicit overload responses |
+| Rolling upgrades | Exercise supported mixed application/schema versions and reject unsupported combinations before writes. Concurrent migrators respect one migration lock; draining stops new work and safely finishes or hands off in-flight requests/jobs. Failure and rollback cannot leave duplicate workers or incompatible schema writers |
+| Installer and updater safety | Detect port, path and service-name collisions without modifying unrelated services or data. Reject corrupted, unsigned and wrong-platform updates before activation; interrupt installation/update at recorded fault windows and restore a consistent supported version/data pair. Uninstall preserves user data and backups unless separately authorized for deletion |
+| Installation identity and fleet control | Require re-enrollment/rekeying for managed restores or clones; exercise detection of observable connected duplicate use and prove revocation rejects the old credentials on connected verifiers. Identical copied credentials cannot reliably identify an offline clone without a separately approved hardware trust mechanism; record detection and disconnected-revocation limits. Remote administration requires explicit consent, current scoped authority and audit; reject widened, expired or revoked access. Redact fleet metadata and verify central-control outage cannot grant access or silently disable permitted local operation |
+| Offline entitlements | Validate signed entitlements, installation binding and bounded offline validity; reject invalid signatures and expired entitlements, and exercise clock rollback under the declared trusted-time policy. Record the offline grace/expiry boundary explicitly: immediate revocation cannot be guaranteed while disconnected |
+| Local operation and synchronization | Prove declared local operations work without internet independently of optional synchronization. Restart bounded durable queues/checkpoints; exercise duplicate and out-of-order replay, schema incompatibility and conflicting revisions without silent overwrite. A long-disconnected node cannot resurrect tombstoned data after retention boundaries; require resnapshot/reconciliation when history is insufficient. Reauthorize replay against current authority rather than trusting an offline grant or queued command |
+| Cells and tenant migration | Reject spoofed routing and stale cell maps. During tenant migration and rollback, maintain one authoritative writer and consistent identity, files, jobs and audit; fence the old cell before cutover and reject stale writes/replays. Cell routing and identity-plane lookup never provide a universal tenant-isolation bypass |
+| Cross-provider recovery | Restore into an isolated destination on another provider using the required encryption keys, secrets under controlled recovery access and pinned artifact/schema versions. Missing keys or incompatible artifacts fail explicitly; verify identity, data, files, jobs and audit consistency and measure achieved RPO/RTO instead of assuming portability |
+| Telemetry and local storage | Verify secret/personal-data redaction and bounded telemetry cardinality, buffering, retention and upload retries during central outage. Saturate local disk with technical fixtures; preserve protected-write/audit atomicity, expose failure and recover without unbounded growth or silent data loss |
+
+Use synthetic identities, inert technical records and test-only providers only; no business modules or demonstrations. Future fault injection, installers and recovery drills require explicitly authorized disposable isolated destinations and must never touch unrelated services or databases. Record profile, topology, artifact/tool versions, resource limits, fault windows and measured outcomes. This documentation change creates no fixtures, infrastructure or application code and executes none of these runtime acceptance tests; documentation validation cannot close these acceptance rows.
+
+## Visual composition acceptance
+
+**PROPOSED / NOT IMPLEMENTED / NOT RUN — design-only acceptance specification.**
+This consolidates AP-ARCH-EVOL-001 and AP-MASTER-CONSTITUTION-001 under the
+[documentation authorization](../00-GOVERNANCE/DECISION-MANAGEMENT.md#visual-composition-documentation-authorization--2026-11-20).
+Trace requirements through the [coverage refinement](../PACK-INVENTORY.md#visual-composition-coverage-refinement),
+[O20–O25](../00-GOVERNANCE/DECISION-MANAGEMENT.md#4-open-decisions) and
+[architectural-readiness boundary](../13-IMPLEMENTATION/VALIDATION-GATES.md#visual-composition-architectural-readiness).
+The seven business scenarios below describe future product acceptance, not current
+orders, ERP features or permission to create modules, fixtures or demonstrations.
+L1 success is still the bounded technical nucleus, not delivery of a complete ERP.
+
+### Future business scenarios A–G
+
+| Scenario | Required future design and acceptance evidence |
+|---|---|
+| A — One label per validated order, released in batches of ten | Define scoped eligibility and a durable counter/atomic claim of exactly ten distinct eligible orders before dispatch; fewer than ten must not trigger this batch. Deduplicate repeated validation events/commands and concurrent claimants; record batch membership, stable per-order label/operation identity, durable dispatch intent and applicable audit atomically within the owning local boundary. Test crash/restart and partial batch completion: retain known successful items and retry only eligible failed items with the same identities. A lost printer acknowledgement is UNKNOWN, requiring status reconciliation or an authorized manual resolution/reprint decision, never blind retry of the whole batch. This is a one-label business objective, **not an exactly-once physical printing promise** or an atomic database/printer transaction |
+| B — Add a button to an existing order screen | Use a governed UI extension point and current selected-record identity/revision; check current tenant/company/site permissions server-side, call the official versioned business contract and preserve its rules. Prove selection changes, stale responses, denial, conflict, partial/unknown result and safe errors are handled; show authorized result and durable audit, not direct table access or injected scripts |
+| C — Develop a missing device adapter | Discover that no compatible adapter exists, define manifest, typed ports/configuration, device/profile requirements and effect/error semantics, then develop/test under the separately approved trust model. Use simulated devices before separately authorized physical tests. Review permissions, dependency versions, provenance/signature and compatibility before packaging/publication and reuse in another graph; a signed package alone is not safe execution authority |
+| D — Create a custom module | Define module identity, owned schemas/data, public capabilities, UI/workflow/navigation contracts, permissions, dependencies and versions. Require contract/security tests, reviewed owned migrations and compatibility/recovery evidence before publication. Reuse existing providers through official contracts; no generated DDL execution, borrowed table ownership or hidden cross-module dependency |
+| E — AI proposes a feature | Inspect the permission-filtered existing application, propose UAM/graph changes and missing components, and retain source/model/prompt/dependency provenance. The human can inspect the diff, change the draft and run isolated tests, then approve the **exact resulting draft revision/artifact**. Any later edit or dependency change invalidates that approval. No silent publication/execution; provider export, quotas and current permissions still apply |
+| F — Preserve native functionality | Extend through approved extension points without replacing native implementation, public APIs, domain invariants or database ownership. Run native/headless paths with studios disabled and AI/Marketplace unavailable; unchanged contracts retain behavior within declared dependencies and entitlement windows. There is no existing full ERP implementation asserted here |
+| G — Recover a failed batch | Identify failed node, pinned version, completed/failed/unknown items and sanitized trace/context filtered by current permissions. Explain retry eligibility, preserve operation identities and checkpoints, and prove authorized safe resume without replaying completed effects. Compensation is an explicit owned action with its own approval/audit and failure history, not a claim to reverse printing or every external effect; record reconciliation and recovery history |
+
+### Future technical qualification
+
+Only inert technical models, synthetic scoped records/identities and test-only
+providers are eligible for a separately authorized technical slice. An inert
+counter/claim/dispatch fixture may qualify A's technical mechanisms without creating
+orders or sending print jobs; it cannot qualify the future business behavior.
+This documentation task creates no fixture or test implementation and runs none.
+
+| Technical boundary | Required future positive/negative evidence |
+|---|---|
+| Typed nodes and ports | Accept compatible types, schemas, required/optional ports and multiplicity; reject absent inputs, implicit unsafe conversions, foreign entity/device references and incompatible contracts. Validate both inputs and outputs, including adversarial payloads |
+| Composites and graph bounds | Reuse pinned nested composites with explicit public ports; reject recursion/cycles, hidden dependencies, unauthorized internal nodes and depth/fan-out/step/size limits. Verify expansion cannot reset parent resource quotas, including validation-time CPU/memory abuse |
+| Imports, archives and references | Round-trip semantic definitions and version/provenance without secrets or environment credentials. Reject unsupported UAM/package/node/schema versions, digest mismatch, incompatible dependencies, traversal/symlinks, archive bombs and parser/reference limits. No automatic code, migration, arbitrary URL/SSRF or dependency fetching during parse/validation; approve any acquisition path separately |
+| Cross-studio consistency | Visual, Data, Process, Interface, Integration, Intelligence/AI and Development/SDK clients read/write the same versioned semantics, not parallel authorities. Exercise conflicting edits, stale approval, native-to-visual and import/export round-trips, dependency locks and pinned in-flight versions; publishing a new revision cannot silently change running work |
+| Scope and revocation | Accept an explicitly authorized control-plane contract without a fabricated tenant while denying its access to tenant data; reject tenant-plane operations without required tenant/company/site context. Across two tenants and multiple companies/sites, deny metadata as well as record/trace/configuration leakage, including search counts, errors and implementation links. Revoke grants between discovery, draft, queue, execution and replay; check late tenant-switch responses, cached metadata and AI memory. Developer capabilities and entitlements cannot self-grant permission |
+| Trust, injection and approvals | Treat template/AI/tool content as data; reject script/code injection and unauthorized side effects in simulations. Verify provenance, separately approved isolation and exact-revision human approval with stale/reused approval rejection; a signature does not substitute for sandbox/escape tests |
+| UI and localization | Validate button selection and extension-point contracts, loading/empty/denied/error/unknown outcomes, keyboard and screen-reader navigation, FR/EN/IT/AR with RTL, both themes and supported viewports; headless behavior cannot depend on canvas state |
+| Offline, outage and performance | Measure the declared graph/workload/profile p95 and tail behavior, memory, bounded queues/backpressure, tenant fairness and node/device/provider usage attribution. Exercise optional-studio/AI/Marketplace outage, offline entitlement expiry/revocation limits, missing local agent/device, interrupted recovery and reconnect compatibility. No real device/provider call or production load is implied |
+
+Reuse the existing deferred execution, agent and deployment matrices above rather
+than introducing another runtime or test authority. Record approved scope, exact
+revision, pinned tool/provider versions, resource limits, commands, fault windows,
+expected/observed results and residual limits. Mocked printer success does not prove
+physical delivery; schema validation does not prove migration safety; document
+checks cannot close any runtime or future business acceptance row.
 
 ## CI and release boundaries
 

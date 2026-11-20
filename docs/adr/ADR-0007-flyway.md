@@ -1,17 +1,17 @@
-# ADR-0007 — Proposed SQL migrations with Flyway
+# ADR-0007 — SQL migrations with Flyway
 
-- **Status:** PROPOSED — Flyway, schema validation and migration workflow are recommendations, not owner-approved or implemented choices.
-
-- **Record reviewed:** 2026-11-17; this is not an approval date.
+- **Status:** APPROVED for the bounded closed L03 integration; broader deployment and upgrade workflows below remain PROPOSED.
+- **Approval basis:** [Closed L03 authorization — 2026-11-19](../00-GOVERNANCE/DECISION-MANAGEMENT.md#l03-closed-application-integration-authorization--2026-11-19).
+- **Record reviewed:** 2026-11-19.
 - **Accountable owner / approval authority:** Project owner.
-- **Application delivery:** NOT IMPLEMENTED; test and release evidence absent.
+- **Application delivery:** IN PROGRESS, not released. The [application qualification checkpoint](../PACK-INVENTORY.md#l03-application-qualification-checkpoint--2026-11-20) records 82 passing backend tests, 111 application persistence checks and 24 restored-target checks. Main-database migration and valid credential-bearing packaged launches remain unexecuted; this is not full L03 acceptance. The earlier [isolated scratch qualification](../PACK-INVENTORY.md#l03-isolated-qualification-evidence--2026-11-19) remains separate historical evidence.
 
 ## Context
 
 The approved shared PostgreSQL strategy needs reproducible schema, constraint,
-role/grant and RLS evolution. Authority Pro is a greenfield monorepo with no
-application code or migration files. Current work is the technical foundation,
-not business-module schemas.
+role/grant and RLS evolution. Authority Pro now has a closed backend skeleton;
+the first application migration is being integrated and has not been applied to
+the main database. Current work is the technical foundation, not business schemas.
 
 ## Options considered
 

@@ -1,7 +1,7 @@
 # Implementation Phases
 
 **Decision status:** PROPOSED sequencing within the owner-approved documentation plus socle scope.
-**Current application state:** L02 no-database backend skeleton IMPLEMENTED / TESTED only; [execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18) records 65 unit tests and 4 packaged integration tests with no failures or skips. The offline clean repeat also passed. No PostgreSQL was touched; frontend, identity, audit, protected inventory and business features are not implemented.
+**Current application state:** L02 no-database backend skeleton IMPLEMENTED / TESTED only; [execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18) records 65 unit tests and 4 packaged integration tests with no failures or skips. The offline clean repeat also passed. No PostgreSQL was touched in L02; the separately authorized [empty local environment](../PACK-INVENTORY.md#l03-local-environment-evidence--2026-11-18) now has bounded setup evidence. The separately authorized [L03 technical qualification](../PACK-INVENTORY.md#l03-isolated-qualification-evidence--2026-11-19) passed isolated Flyway/JDBC/RLS and same-cluster restoration checks in two test databases, not in the main application database. The later closed L03 application database integration is authorized and IN PROGRESS, not qualified as a complete slice. Its [application checkpoint](../PACK-INVENTORY.md#l03-application-qualification-checkpoint--2026-11-20) passed 82 backend tests, 111 persistence checks and 24 restored-target checks; the first main migration and valid credential-bearing packaged launches remain gated. Frontend, identity, audit, protected inventory and business features remain unimplemented.
 **Scope reaffirmed:** Build only the technical foundation that will receive future modules; no business features, screens, tables or demonstration modules.
 
 ## Delivery levels
@@ -46,7 +46,7 @@ These are the eight lots presented in the conversation, now made explicit. Later
 | L07 — Angular shell | UI platform: login, context, navigation, audit view, themes, preferences and FR/EN/IT/AR with RTL | L05/L06 APIs and audit read contract | Real browser golden/edge paths, late tenant responses, permissions, keyboard/accessibility and all locales/themes; UI part of G4 |
 | L08 — Integrated qualification | Quality/security/operations: build, CI, performance baseline, supply-chain checks and recovery | L02–L07; evidence gathered continuously | Integrated G2–G4 evidence, clean-install repeatability, isolated restore and G5 readiness review; no implicit remote publication |
 
-L01 may run separately authorized, disposable technical spikes to establish compatibility; these are not production scaffolding or approval of a dependency matrix. With bounded L02 verification complete, the next step is L03 facts/design and approval: establish the server/target facts and proposed isolation mechanics without automatically connecting, provisioning or migrating PostgreSQL. L03 cannot claim end-to-end user authorization before L05. L04 must be integrated and retested with provisioning/login/session behavior in L05. L08 does not postpone protection, audit or recovery until the end.
+L01 may run separately authorized, disposable technical spikes to establish compatibility; these are not production scaffolding or approval of a dependency matrix. The subsequent closed L03 authorization permits its bounded integration; fresh backend checks and actual application qualification/restore must pass before the authorized main migration. Earlier L02 or scratch results do not qualify current changes, and unrelated targets remain excluded. L03 cannot claim end-to-end user authorization before L05. L04 must be integrated and retested with provisioning/login/session behavior in L05. L08 does not postpone protection, audit or recovery until the end.
 
 ## Proposed extensions after the nucleus
 
@@ -70,6 +70,39 @@ The additional contracts below are documentation refinements, **PROPOSED / NOT I
 | Governed UI schemas, C12/C38/C39 | Schema dialect/versioning, compiled widget set, existing API/data owners, publication/revision rules and accessibility | [Frontend contracts](../02-ARCHITECTURE/FRONTEND-ARCHITECTURE.md#deferred-schema-driven-interfaces); forms never authorize runtime database/entity/code generation |
 
 Use the [deferred test matrix](../11-QUALITY-AND-TESTING/TEST-STRATEGY.md#deferred-capability-acceptance) with technical fixtures only. Compare operating cost, licensing, isolation, persistence/recovery and migration feasibility before adopting an external workflow/agent engine. An adapter is not proof that engines or their histories are interchangeable. No new broker, cache, model provider, infrastructure or business module is selected by this sequencing.
+
+## Deployment extension gates
+
+The [distribution trajectory](../01-PRODUCT/PRODUCT-ROADMAP.md#deployment-and-distribution-trajectory) preserves the owner-requested vision without creating L12+ lots or changing L01–L08 exits. The [deployment matrix](../02-ARCHITECTURE/DEPLOYMENT-ARCHITECTURE.md#deployment-capability-matrix) maps every candidate to existing capability owners and [acceptance cases](../11-QUALITY-AND-TESTING/TEST-STRATEGY.md#deployment-and-distribution-acceptance). All implementation below remains separately gated.
+
+| Candidate | Required decision / dependency | Exit boundary |
+|---|---|---|
+| Profile compatibility and release portability | O15; C10–C13/C28/C41/C48/C50, selected L2/L09–L11 contracts | Versioned manifest extension, target-version fixtures and fail-closed activation; no distribution support inferred from schema validity |
+| Hosted/private and multi-instance qualification | O16; L1 plus selected C01/C32–C35/C43/C47–C50 controls; C16/C31 only when durable work is selected | Approved pool/workload budgets, actual session/revocation/CSRF and node-loss tests, compatible rolling upgrade and isolated restore |
+| Windows distribution and controlled fleet | O17/O18; C23/C33/C41/C46–C48/C50/C57; C09/C36 only if entitlement enforcement is selected | Collision-safe installer, signed update interruption recovery, scoped remote authority and independent local operation |
+| Local/edge autonomy and selective sync | O5/O18 plus O4 if licensed; C14/C16/C24/C25/C32/C43/C45/C57 as required | Bounded offline authority, current replay authorization, explicit conflicts/deletions/version windows and disconnected recovery |
+| Cells, tenant placement and advanced resilience | O19; C03/C34/C35/C43/C45/C47/C49/C50/C57 | Identity and data routing boundaries, single-writer movement, stale-node fencing, recovery/failback and measured residency/capacity limits |
+
+Nucleus work continues with the remaining L03 application migration, transaction-context and isolation decisions; the dedicated local environment alone does not close them. Unselected advanced distribution choices do not block that work. Before a later capability is implemented, propose a bounded delivery slice and repeat applicable G1–G5 gates rather than treating these documentary contracts as blanket approval.
+
+## Visual composition design and delivery gates
+
+**PROPOSED / NOT IMPLEMENTED.** The [documentation consolidation](../00-GOVERNANCE/DECISION-MANAGEMENT.md#visual-composition-documentation-authorization--2026-11-20) preserves the [VC01–VC18 requirements](../PACK-INVENTORY.md#visual-composition-coverage-refinement), C01–C58 and L01–L11. The supplied P0–P7 roadmap and foundation-completion phases are source planning inputs, not a second approved schedule or permission to implement everything. Detailed dialects, machine-readable contracts and consumers remain open until O20–O25 and applicable existing decisions are resolved.
+
+| Proposed stage | Requirement coverage / existing allocation | Required boundary and next deliverable |
+|---|---|---|
+| Documentary consolidation now | VC01–VC18; existing product/architecture/security/quality specifications | Source inventory, explicit gaps, terminology reconciliation, owners and A–G acceptance; link validation is not contract/runtime acceptance |
+| Complete the current nucleus | L03–L08, unchanged | Current application qualification/restore before the authorized main migration, then atomic audit, identity/access, protected inventory, Angular and integrated evidence; advanced studios do not block this work |
+| Select shared model and extension contracts | VC02–VC06/VC09; selected L09/L11 extensions | Approve UAM ownership/dialect, provider/consumer graph, versioning, extension points and model-development boundary before executable schemas or new runtime APIs |
+| Qualify one technical vertical slice | VC04–VC06/VC10; selected L09/L10/L11 dependencies | Inert fixture provider, declared contribution, exact-revision publication, negative authorization and compatibility tests; durable execution only if the selected slice needs it |
+| Introduce a bounded visualizer/composition client | VC02/VC07/VC17; selected L3 client after required contracts | Actual permission-filtered observations, visible navigation, typed composition, headless equivalence and all-locale/keyboard/RTL checks; no fabricated existing ERP |
+| Extend reusable composition and development | VC05/VC08/VC09/VC15; separately scoped L3 | Composite versioning, reviewed generators/migrations and qualified adapters; no unreviewed code execution, runtime DDL or signature-as-sandbox assumption |
+| Select distribution, commerce and AI capabilities | VC11–VC16; independent L3 candidates | Per-capability trust, entitlement, provider/data policy, offline/resource and recovery decisions; no requirement to build the whole Marketplace before a governed AI draft or vice versa |
+| Future business validation only | E P4/ERP POC and M scenarios A–G | Separate business-scope authorization before any real orders, inventory, invoices or custom business module; these are not exit conditions for the current technical nucleus |
+
+Before a selected implementation, record requirement IDs, scope/non-scope, API/schema/owner dependencies, impacted permissions, risk, relative priority/complexity, approval evidence, migration/recovery needs and concrete acceptance. Do not invent staffing, duration, numeric capacity or a universal engine choice. Each slice is implemented and verified before moving on; a failed gate remains open. Architectural readiness means reviewed contracts for that slice, not that every optional platform product is built or that the foundation is released.
+
+The [visual-composition acceptance matrix](../11-QUALITY-AND-TESTING/TEST-STRATEGY.md#visual-composition-acceptance) and [validation gates](VALIDATION-GATES.md) govern evidence. A full generated UAM schema, exact node DSL, executable publication protocol, complete studio blueprints and constitutional amendments remain explicit work after their decisions; this narrative consolidation does not pretend to deliver them.
 
 ## Future vision only
 

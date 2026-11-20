@@ -26,6 +26,35 @@ recovery and review. Configuration or UI support does not authorize generation.
 AI output changes none of these trust boundaries. These distinctions are proposed
 requirements, not claims of implemented settings, schemas or generated models.
 
+**PROPOSED / NOT IMPLEMENTED — visual-composition refinement.** Under the
+[documentation-only authorization](../00-GOVERNANCE/DECISION-MANAGEMENT.md#visual-composition-documentation-authorization--2026-11-20),
+decisions O20–O25 and [coverage refinement](../PACK-INVENTORY.md#visual-composition-coverage-refinement),
+three change channels remain distinct:
+
+| Channel | Changes | Does not authorize |
+|---|---|---|
+| Typed configuration values | Existing owned keys and bounded resource bindings within approved scopes | New fields/contracts, database models, permissions or executable behavior |
+| UI schema/layout | Presentation and validated bindings to existing contracts and reviewed widgets | Database schema changes, broader rights or direct domain-state edits |
+| UAM semantic development | Versioned composition of data-contract references, UI bindings, processes and capabilities | Automatic execution, runtime DDL or bypass of owner review and release gates |
+
+The [UAM](../02-ARCHITECTURE/TARGET-ARCHITECTURE.md#future-semantic-application-model-and-clients)
+is neither the settings store nor a copy of business/execution state. Its drafts,
+immutable published revisions and exact-digest approval follow the
+[composition contract](MODULE-RUNTIME.md#10-future-visual-composition-contracts).
+A settings write cannot be reinterpreted as model publication; a UI layout edit
+cannot silently change semantic contracts or persisted data.
+
+No setting, including an administrator or AI-proposed value, may create database
+tables, run migrations or enable dynamic DDL. Future generated models require a
+separately approved compiler/build and reviewed migration pipeline under the
+[database model-development boundary](../02-ARCHITECTURE/DATABASE-ARCHITECTURE.md#future-dynamic-fields-and-model-development).
+Generated artifacts need explicit owner/security review, compatibility and
+recovery plans, and clean/upgrade validation before deployment by the migrator;
+configuration publication supplies none of that authority. Missing schema or
+binding prerequisites must block use rather than trigger automatic generation.
+The [visual-composition acceptance](../11-QUALITY-AND-TESTING/TEST-STRATEGY.md#visual-composition-acceptance)
+remains future evidence, not approval to implement these channels.
+
 ## 2. Ownership and dependencies
 
 `runtime` owns technical environment/bootstrap configuration and safe effective-status reporting. `tenancy` owns persisted tenant/company settings and their authorization scope. Each module owns its typed configuration definitions; it must not read another owner's tables or undocumented environment keys. `access` supplies explicit permissions, and `audit` appends critical change evidence in the same transaction.

@@ -1,7 +1,7 @@
 # Validation Gates
 
 **Decision status:** PROPOSED gate criteria.
-**Runtime status:** L02 no-database build and its 69 tests passed locally, including an offline clean repeat. Full G2–G5, database isolation and browser acceptance remain open; see [execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18).
+**Runtime status:** L02 no-database build and its 69 tests passed locally, including an offline clean repeat. Full G2–G5, integrated application isolation and browser acceptance remain open; see [execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18).
 
 ## G0 — Documentation and contracts
 
@@ -25,7 +25,7 @@ Fresh local dependency installation and build succeed; application starts agains
 
 L02 exits on the [approved no-database skeleton contract](../adr/ADR-0011-api-versioning.md#l02-local-http-approval--2026-11-18), not the integrated startup above: selected JDK/wrapper build, exact five-root empty graph, negative boundary fixtures, validated local startup, status-only probes with readiness 503 and denial elsewhere; no account, session, datasource or migration. An occupied port must not lead to stopping another service. None of this claims full G2. Completion of G2 requires actual PostgreSQL role/migration integration under separately approved application mechanics; L03 does not require full G2 as an entry condition. Both slices require safe errors/logs and bounded configuration; data/credential separation, backup/restore and database security checks begin with L03. L08 repeats their integrated evidence rather than introducing controls at the end.
 
-The L01/L02 no-database evidence remains historical. The authorized L03 environment initialization is not Flyway approval or implemented tenant logic and cannot close G2. Application migrations, RLS, JDBC integration, identity, audit, Angular and backup remain unimplemented. The [environment evidence](../PACK-INVENTORY.md#l03-local-environment-evidence--2026-11-18) records 22 passing tooling tests, the empty dedicated database, actual host authentication, 11 negative privilege checks and a rolled-back DDL probe. Those results do not demonstrate tenant isolation or application integration.
+The L01/L02 no-database evidence remains historical. The authorized L03 environment initialization is not Flyway approval or implemented tenant logic and cannot close G2. The separately authorized closed L03 application migrations/RLS/JDBC integration is IN PROGRESS: [local application qualification](../PACK-INVENTORY.md#l03-application-qualification-checkpoint--2026-11-20) passed 82 backend tests, 111 persistence checks and 24 restored-target checks, but the main database is not migrated and valid credential-bearing packaged launches remain untested. This checkpoint does not close L03 or G2; identity, audit and Angular remain unimplemented. The subsequently authorized [isolated qualification](../PACK-INVENTORY.md#l03-isolated-qualification-evidence--2026-11-19) passed technical Flyway/JDBC/RLS and same-cluster restore checks only; it does not close G2 or production recovery acceptance. The [environment evidence](../PACK-INVENTORY.md#l03-local-environment-evidence--2026-11-18) records 22 passing tooling tests, the empty dedicated database, actual host authentication, 11 negative privilege checks and a rolled-back DDL probe. Those results do not demonstrate tenant isolation or application integration.
 
 ## G3 — Identity and isolation
 
@@ -53,6 +53,50 @@ Reapply the relevant gates to each explicitly approved L2/L3 slice and add its r
 - **L10:** prove one producer publication mechanism, inbox/effect atomicity, crash recovery, ordering, stale-lease rejection, bounded retries, failure queue, authorized replay/cancellation and tenant-scoped workers. A scheduled job additionally needs restart/misfire/timezone tests.
 - **L11:** accept selected SDK/UI/governance capabilities separately. Test contributions without business modules; check schema compatibility, real browser accessibility/localization, scoped export/retention, access reviews, rotation, artifact trust and environment boundaries where selected.
 - **L3:** define a bounded use case, threat model, dependency and acceptance contract before implementation. Scripts/AI/third-party code require explicit authority and confinement; no general-purpose execution follows from having a descriptor.
+
+## Visual composition architectural readiness
+
+**PROPOSED / NOT IMPLEMENTED — separate from implementation gates.** The
+[documentation-only authorization](../00-GOVERNANCE/DECISION-MANAGEMENT.md#visual-composition-documentation-authorization--2026-11-20)
+permits consolidation of AP-ARCH-EVOL-001 and AP-MASTER-CONSTITUTION-001, not a
+Constitution amendment, executable contract, new infrastructure or implementation
+phase. Use the [coverage refinement](../PACK-INVENTORY.md#visual-composition-coverage-refinement)
+and [open decisions O20–O25](../00-GOVERNANCE/DECISION-MANAGEMENT.md#4-open-decisions)
+as the shared mapping, not another capability catalogue or roadmap.
+
+Architectural readiness requires reviewed, consistent specifications with named
+responsibility areas, owned/versioned public contracts, dependencies, failure and
+recovery semantics, trust/tenant boundaries, compatibility/profile/resource limits
+and acceptance criteria. Trace all seven [future scenarios A–G](../11-QUALITY-AND-TESTING/TEST-STRATEGY.md#visual-composition-acceptance)
+to these contracts, preserving native functionality and one authoritative owner
+for each semantic, registry, execution or domain fact across studios. Record unresolved choices and their blocking scope;
+a paragraph saying “extensible” or a successful document check is not full
+architectural readiness. An open N0 decision cannot be silently marked approved.
+
+The scenarios are **design-only future business acceptance**, not permission to
+create orders, printers, business tables/modules or a complete ERP proof of concept.
+Only inert technical fixtures may be proposed for a separately authorized technical
+slice; no fixtures are created by this consolidation. Neither this review nor the
+future scenarios redefine L01–L08/L1 success as the whole ERP or close G2–G5.
+
+Before **each** selected slice:
+
+1. Bound the scope and resolve/approve applicable detailed N0 contracts and the
+   relevant O20–O25 decisions (plus existing identity, data, trust, AI, licensing or
+   deployment decisions). Record approval before code, schemas, grants, migration,
+   external services or physical effects; authorize execution targets separately.
+2. Reuse existing owners/APIs and specify positive/negative technical cases for the
+   exact revision, including authorization, compatibility, resource limits and
+   rollback/reconciliation boundaries. No new role or permission follows from a
+   developer mode, package signature or subscription.
+3. Only after authorized implementation, attach actual executed evidence to the
+   relevant G2–G5/extension gates. Separate document review, inert technical proof,
+   business acceptance and production qualification; unrun cases remain NOT RUN.
+
+**Current baseline:** L03 closed application integration is IN PROGRESS / NOT
+QUALIFIED; the main `authority_pro` database is not migrated. Earlier L02 and
+isolated L03 evidence remains historical and bounded, not qualification of current
+L03 changes. No backend test is run by this documentation consolidation.
 
 ## Evidence format
 

@@ -1,7 +1,7 @@
 # Database Architecture
 
-**Decision status:** Shared tenant_id/RLS strategy, restricted runtime and verified transaction-local tenant context APPROVED as orientations; exact schema/grants/integration PROPOSED.
-**Implementation status:** Empty dedicated local database and bounded setup roles verified; application tables, migrations, transaction context and RLS NOT IMPLEMENTED. Table names below are conceptual.
+**Decision status:** Shared tenant_id/RLS strategy and restricted runtime/context orientations APPROVED; the later [closed L03 integration](../00-GOVERNANCE/DECISION-MANAGEMENT.md#l03-closed-application-integration-authorization--2026-11-19) approves its bounded technical subset. Authenticated membership authorization, broader schema/operational policies and future composition details remain separately gated or PROPOSED.
+**Implementation status:** Dedicated local database/setup roles and isolated scratch qualification verified. Bounded L02 remains the delivered no-database skeleton; L03 application JDBC/RLS integration is IN PROGRESS, not delivered. No main-application migration baseline is established. Table names below are conceptual, not proof of deployed application tables.
 
 ## Dedicated server and new project database
 
@@ -52,9 +52,21 @@ Use UUID technical IDs; UTC instants for timestamps and locale-independent dates
 
 Unique keys include tenant scope where relevant; global account login identifiers are an explicit exception. Normalize login identifiers once with a documented policy. Index tenant filters and stable `(occurred_at, id)` audit ordering. Credentials and framework session data must never be serialized by public DTOs.
 
+## Future dynamic fields and model development
+
+**PROPOSED / NOT IMPLEMENTED.** The [documentation-only authorization](../00-GOVERNANCE/DECISION-MANAGEMENT.md#visual-composition-documentation-authorization--2026-11-20), decisions O20–O25 and [coverage refinement](../PACK-INVENTORY.md#visual-composition-coverage-refinement) do not authorize schema execution or change approved database privileges.
+
+The baseline remains owner-managed relational tables, explicit relationships, constraints and reviewed migrations. Future dynamic fields or JSONB may be used only within a bounded, versioned schema owned by the resource provider. Define allowed keys/types, required fields, cardinality, size/depth limits and server-side validation before persistence; unknown or incompatible fields are rejected. JSONB is not a permission-free escape from relational integrity or an unrestricted business-data bag.
+
+Each such design must specify indexing and supported query/filter/sort patterns, query cost and result-size budgets, tenant/company/site authorization, RLS and tenant-safe references, sensitivity, retention/deletion and legal-hold behavior. JSONB contents must not hide foreign-resource access, secrets or unbounded history. Schema evolution, backfill and old/new reader compatibility need owner review and measurable acceptance evidence, including negative validation, isolation and query-budget tests.
+
+There is no universal EAV store, table-per-node scheme or runtime DDL. A visual node, UI field, setting key or UAM publication cannot create/alter tables, APIs or privileges. Model development is separate from [configuration values and UI schemas](../03-CORE/CONFIGURATION-ENGINE.md#settings-interface-schemas-and-generated-models).
+
+If a future data-model compiler is approved, it produces reviewable versioned migration artifacts through a controlled development/build pipeline. Approval covers ownership, generated diff, tenant constraints/RLS, indexes, compatibility, backfill, failure/recovery and clean/upgrade tests before the deployment migrator applies anything. The runtime credential never receives DDL or migration authority. UI configuration publication remains a separate gate and must block on missing approved schema prerequisites; it cannot silently run generated SQL.
+
 ## Migrations and recovery
 
-Flyway is a proposal in ADR-0007. Use one deterministic migration order in the monorepo, with ownership recorded per migration. Do not reserve arbitrary module number ranges as a runtime install mechanism. Hibernate may validate mappings but never auto-update production schema.
+Flyway is approved for the [bounded closed L03 integration](../adr/ADR-0007-flyway.md); broader deployment/upgrade workflows remain proposed. Use one deterministic migration order in the monorepo, with ownership recorded per migration. Do not reserve arbitrary module number ranges as a runtime install mechanism. Hibernate may validate mappings but never auto-update production schema.
 
 Prefer forward expand/backfill/contract migrations. A database rollback is not automatically possible when rolling back the application. Test clean creation and previous-version upgrade; test restoration of a whole backup before trusting it. Selective tenant restore requires separate referential-integrity, event-replay, shared-identity and file-consistency procedures; it is not provided by a shared database dump.
 
@@ -62,7 +74,7 @@ Prefer forward expand/backfill/contract migrations. A database rollback is not a
 
 No committed password default or runtime superuser credential. Failed policy checks roll back the operation. Audit/retention jobs use separately approved roles, not runtime DELETE privileges on append-only records. Retention and legal holds require jurisdiction decisions before production.
 
-Tests must cover all four DML operations, missing context, wrong company/site foreign keys, pooled connection reuse, effective role privileges, migration failure and restore validation. No such tests have run yet.
+Tests must cover all four DML operations, missing context, wrong company/site foreign keys, pooled connection reuse, effective role privileges, migration failure and restore validation. [Isolated L03 qualification](../PACK-INVENTORY.md#l03-isolated-qualification-evidence--2026-11-19) already supplies bounded scratch evidence for these technical areas; it is not authenticated application integration or a main migration baseline. Main-application acceptance remains open, including current membership/permission enforcement and durable runtime writes. Future model-development checks also follow [visual-composition acceptance](../11-QUALITY-AND-TESTING/TEST-STRATEGY.md#visual-composition-acceptance); no new test execution is claimed by this documentation refinement.
 
 ## Related
 

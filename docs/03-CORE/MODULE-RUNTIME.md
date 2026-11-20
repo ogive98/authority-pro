@@ -189,6 +189,56 @@ Before any workflow slice, approve the definition grammar, ownership/tenant mode
 
 The [deferred capability test matrix](../11-QUALITY-AND-TESTING/TEST-STRATEGY.md#deferred-capability-acceptance) is required evidence if these slices are selected. It uses inert technical fixtures only. None of these requirements closes L1 acceptance, selects an engine or authorizes adding fields to the current foundation manifest.
 
+## 10. Future visual composition contracts
+
+**PROPOSED / NOT IMPLEMENTED.** This refinement consolidates AP-ARCH-EVOL-001 and AP-MASTER-CONSTITUTION-001 under the [documentation-only authorization](../00-GOVERNANCE/DECISION-MANAGEMENT.md#visual-composition-documentation-authorization--2026-11-20), decisions O20–O25 and [coverage refinement](../PACK-INVENTORY.md#visual-composition-coverage-refinement). It does not expand current implementation scope. Section 9's workflow contracts, single-authority execution rule and provider ownership remain applicable; composition is not a second universal engine.
+
+### Catalogue and node contracts
+
+A future node is a typed, versioned reference to a provider-owned contract, not a Java class, arbitrary executable payload or new database table. A catalogue entry must describe:
+
+| Contract part | Required meaning |
+|---|---|
+| Identity and provider | Stable node ID, owning provider/module, exact node and capability contract versions, compatible model dialect |
+| Inputs and outputs | Typed schemas, named ports, direction, required/optional status and connection cardinality; no implicit coercion |
+| Configuration | Bounded typed parameters, defaults, validation, sensitivity and allowed resource bindings; no secret values in definitions |
+| Errors | Declared failure outcomes, retry/reconciliation semantics and unsupported-operation behavior |
+| Authority | Required permissions and tenant/company/site scope; declarations never grant rights |
+| Budgets | Size, time, steps, fan-out, concurrency and nesting limits enforced server-side |
+| Provenance and documentation | Controlled source/build identity and integrity references, contract documentation, examples and deprecation information |
+| Capabilities | Explicit provided/consumed capability identities and versions, mapped to reviewed named exports and declared dependencies |
+
+The proposed catalogue has ten families: **Data, Trigger, Logic, Business, UI, Device, Integration, Output, AI and Governance**. These are classification labels, not ten engines, installed capabilities or new module roots. The Business family is for future separately authorized provider modules and is excluded from Core. No family authorizes arbitrary scripts, connectors, device access or AI effects.
+
+### Parameterized composites and validation
+
+A composite may encapsulate a versioned subgraph behind explicit typed inputs, outputs and parameters, exposing no private internals as public contracts. Nested composites pin exact child versions and preserve provider ownership, permissions and attribution. Reuse does not clone domain state or elevate authority. Encapsulation must not conceal required capabilities or resource costs from validation.
+
+Before preview or publication, validate schemas, provider/version resolution, references, port types and cardinalities, reachability, cycles and recursive composite references. Reject unsupported cycles/recursion; any later permitted bounded repetition remains subject to section 9's separate execution semantics. Enforce nesting, expanded graph size, fan-out, time, step and concurrency budgets across the whole composition, not merely per node. Missing or incompatible providers, hidden privileged bindings and budget violations block publication rather than producing a partially valid graph.
+
+### UAM revisions and coherent publication
+
+The [UAM semantic model](../02-ARCHITECTURE/TARGET-ARCHITECTURE.md#future-semantic-application-model-and-clients) has its own application revision, distinct from node, module, capability contract and editor-layout versions. A publication bundle pins a coherent set of exact data-model/schema references, UI schemas/bindings, process definitions, composites and capability versions. Review must cover their joint compatibility, resource bindings, scope and migration prerequisites; independently valid fragments are insufficient.
+
+Draft editing uses expected revisions. Preview is scoped and side-effect-free, not production execution. Approval binds the exact complete bundle digest and revision; any semantic or binding change invalidates that approval. Publication records an immutable snapshot with provenance and compatibility evidence. It must not expose a mixture of old/new component versions, mutate previously published snapshots or rewrite running instances' pins. A data-model reference neither supplies runtime DDL nor replaces the separately approved migration pipeline.
+
+### Independent availability dimensions
+
+| Dimension | Meaning; never an implied grant |
+|---|---|
+| Package present / installed | Reviewed compiled code is in the deployed build; no live installer is introduced |
+| Enabled / active | Explicit scoped policy permits admission, subject to dependencies and mandatory controls |
+| Licensed | Independently verified entitlement, if a future licensing contract is approved; no fabricated license state |
+| Configured | Required typed values and resource bindings validate for the selected scope |
+| Published | An exact approved immutable application snapshot exists; a draft is not a release |
+| Executing | An actual admitted instance has observed execution state under current authority and pinned versions |
+
+These dimensions must be reported independently with unavailable/unknown reasons, not collapsed into one green status. Present does not mean enabled, enabled does not mean licensed or configured, and published does not mean executing. Incompatible and deprecated versions need explicit compatibility/admission policies. Current authorization is checked for reads, publication and effects; publication approval is not perpetual execution authority.
+
+All proposed node/UAM metadata belongs to future separately reviewed, versioned contracts. **The foundation manifest remains `0.1.0` with exactly its existing eleven fields and rejection of unknown fields.** No node, composite, licensing, budget, provenance, migration or UAM field is added or implicitly accepted. First-party compilation, build/restart lifecycle and the five approved module roots are unchanged.
+
+Before implementation, approve model/catalogue ownership, dialects, budgets, compatibility rules, exact-digest publication and single-owner execution integration. The [visual-composition acceptance matrix](../11-QUALITY-AND-TESTING/TEST-STRATEGY.md#visual-composition-acceptance) is future required evidence, not a passed test or authorization to implement business fixtures.
+
 ## Related contracts
 
 - [Thunder Core](THUNDER-CORE.md)

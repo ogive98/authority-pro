@@ -10,7 +10,11 @@ Its local HTTP boundary allows only exact GET liveness (200/UP) and readiness
 (503/OUT_OF_SERVICE), denies other requests, retains CSRF, creates no session or
 default user and returns sanitized RFC 9457 errors. This is not implemented
 identity, tenant isolation or audit, nor production-readiness certification.
-No PostgreSQL was touched and no frontend is implemented.
+No PostgreSQL was touched by L02 and no frontend is implemented. Current L03
+closed application integration is IN PROGRESS / NOT QUALIFIED; the main
+`authority_pro` database is not migrated. Earlier isolated L03 qualification is
+not evidence for current application changes. This consolidation runs no backend
+test and changes no database, permission or security configuration.
 
 ## 1. Principles
 
@@ -197,6 +201,93 @@ Dry-run must mean isolated execution with no effectful tools; its success is not
 a production security guarantee. An emergency stop must prevent new work and
 further dispatch, but cannot magically undo already committed or external effects;
 resolve in-flight outcomes through the durable operation protocol.
+
+## 11. Shared composition and development security boundary
+
+**PROPOSED / NOT IMPLEMENTED — gated by applicable N0 approval and slice evidence.**
+This consolidates AP-ARCH-EVOL-001 and AP-MASTER-CONSTITUTION-001 under the
+[documentation-only authorization](DECISION-MANAGEMENT.md#visual-composition-documentation-authorization--2026-11-20).
+See the [coverage refinement](../PACK-INVENTORY.md#visual-composition-coverage-refinement)
+and [open decisions O20–O25](DECISION-MANAGEMENT.md#4-open-decisions). It changes
+neither the Constitution nor existing roles, grants or executable manifests.
+The UAM, registries and owning APIs remain the shared contract authority; visual,
+SDK/API, imported, AI-generated and Development Studio contributions get no
+alternative permission system or direct database access.
+
+### Common conditions across creation and execution paths
+
+- Check CURRENT actor/delegation permissions and the operation's declared scope
+  on discovery, read, draft edit, validation, simulation, build, import/export,
+  approval, publication, activation, execution and recovery. A control-plane
+  contract requires explicit control-plane authority, not a fabricated tenant;
+  it grants no access to tenant data. A tenant-plane contract requires verified
+  tenant/organization context and company/site scope where its resource contract
+  requires them. Missing required or mismatched scope denies the operation.
+  A saved draft, cached catalogue, queued action or purchased capability cannot
+  preserve a revoked grant or convert control-plane authority into tenant access.
+- Filter visualizer **metadata as well as data** server-side: entity/schema names,
+  relationships, dependencies, devices, configuration, extension points, execution
+  traces and implementation links can disclose protected structure. Counts, search,
+  errors, previews, caches and exports must not reveal hidden objects indirectly.
+  Revalidate on tenant switch and revocation; hiding canvas elements is insufficient.
+- Separate permission to develop, test, approve, publish and activate from permission
+  to execute a capability or read its data. A developer can declare required
+  permissions, never self-assign grants or elevate users through generated roles,
+  manifests or imports. Licensing and UI mode are not authorization.
+- Record sanitized provenance from source/import identity and content digest through
+  exact draft revision, dependency lock, builder/tool versions, test results and
+  artifact digest to publication. Retain human/AI authorship and change lineage;
+  provenance is evidence, not execution authority. No secrets in exported UAM,
+  packages, prompts, logs, traces or build artifacts; use scoped secret references
+  rebound through approved destination configuration, never copied credentials.
+- Apply the exact-action approval contract in section 10 to the **exact draft
+  revision and resulting artifact**, including reviewed dependency/schema changes
+  and target environment. Human approval requires current authority; any change
+  invalidates it and requires renewed validation/tests and approval. Publication
+  cannot silently approve migrations, privileged actions or changed build output.
+
+### Untrusted input, builds and device boundaries
+
+Treat all imported archives, templates, graphs, schemas, references and generated
+code as untrusted. Before accepting an import, bound compressed and expanded size,
+entry count, compression ratio, nesting, parser depth/tokens, graph expansion and
+reference count/depth. Reject path traversal, absolute paths, escaping links,
+duplicate/conflicting entries, unsupported formats/versions and cyclic or missing
+references; parsing must not instantiate executable types or trigger side effects.
+Resolve only approved package-local or registry references with pinned identity,
+version and digest. Do not fetch arbitrary URLs, external schema/entity references
+or dependencies during parse/validation. Any separately approved acquisition path
+needs allowlisted origins, redirect/DNS/address checks against SSRF (including
+loopback, private and metadata endpoints), bounded downloads and provenance checks;
+no implicit network access or dependency installation follows from an import.
+
+Trusted reviewed first-party artifacts, organization-controlled extensions and
+untrusted third-party/generated code are distinct trust classes. Untrusted code
+requires a **separately approved isolated trust/execution model** with resource,
+network, filesystem, credential and tenant boundaries and escape tests before any
+execution. A signature proves artifact provenance/integrity, not safety or a sandbox;
+a classloader, SDK or successful build supplies no isolation guarantee. No runtime
+hot-loading, arbitrary shell, generated DDL or migration credential follows from
+Development Studio. Generated schema changes remain reviewed proposals for the
+owning migration process. Device/local-agent access needs explicit scoped contracts,
+authorized destinations and effect declarations; simulation uses inert adapters,
+never a physical device. Unknown physical outcomes require reconciliation, not a
+blind retry or a promise that cancellation undoes the effect.
+
+### Reuse existing AI governance
+
+Extend section 10 and existing C55–C57 responsibilities, not a second AI authority
+or provider subsystem. O7/O13 remain applicable alongside O20–O25. Provider/model
+configuration, tenant memory/retrieval revocation, prompt and model versioning,
+evaluation datasets/results and output validation must be linked to the same draft
+provenance and approval path. Evaluation data needs its own authorized scope and
+retention policy. Attribute usage, cost and quotas to the invoking scope/capability;
+record provider/model/prompt/evaluation versions without retaining secret-bearing
+payloads. Approved data classification, destination, residency, retention and
+provider-training policy apply to every call and fallback. A fallback provider or
+model cannot silently widen data export, authority or cost limits; unsupported or
+unavailable providers block the optional AI action, not unrelated Core operations.
+No provider, model, memory store or evaluation service is selected by this proposal.
 
 ## Related documents
 

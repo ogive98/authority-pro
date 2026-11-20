@@ -6,6 +6,8 @@ locked source requirements (including four languages/RTL) remain requirements.
 see [bounded execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18).
 All numeric targets below remain UNMEASURED: skeleton verification is not a
 performance benchmark, frontend test or integrated foundation acceptance.
+Current L03 integration is IN PROGRESS / NOT QUALIFIED and the main database is
+not migrated. No backend test or performance measurement is run by this consolidation.
 
 Targets below are candidates for review, not guarantees, approved service levels
 or proof that a 2 GB deployment or 500 ms login is achievable.
@@ -127,6 +129,45 @@ PROPOSED support matrix: current and previous major Chromium, Firefox and Safari
 candidate desktop viewport 1280×720, with responsive behavior to validate.
 This is not tested support or an approved exclusion of other devices. Review
 accessibility and RTL layouts at defined viewports before fixing the matrix.
+
+## 11. Composition resource and independence budgets
+
+**PROPOSED / NOT IMPLEMENTED / UNMEASURED.** These AP-ARCH-EVOL-001 /
+AP-MASTER-CONSTITUTION-001 refinements are covered by the
+[documentation authorization](../00-GOVERNANCE/DECISION-MANAGEMENT.md#visual-composition-documentation-authorization--2026-11-20)
+and [coverage refinement](../PACK-INVENTORY.md#visual-composition-coverage-refinement).
+[O20–O25](../00-GOVERNANCE/DECISION-MANAGEMENT.md#4-open-decisions), applicable N0
+contracts and measured acceptance must precede each selected implementation;
+no numeric quota, capacity claim or new execution service is approved here.
+
+| Boundary | Required bounded workload and enforcement proposal |
+|---|---|
+| Validation/import | Cap encoded/expanded bytes, nodes/edges, schema and reference sizes, parser/reference depth, composite nesting, transitive expansion and fan-out; reject recursive/unbounded structures before execution. Limit validation CPU, memory, elapsed time and concurrent requests, not just final graph size |
+| Execution | Bound steps/iterations, depth, branch fan-out, input/output and intermediate-state size, CPU/memory, wall-clock and per-node deadlines; count nested composites, retries and delegated calls against the parent budget rather than resetting it |
+| Asynchronous work | Long or effectful batches use bounded work units/checkpoints, not an indefinitely blocked HTTP request. Bound queue length/bytes/age, workers, concurrent runs, attempts and retry time; apply admission control, backpressure and tenant fairness. Explicit overload/pending/failure and cancellation semantics must preserve already committed or unknown effects |
+| Shared resources | Bound aggregate database connections, device dispatches and provider calls across all workers/nodes, including recovery and rollout overlap. Limit telemetry cardinality/storage, metadata retrieval and caches; no per-node process or mandatory broker follows from a graph |
+| Usage/cost | Attribute CPU/time, bytes, steps, retries, queue wait and external calls to authorized tenant/company/site, application/revision, execution and node; attribute device operations and AI/provider/model usage separately. Separate estimated/reserved cost, observed usage and billed cost; bound labels and redact payloads |
+
+Benchmark graph validation and execution separately under the section 1 protocol.
+Record graph depth/fan-out/composite expansion, payload sizes, port/schema checks,
+dataset and tenant mix, synchronous/asynchronous ratio, device/provider latency,
+concurrency, cache state, rejected work and fault windows. Measure p95 (and tail
+latency), throughput, memory, saturation, recovery and isolation with authorization,
+RLS and audit enabled where applicable. A small graph or ten-item scenario is not
+proof of arbitrary graph size or concurrent-user capacity; reject unsupported
+workloads rather than asserting a magic capacity. Cost/resource telemetry must
+remain useful during offline buffering within declared storage limits.
+
+Core/headless operation and native module APIs must remain independent of optional
+Visual/Development Studio, AI providers and Marketplace availability. Their outage
+must not stop unrelated, already authorized native or published headless operations
+within declared dependency/entitlement validity windows; an actually dependent
+capability must show its bounded blocked/degraded state, never false success.
+Do not load every installed package to discover it. Qualify cold/lazy loading,
+metadata pagination, studio-disabled startup, offline operation and reconnection
+on each supported profile. Verify these budgets and outage cases through the
+[future composition acceptance](../11-QUALITY-AND-TESTING/TEST-STRATEGY.md#visual-composition-acceptance),
+not documentation or L02 unit-test success.
 
 ## Related documents
 

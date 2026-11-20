@@ -71,7 +71,10 @@ final class BoundaryRules {
                 String name = target.getName();
                 if (name.startsWith("org.springframework.") || name.startsWith("jakarta.")
                         || name.startsWith("javax.persistence.") || name.startsWith("org.hibernate.")
-                        || name.startsWith("com.fasterxml.jackson.")) {
+                        || name.startsWith("com.fasterxml.jackson.") || name.startsWith("tools.jackson.")
+                        || name.startsWith("java.sql.") || name.startsWith("javax.sql.")
+                        || name.startsWith("org.flywaydb.") || name.startsWith("org.postgresql.")
+                        || name.startsWith("com.zaxxer.hikari.")) {
                     return "Domain depends on framework";
                 }
                 if (inLayer(base, target, "application") || inLayer(base, target, "infrastructure")) {

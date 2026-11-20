@@ -175,6 +175,18 @@ async function waitHealthy(id) {
   throw new Error('Dedicated PostgreSQL startup timed out; partial resources are retained');
 }
 
+export function accessLocalEnvironment() {
+  const state = JSON.parse(readFileSync(statePath, 'utf8'));
+  assert.equal(state.phase, 'verified', 'Environment must already be verified');
+  validateState(state, localDaemon(), manifestHash());
+  checkOwnership(state);
+  const credentials = JSON.parse(protect(readFileSync(credentialsPath), true).toString('utf8'));
+  assert.equal(credentials.id, state.id, 'Credential ownership mismatch');
+  return { state, passwords: credentials.passwords };
+}
+
+export function protectedContainerSnapshot() { return snapshot(); }
+
 async function verify(state, protectedBefore = snapshot()) {
   validateState(state, localDaemon(), manifestHash());
   const containerId = checkOwnership(state);
@@ -192,9 +204,10 @@ async function verify(state, protectedBefore = snapshot()) {
   assert.equal(sql(passwords, runtime, 'authority_pro', "SELECT current_user || ':' || current_database() || ':' || has_database_privilege(current_user,current_database(),'CONNECT') || ':' || has_database_privilege(current_user,current_database(),'CREATE') || ':' || has_database_privilege(current_user,current_database(),'TEMPORARY') || ':' || has_schema_privilege(current_user,'public','USAGE') || ':' || has_schema_privilege(current_user,'public','CREATE');"), 'authority_pro_runtime:authority_pro:true:false:false:true:false');
   assert.equal(sql(passwords, admin, 'postgres', "SELECT count(*) FROM pg_database d CROSS JOIN LATERAL aclexplode(COALESCE(d.datacl,acldefault('d',d.datdba))) a WHERE d.datallowconn AND a.grantee=0 AND a.privilege_type IN ('CONNECT','CREATE','TEMPORARY');"), '0');
   assert.equal(sql(passwords, admin, 'postgres', "SELECT count(*) FROM pg_hba_file_rules WHERE error IS NOT NULL OR auth_method <> 'scram-sha-256';"), '0');
-  assert.equal(sql(passwords, admin, 'authority_pro', "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public';"), '0');
+  const publicCatalogQuery = "SELECT c.oid::text || ':' || c.relname::text || ':' || c.relkind::text FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' ORDER BY c.oid;";
+  const publicBefore = sql(passwords, admin, 'authority_pro', publicCatalogQuery);
   sql(passwords, migrator, 'authority_pro', 'BEGIN; SET LOCAL ROLE authority_pro_owner; CREATE TABLE public.environment_probe (id integer PRIMARY KEY); ROLLBACK;');
-  assert.equal(sql(passwords, admin, 'authority_pro', "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public';"), '0');
+  assert.equal(sql(passwords, admin, 'authority_pro', publicCatalogQuery), publicBefore);
   const denied = [
     [runtime, 'authority_pro', 'CREATE TABLE public.environment_probe (id integer);'],
     [runtime, 'authority_pro', 'CREATE TEMP TABLE environment_probe (id integer);'],
@@ -224,10 +237,12 @@ async function verify(state, protectedBefore = snapshot()) {
   assert.deepEqual(hostRuntime, [{ role: runtime, database: 'authority_pro' }]);
   await assert.rejects(hostQuery(randomBytes(32).toString('base64url'), runtime, 'authority_pro', 'SELECT 1'), error => error.code === '28P01');
   const protectedAfter = snapshot();
-  const protectedUnchanged = protectedBefore.every(before => protectedAfter.some(after => JSON.stringify(after) === JSON.stringify(before)));
+  assert.deepEqual(protectedAfter, protectedBefore, 'Concurrent container lifecycle changes observed');
+  const protectedUnchanged = true;
   const report = { checkedAt: new Date().toISOString(), environmentId: state.id, containerId, postgres: '16.15',
     listener: '127.0.0.1:5434', database: 'authority_pro', runtimeRole: runtime, deniedPrivilegeChecks: denied.length,
-    wrongPasswordRejected: true, migrationOwnerRollback: true, publicObjects: 0, scramOnly: true,
+    wrongPasswordRejected: true, migrationOwnerRollback: true, publicObjects: publicBefore ? publicBefore.split(/\r?\n/).length : 0, scramOnly: true,
+    publicCatalogUnchanged: true,
     memoryLimitMiB: 256, cpuLimit: 0.5, hostAuthenticationVerified: true,
     protectedContainersObserved: protectedBefore.length, protectedContainersUnchanged: protectedUnchanged,
     concurrentChangesObserved: !protectedUnchanged,

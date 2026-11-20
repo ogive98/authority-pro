@@ -90,10 +90,50 @@ The earlier Phase-0 no-code status is historical. The approved scope remains
 normative documentation plus a runnable foundation in
 `C:/Users/admin/Documents/authority-pro`, organized as one monorepo. L02 has a
 built and tested no-database backend skeleton, not an integrated socle or functional
-module APIs. No PostgreSQL was touched; frontend, identity, audit and protected
-inventory remain unimplemented, and no business modules are authorized.
-Approval, implementation, testing and release remain separate; L02 does not
-authorize automatic L03 implementation or deployment.
+module APIs. L02 itself did not touch PostgreSQL. Subsequent dedicated-environment
+and isolated scratch qualification have separate evidence; the later closed L03
+application integration is authorized and IN PROGRESS, not delivered or qualified
+as a complete slice. No main-database migration is established by this documentation
+review. Frontend, identity, audit and protected inventory remain unimplemented,
+and no business modules are authorized. Approval, implementation, testing and
+release remain separate; no deployment follows from these records.
+
+## 9. Retained composition and developer vision
+
+**PROPOSED / NOT IMPLEMENTED.** The [two-complement coverage map](../PACK-INVENTORY.md#visual-composition-coverage-refinement) and [documentation authorization](../00-GOVERNANCE/DECISION-MANAGEMENT.md#visual-composition-documentation-authorization--2026-11-20) extend the target without replacing existing capabilities or authorizing an ERP implementation. The intended user journey is: explore what is actually installed and authorized, extend it through declared points, compose reusable features, develop missing providers, test and publish an exact reviewed revision. Native application operation must remain possible without the visual editor, AI or Marketplace.
+
+The [UAM](../02-ARCHITECTURE/TARGET-ARCHITECTURE.md#future-semantic-application-model-and-clients) supplies common semantic contracts; visual layout is not their source of truth. Composition can add a button, field, tab, validation, menu, widget or document action only through an owned extension point. Capability discovery is not decompilation of arbitrary Java into editable graphs. New business semantics remain in separately authorized modules, never in the Core or a universal metadata store.
+
+### Studio responsibilities and progressive experience
+
+The following six composition workspaces are candidates, not six new backend engines. Their ownership and final naming remain O23 decisions.
+
+| Workspace | Retained responsibilities |
+|---|---|
+| Data | Model/schema design, relationships, constraints, validation, indexes and lifecycle metadata through a reviewed development/migration pipeline |
+| Process | Events, workflows, human tasks, conditions, timers, subprocesses, retries, batch operations and recovery over approved capabilities |
+| Interface | Forms, tables, dashboards, navigation, layouts, responsive themes and permission-aware extension contributions |
+| Integration | APIs, webhooks, external/local services, permitted database adapters, devices, authentication bindings, mappings, tests and monitoring |
+| Intelligence | Reports, KPIs, analytical views, alerts, decisions, prediction/classification and simulation using owned projections and approved providers |
+| Development | Configuration, reusable composite creation, schema/UI development, then advanced SDK/code; testing, debugging, profiling, documentation, packaging and reviewed publication |
+
+AP-ARCH-EVOL-001 emphasizes analytics in Intelligence Studio; AP-MASTER-CONSTITUTION-001 also places AI creation and evaluation there. The proposed reconciliation retains both: Intelligence owns the analytical/decision experience, while common AI assistance serves every studio through the same UAM, permissions and approval chain. AI model/prompt evaluation, versions, usage, costs, local/self-hosted providers and fallback remain governed capabilities, not a second application-generation runtime.
+
+The existing Authority Studio areas **Design, Development, AI, Quality, Environment and Release** remain intact as lifecycle responsibilities across these composition workspaces. In particular, Quality, Environment and Release are not removed when adding Data or Integration. Basic, Advanced and Developer modes change presentation complexity, not stored semantics, permissions or execution authority. SDK/CLI/API clients must work independently of Studio.
+
+Custom features may target an application, organization, application collection, private library or Marketplace under separately validated publication scopes. Reuse, cloning and import never copy permissions, approvals, credentials or business data implicitly. Node groups are encapsulated, typed, versioned and parameterized; nested reuse is limited and validated across the expanded graph.
+
+### Optional ecosystem and commercial candidates
+
+Preserve future standard modules and optional industry modules, including included-active, included-inactive, custom and paid editions. Generic contacts/directories, tasks, documents, notifications, forms and workspaces remain visible candidates; declaring them generic does not make their implementation part of the current nucleus. Existing source business/industry catalogues are unchanged.
+
+Marketplace candidates include modules, features, nodes/composites, UI components, workflows, templates, connectors and complete applications. Retain developer/publisher verification, integrity and compatibility review, release histories, purchases/trials/subscriptions, ratings/reviews, refunds, licensing, revenue sharing/commissions and anti-abuse. Commercial workflows and portals are outside the technical socle. License availability, installed presence, scoped activation, configuration, publication and actual execution are distinct states; an entitlement never grants user permissions.
+
+AI Studio may be visible or preinstalled in a future edition while advanced capabilities require a subscription or usage credits. Free/restricted, Creator, Professional, Enterprise and private-capacity offerings are options, not approved pricing or product commitments. Core availability and data access must not depend on an AI provider or a temporary Marketplace outage; offline license validity and revocation limits require explicit policies, not indefinite grace.
+
+### Preserved validation journey
+
+The [seven scenarios](../11-QUALITY-AND-TESTING/TEST-STRATEGY.md#visual-composition-acceptance) retain automatic labels after ten validated orders, an added screen button, development of a missing printer adapter, a custom module, an inspected AI draft, native-feature preservation and failed-batch recovery. The first complement's complete customer/supplier/product/order/inventory/invoice POC also remains a future candidate, not a required business demonstrator for the technical foundation. A documented representation is architectural evidence only; actual delivery requires a separately authorized implementation and tests.
 
 ## Related documents
 

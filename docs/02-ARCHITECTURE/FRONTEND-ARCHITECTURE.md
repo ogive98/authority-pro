@@ -73,6 +73,20 @@ errors in all four locales, including RTL. Distinguish unavailable, denied, stal
 loading, empty and error states honestly; schemas do not justify fake operational
 screens or claims that deferred capabilities are implemented.
 
+## Future extension points, visualizer and studio modes
+
+**PROPOSED / NOT IMPLEMENTED.** These refinements follow the [documentation-only authorization](../00-GOVERNANCE/DECISION-MANAGEMENT.md#visual-composition-documentation-authorization--2026-11-20), decisions O20–O25 and [coverage refinement](../PACK-INVENTORY.md#visual-composition-coverage-refinement). They do not change the static L1 frontend scope or deliver a studio.
+
+Extensions use explicit, owned and versioned points for buttons, tabs, fields, menus and actions. Each point declares compatible contribution contracts, bounded typed context/selection, allowed placement and reviewed precompiled components. Selected resource IDs are untrusted input: the backend revalidates the contract's control-plane or tenant-plane authority, required tenant/company/site scope, resource revision and rights for every query/command. Visibility is not authorization. No arbitrary DOM/template injection, remote JavaScript, reflective class invocation or access to another feature's internal state is permitted.
+
+The visualizer projects declared contracts and actual authorized observations. Report installed/present, active/enabled, configured, draft/published, incompatible and deprecated states independently, together with authorized rights and explicit unknown/unavailable/stale reasons. Licensing and execution are separate dimensions where real providers exist. Do not infer activation from installation, configuration from a green icon or execution from a published graph. Never reverse engineer Java or maintain a second copy of authoritative business state. Navigation resolves real registered routes or authorized resource views; unsupported destinations are honestly unavailable, not fabricated screens. Hidden resources and forbidden fields must not be fetched or disclosed through graph edges, labels, counts or selection context.
+
+Basic, Advanced and Developer modes are different presentations of the same [UAM semantic model](TARGET-ARCHITECTURE.md#future-semantic-application-model-and-clients), not separate application formats or permission tiers. Switching modes preserves meaning and versions; a simpler view cannot silently discard advanced semantics. Developer mode is not an arbitrary code-injection channel. Studios, SDKs, API/headless clients and AI use the same guarded validation, preview and exact-digest publication contracts; headless operation requires no studio. AI suggestions remain reviewable drafts.
+
+Provide keyboard and non-drag alternatives for creating, connecting, ordering, selecting and editing nodes and extension contributions. Preserve focus, meaningful labels and accessible validation errors in French, English, Italian and Arabic, including RTL layouts. Scoped preview must explicitly identify the contract's authorized control-plane or tenant-plane scope, model revision and permitted data source; tenant previews include the verified tenant and company/site where applicable, while control-plane previews grant no tenant-data access; use inert fixtures or authorized read-only projections, omit secrets and inaccessible data, and produce no production effects. Scope changes cancel pending work and invalidate stale preview/selection results.
+
+Acceptance additionally requires the [visual-composition matrix](../11-QUALITY-AND-TESTING/TEST-STRATEGY.md#visual-composition-acceptance): mode equivalence, headless parity, negative extension/context authorization, honest observed states, scope-safe preview and keyboard/non-drag operation in all four locales. These are future requirements, not browser verification results.
+
 ## Failure, performance and tests
 
 Every data view distinguishes loading, empty, error and denied states. Abort stale requests, bound table pagination and avoid unsafe HTML rendering. Propose bundle budgets after measuring an actual Angular production build.

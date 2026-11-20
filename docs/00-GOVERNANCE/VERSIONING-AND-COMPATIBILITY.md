@@ -46,11 +46,18 @@ Events use an envelope with `eventId`, `eventType`, `schemaVersion`,
 
 ## 4. Module versioning
 
-- Each module has its own semantic version.
-- A manifest declares `platformVersion` (compatibility range) and
-  `sdkVersion` (minimum).
-- Proposed installation validation would refuse an unsatisfied range; no
-  installer or compatibility test is implemented.
+- Each module has its own semantic version, distinct from capability contract
+  and manifest dialect versions.
+- The [foundation manifest](../03-CORE/MODULE-RUNTIME.md#4-foundation-manifest-contract)
+  remains `0.1.0`, with its existing eleven fields, exact module/capability versions
+  and rejection of unknown fields. It has no `platformVersion` or `sdkVersion`
+  field, compatibility ranges, node definitions or UAM metadata.
+- Platform/SDK range negotiation is a future proposal requiring separate contract
+  design and schema-version approval, not an accepted extension to `0.1.0`.
+  A reviewed release compatibility record must supply the tested combination;
+  absent fields never imply universal compatibility.
+- No live installer or automatic compatibility solver is implemented. Compiled
+  first-party updates remain controlled builds and restarts.
 - Module upgrades follow expand-and-contract for their own data.
 
 ## 5. Database compatibility
@@ -64,7 +71,9 @@ Events use an envelope with `eventId`, `eventType`, `schemaVersion`,
   3. Contract: remove the old structure after the compatibility window.
 - Every migration that changes data has a rollback or restore procedure.
 - Future migrations must be tested against a clean database and, once one
-  exists, the previous release schema. No migration tests have run yet.
+  exists, the previous release schema. [Isolated scratch migration/restore checks](../PACK-INVENTORY.md#l03-isolated-qualification-evidence--2026-11-19)
+  provide bounded technical evidence, not a main-application migration baseline
+  or released-schema upgrade acceptance.
 
 ## 6. Frontend compatibility
 
@@ -90,15 +99,79 @@ The runnable L02 build and clean verification do not prove frontend,
 database/migration, session-store integration or production support. Those slices
 still require remaining version selections and reproducible compatibility evidence;
 offline L02 clean verification also passed as recorded in the execution evidence.
-The dedicated-instance approval is environment initialization only, not Flyway
-approval or implemented tenant logic. Application migrations, RLS, JDBC integration,
-identity, audit, Angular and backup remain unimplemented; G2 is open.
+The dedicated-instance approval is environment initialization only, not general
+Flyway adoption or implemented tenant logic. Subsequent isolated scratch qualification
+provides bounded JDBC/RLS, migration and same-cluster restore evidence; it is not a
+delivered application capability or production backup/recovery proof. L03 application
+JDBC/RLS integration is IN PROGRESS, not delivered, and no main-application migration
+baseline is established. Functional identity/audit, Angular and full application
+compatibility acceptance are not established by L02 or that scratch evidence; G2 is open.
 
 ## 8. Deprecation policy
 
 Deprecation requires: an ADR or design note, a changelog entry, a migration
 guide, telemetry where available, and a removal date no earlier than two minor
 releases after deprecation.
+
+## 9. Future application revisions and immutable releases
+
+**PROPOSED / NOT IMPLEMENTED.** This consolidation of AP-ARCH-EVOL-001 and
+AP-MASTER-CONSTITUTION-001 follows the [documentation-only authorization](DECISION-MANAGEMENT.md#visual-composition-documentation-authorization--2026-11-20),
+decisions O20–O25 and [coverage refinement](../PACK-INVENTORY.md#visual-composition-coverage-refinement).
+It changes no approved permission, foundation manifest field or implementation gate.
+
+A UAM application revision identifies a coherent semantic composition, independently
+of platform release, module version, node/composite version, capability/API contract
+version, data schema version and editor-layout version. A layout-only change cannot
+silently alter application semantics. Draft revisions support conflict detection;
+a release records an immutable snapshot and exact approved bundle digest.
+
+The release compatibility record pins exact provider/module/node/composite dependencies,
+data-model/schema references, UI bindings/form schemas, process definitions and required
+capability versions. Validation covers the complete combination and resource bindings,
+not just each fragment in isolation. Approval binds the exact digest; edits require
+new validation and approval. Publication must not expose mixed old/new fragments or
+rewrite an already published snapshot. These are future contracts, not new fields
+implicitly accepted by the current manifest.
+
+New releases select versions for new work only. Running instances retain their pinned
+definitions, capability/form versions and execution revisions. Preserve compatible
+providers until approved drain or explicit instance migration; migration needs reviewed
+state mapping, impact and recovery evidence. Replacing a version pointer is not migration.
+Deprecation must account for still-running instances, not only current editor clients.
+
+Rollback selects a previous compatible application release; it does not undo database
+migrations, delete retained history, reverse committed domain writes or cancel external
+effects already performed. Database restore/roll-forward and provider-owned compensation
+remain separate authorized procedures. Reject rollback when schema, bindings or required
+providers are incompatible, rather than report a false restoration.
+
+## 10. Future import, export and clone compatibility
+
+**PROPOSED / NOT IMPLEMENTED.** Application portability concerns versioned definitions
+and approved non-secret metadata, not a copy of operational business or execution state.
+Exports carry dialect/revision/digest, exact dependency references, provenance and an
+explicit inventory of logical resource bindings. Provenance records source identity and
+lineage; a signature or trusted source does not itself authorize use in a destination.
+
+Secrets, credentials, tokens and live sessions are excluded. Sensitive infrastructure
+references must be omitted or replaced by safe logical binding names. Import/clone never
+copies memberships, permission grants, approvals, licenses or historical initiating-user
+authority. Required-permission declarations may describe requirements but confer no rights.
+Business-data export, if separately approved, remains a different scoped contract.
+
+At the destination, validate provenance/integrity, dialect and exact dependency
+compatibility, provider availability, tenant-safe resource references and budgets before
+acceptance. Resource binding remaps are explicit, reviewed and reauthorized for the target
+tenant/company/site; unresolved or foreign bindings block publication. A clone receives
+new identity/revision and retained source lineage as a draft, not the source's activation
+or approval. Changed bindings change the bundle digest and require fresh scoped preview,
+review and publication approval. Import cannot install missing code, create database
+models or provision secrets automatically.
+
+Future evidence follows [visual-composition acceptance](../11-QUALITY-AND-TESTING/TEST-STRATEGY.md#visual-composition-acceptance)
+and the [runtime composition contracts](../03-CORE/MODULE-RUNTIME.md#10-future-visual-composition-contracts).
+No import/export, clone, compatibility or rollback test is claimed as executed here.
 
 ## Related documents
 

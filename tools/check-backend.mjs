@@ -23,7 +23,10 @@ for (const key of ['MVNW_USERNAME', 'MVNW_PASSWORD', 'MVNW_REPOURL', 'MVNW_VERBO
 }
 environment.MAVEN_SKIP_RC = 'true';
 environment.MAVEN_USER_HOME = join(root, 'tmp', 'l02', 'wrapper-home');
-environment.MAVEN_OPTS = '-Xmx512m -Djava.awt.headless=true';
+for (const key of Object.keys(environment)) {
+  if (/^(AUTHORITY_PRO_|SPRING_|SERVER_|MANAGEMENT_|PG)/.test(key)) delete environment[key];
+}
+environment.MAVEN_OPTS = '-Xmx192m -XX:MaxMetaspaceSize=128m -Djava.awt.headless=true';
 mkdirSync(environment.MAVEN_USER_HOME, { recursive: true });
 const windows = process.platform === 'win32';
 const argumentsForMaven = [

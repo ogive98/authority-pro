@@ -28,7 +28,7 @@ Definitions describe the intended platform, not delivered functionality.
 | **Company** | Entity within an organization with potentially distinct user grants, configuration and modules; not a separate tenant by default. |
 | **Site** | Physical or logical location belonging to a company within an organization tenant. |
 | **Membership** | Proposed association of a user with an organization and scoped grants; company/site roles and permissions remain to be approved. |
-| **RLS** | PostgreSQL Row-Level Security. Tenant isolation must be verified under a restricted non-owner, non-superuser, NOBYPASSRLS runtime role; implementation and tests do not yet exist. |
+| **RLS** | PostgreSQL Row-Level Security. Verify isolation under a restricted non-owner, non-superuser, NOBYPASSRLS runtime role; bounded scratch qualification exists, while closed L03 application integration is in progress and authenticated application isolation remains unqualified. |
 | **Control plane** | Proposed narrowly authorized identity and platform-metadata administration. It grants no automatic tenant business-data access and is not a global RLS bypass. |
 | **Tenant plane** | Proposed tenant-scoped operations requiring verified user/tenant authorization and transaction-local database context, including company/site restrictions. |
 | **Migration role** | Proposed database role for schema changes, separate from runtime credentials and unavailable to ordinary requests/jobs. |
@@ -41,6 +41,28 @@ Definitions describe the intended platform, not delivered functionality.
 | **Soft Glass** | Visual direction: restrained glass effects, clear hierarchy, minimal noise. |
 | **Authority X** | Future global command palette and intelligent navigation; Phase 7 is proposed vision only, not implementation authorization. |
 | **Authority Studio** | Future environment for building modules and extensions; Phase 7 is proposed vision only, not implementation authorization. |
+
+## Composition terminology proposals
+
+**PROPOSED / NOT IMPLEMENTED.** These definitions reconcile the [two supplied complements](PACK-INVENTORY.md#visual-composition-coverage-refinement); they do not rename approved concepts or implement products. Final ownership and dialects remain O20–O25 decisions.
+
+| Term | Proposed meaning |
+|---|---|
+| **UAM / Application Model** | Universal Application Model: versioned semantic definition referencing owned data, UI, processes, contracts, permissions, integrations and deployment requirements; distinct from canvas layout, operational values and execution state. |
+| **Visualizer** | Permission-filtered view of declared capabilities and observed application state, with real authorized navigation; not automatic conversion of arbitrary Java into editable graphs. |
+| **Node / LEGO component** | Typed versioned provider contract with declared ports, configuration, errors, permissions, dependencies, provenance and budgets; not an arbitrary script or new table. |
+| **Port** | Named typed input/output with direction, required status, cardinality and declared connection semantics. |
+| **Composite** | Encapsulated reusable subgraph with explicit public ports/parameters, pinned child versions and validated nesting/resource limits. |
+| **Extension point / feature injection** | Owned versioned contribution contract for an existing screen or capability; never arbitrary DOM, SQL or private-source mutation. |
+| **Composition studios** | Data, Process, Interface, Integration, Intelligence and Development workspaces over common contracts; not replacements for Studio's existing Design/Development/AI/Quality/Environment/Release responsibilities. |
+| **Intelligence Studio** | Proposed analytical/decision workspace retaining reports, KPIs, alerts, predictions and simulation; both complements' analytical and AI functions remain visible. Final naming is O23, not an approved merger. |
+| **AI Studio / common AI assistance** | Optional inspected suggestions, generation, testing and diagnosis through the same model and permissions as humans; no independent runtime or self-approved publication. |
+| **Basic / Advanced / Developer** | Presentation-complexity modes over the same semantics, not different permissions, formats or independent editors. |
+| **Application revision / publication bundle** | Exact coherent revision and digest of model, UI, process and dependency references; approval and publication are separate from activation and execution. |
+| **Installed / enabled / configured / entitled / published** | Independent availability dimensions; presence, permission, license, valid bindings and a reviewed revision must never be collapsed into one status. |
+| **Architectural readiness** | Reviewed contracts, ownership, decisions and planned acceptance for a selected capability; not implementation, successful tests, release or production readiness. |
+
+PBC continues to mean **Plugin-Based Components**. The second complement's expansion "Platform Business Capabilities" is not adopted. Resource profiles and deployment profiles are separate dimensions, and governance N0/N1/N2 is not delivery L1/L2/L3. Deferred functions remain requirements; deferral does not mean deletion.
 
 ## Naming rules
 

@@ -12,7 +12,7 @@
     "environment:prepare": "node tools/local-environment.mjs prepare",
     "environment:verify": "node tools/local-environment.mjs verify",
     "test:environment": "node --test tools/local-environment.test.mjs",
-    "test": "node --test tools/validate-docs.test.mjs tools/local-environment.test.mjs"
+    "test": "node --test tools/validate-docs.test.mjs tools/local-environment.test.mjs tools/local-data.test.mjs"
   },
   "devDependencies": {
     "ajv": "8.20.0",

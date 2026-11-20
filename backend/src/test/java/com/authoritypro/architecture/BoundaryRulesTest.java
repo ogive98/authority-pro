@@ -142,6 +142,8 @@ class BoundaryRulesTest {
                 "identity.application.WrongDirection", "identity.api.LeakyContract", "identity.infrastructure.Adapter");
         assertArchFailure(BoundaryRules.layersPointInward(base), classes,
                 "Domain depends on framework", "FrameworkCoupled", "org.springframework.context.ApplicationContext",
+                "java.sql.Connection", "javax.sql.DataSource", "com.zaxxer.hikari.HikariDataSource",
+                "org.flywaydb.core.Flyway", "org.postgresql.ds.PGSimpleDataSource",
                 "Domain points outward", "OutwardDependency", "Application depends on infrastructure", "WrongDirection",
                 "API leaks private ownership", "LeakyContract");
     }
