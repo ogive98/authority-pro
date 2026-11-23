@@ -14,4 +14,14 @@ public final class LocalDatabaseBootstrap implements DatabaseBootstrap {
     public int migrate(InputStream input) {
         return LocalDatabase.migrate(LocalDatabase.readPassword(input));
     }
+
+    @Override
+    public String[] provisionerSecrets(InputStream input) {
+        return LocalDatabase.readSecrets(input, 3);
+    }
+
+    @Override
+    public HikariDataSource provisioner(String password) {
+        return LocalDatabase.provisionerDataSource("authority_pro", password);
+    }
 }

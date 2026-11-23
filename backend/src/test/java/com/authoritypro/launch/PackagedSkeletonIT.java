@@ -22,8 +22,9 @@ import static org.awaitility.Awaitility.await;
 class PackagedSkeletonIT {
     private static final Path JAR = Path.of(System.getProperty("skeleton.jar")).toAbsolutePath();
     private static final List<String> REQUIRED = List.of("spring-jdbc-7.0.10.jar", "HikariCP-7.0.2.jar",
-            "postgresql-42.7.14.jar", "flyway-core-12.4.0.jar", "flyway-database-postgresql-12.4.0.jar");
-    private static final List<String> FORBIDDEN = List.of("spring-data-", "spring-session-",
+            "postgresql-42.7.14.jar", "flyway-core-12.4.0.jar", "flyway-database-postgresql-12.4.0.jar",
+            "spring-session-core-4.1.1.jar", "spring-session-jdbc-4.1.1.jar");
+    private static final List<String> FORBIDDEN = List.of("spring-data-",
             "spring-boot-jdbc-", "spring-boot-flyway-", "spring-boot-data-jpa-",
             "hibernate-core-", "hibernate-envers-", "hibernate-spatial-", "h2-",
             "hsqldb-", "mysql-", "mariadb-", "r2dbc-",
@@ -39,7 +40,7 @@ class PackagedSkeletonIT {
             for (String library : REQUIRED) {
                 assertThat(names).contains("BOOT-INF/lib/" + library);
             }
-            for (String prefix : List.of("spring-jdbc-", "HikariCP-", "postgresql-", "flyway-")) {
+            for (String prefix : List.of("spring-jdbc-", "HikariCP-", "postgresql-", "flyway-", "spring-session-")) {
                 assertThat(names.stream().filter(name -> name.startsWith("BOOT-INF/lib/" + prefix)))
                         .allMatch(name -> REQUIRED.contains(name.substring("BOOT-INF/lib/".length())));
             }

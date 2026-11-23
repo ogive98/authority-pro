@@ -27,7 +27,8 @@ public class HttpSecurityConfiguration {
     CookieCsrfTokenRepository csrfTokenRepository() {
         CookieCsrfTokenRepository repository = new CookieCsrfTokenRepository();
         repository.setCookiePath("/");
-        repository.setCookieCustomizer(cookie -> cookie.httpOnly(true).sameSite("Strict"));
+        // The SPA reads this value and echoes it in X-XSRF-TOKEN; the session cookie stays HttpOnly.
+        repository.setCookieCustomizer(cookie -> cookie.httpOnly(false).sameSite("Lax"));
         return repository;
     }
 

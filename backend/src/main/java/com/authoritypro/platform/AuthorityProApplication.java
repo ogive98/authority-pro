@@ -2,6 +2,8 @@ package com.authoritypro.platform;
 
 import com.zaxxer.hikari.HikariDataSource;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.ArrayList;
@@ -22,17 +24,32 @@ public class AuthorityProApplication {
     public interface DatabaseBootstrap {
         HikariDataSource runtime(InputStream input);
         int migrate(InputStream input);
+        String[] provisionerSecrets(InputStream input);
+        HikariDataSource provisioner(String password);
+    }
+
+    /** Identity owns the bootstrap use case; the entrypoint only supplies the provisioner transaction. */
+    public interface OperatorProvisioner {
+        void provision(Connection connection, String login, char[] password);
     }
 
     private static DatabaseBootstrap databaseBootstrap() {
+        return singleService(DatabaseBootstrap.class, "DATABASE_STARTUP_REFUSED");
+    }
+
+    private static OperatorProvisioner operatorProvisioner() {
+        return singleService(OperatorProvisioner.class, "PROVISIONING_REFUSED");
+    }
+
+    private static <T> T singleService(Class<T> type, String refusal) {
         try {
-            var providers = ServiceLoader.load(DatabaseBootstrap.class).iterator();
-            if (!providers.hasNext()) throw new IllegalStateException("DATABASE_STARTUP_REFUSED");
+            var providers = ServiceLoader.load(type).iterator();
+            if (!providers.hasNext()) throw new IllegalStateException(refusal);
             var provider = providers.next();
-            if (providers.hasNext()) throw new IllegalStateException("DATABASE_STARTUP_REFUSED");
+            if (providers.hasNext()) throw new IllegalStateException(refusal);
             return provider;
         } catch (ServiceConfigurationError failure) {
-            throw new IllegalStateException("DATABASE_STARTUP_REFUSED");
+            throw new IllegalStateException(refusal);
         }
     }
 
@@ -41,7 +58,7 @@ public class AuthorityProApplication {
             Objects.requireNonNull(mode);
         }
 
-        public enum Mode { SKELETON_LOCAL, DATA_LOCAL, MIGRATE_LOCAL }
+        public enum Mode { SKELETON_LOCAL, DATA_LOCAL, MIGRATE_LOCAL, PROVISION_LOCAL }
 
         public static SkeletonSettings from(Map<String, String> environment, Properties system, String[] arguments) {
             if (arguments.length != 0) {
@@ -71,6 +88,7 @@ public class AuthorityProApplication {
                 case "skeleton-local" -> Mode.SKELETON_LOCAL;
                 case "data-local" -> Mode.DATA_LOCAL;
                 case "migrate-local" -> Mode.MIGRATE_LOCAL;
+                case "provision-local" -> Mode.PROVISION_LOCAL;
                 default -> throw new IllegalArgumentException("MODE_INVALID");
             });
         }
@@ -93,13 +111,39 @@ public class AuthorityProApplication {
             if (settings.mode() == SkeletonSettings.Mode.MIGRATE_LOCAL) {
                 int count = databaseBootstrap().migrate(System.in);
                 System.out.println("MIGRATION_OK count=" + count);
+            } else if (settings.mode() == SkeletonSettings.Mode.PROVISION_LOCAL) {
+                provisionOperator();
             } else {
                 application(settings).run();
             }
         } catch (RuntimeException exception) {
-            System.err.println("DATABASE_STARTUP_REFUSED");
+            System.err.println(settings.mode() == SkeletonSettings.Mode.PROVISION_LOCAL
+                    ? "PROVISIONING_REFUSED" : "DATABASE_STARTUP_REFUSED");
             System.exit(2);
         }
+    }
+
+    /** Reads provisioner secret, operator login and password; one transaction creates the first operator. */
+    private static void provisionOperator() {
+        DatabaseBootstrap bootstrap = databaseBootstrap();
+        String[] secrets = bootstrap.provisionerSecrets(System.in);
+        char[] password = secrets[2].toCharArray();
+        try (HikariDataSource source = bootstrap.provisioner(secrets[0]);
+                Connection connection = source.getConnection()) {
+            connection.setAutoCommit(false);
+            try {
+                operatorProvisioner().provision(connection, secrets[1], password);
+                connection.commit();
+            } catch (RuntimeException | SQLException failure) {
+                connection.rollback();
+                throw new IllegalStateException("PROVISIONING_REFUSED");
+            } finally {
+                java.util.Arrays.fill(password, '\0');
+            }
+        } catch (SQLException failure) {
+            throw new IllegalStateException("PROVISIONING_REFUSED");
+        }
+        System.out.println("OPERATOR_PROVISIONED");
     }
 
     public static SpringApplication application(SkeletonSettings settings) {

@@ -174,8 +174,8 @@ class HttpBoundaryTest {
         assertProblem(missing, 403, "CSRF_REJECTED");
         String setCookie = missing.headers().allValues("Set-Cookie").stream()
                 .filter(value -> value.startsWith("XSRF-TOKEN=")).findFirst().orElseThrow();
-        assertTrue(setCookie.contains("HttpOnly"));
-        assertTrue(setCookie.contains("SameSite=Strict"));
+        assertFalse(setCookie.toLowerCase(java.util.Locale.ROOT).contains("httponly"));
+        assertTrue(setCookie.contains("SameSite=Lax"));
         assertTrue(setCookie.contains("Path=/"));
         HttpCookie cookie = HttpCookie.parse(setCookie).getFirst();
         String cookieHeader = cookie.getName() + "=" + cookie.getValue();
