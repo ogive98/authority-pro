@@ -20,6 +20,7 @@ const container = 'authority-pro-postgres';
 const volumes = ['authority-pro-pgdata', 'authority-pro-pgsecrets'];
 const network = 'authority-pro-network';
 const roles = ['authority_pro_operator', 'authority_pro_migrator', 'authority_pro_runtime'];
+const provisioner = 'authority_pro_provisioner';
 const helper = 'authority-pro-secret-init';
 
 export function scramVerifier(password, salt = randomBytes(16)) {
@@ -186,6 +187,31 @@ export function accessLocalEnvironment() {
 }
 
 export function protectedContainerSnapshot() { return snapshot(); }
+
+/**
+ * Idempotently adds the L05 one-shot provisioning role to the existing cluster and DPAPI store.
+ * The role never inherits, never owns objects and admits a single connection. Never prints its secret.
+ */
+export function ensureProvisioner(passwords) {
+  const flags = sql(passwords, roles[0], 'postgres',
+    `SELECT rolcanlogin || ':' || rolsuper || ':' || rolcreatedb || ':' || rolcreaterole || ':' || rolbypassrls `
+    + `|| ':' || rolreplication || ':' || rolinherit || ':' || rolconnlimit FROM pg_roles WHERE rolname = '${provisioner}';`);
+  let password = passwords[provisioner];
+  if (flags === '') {
+    if (password === undefined) password = randomBytes(32).toString('base64url');
+    sql(passwords, roles[0], 'postgres',
+      `CREATE ROLE ${provisioner} LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS `
+      + `CONNECTION LIMIT 1 PASSWORD '${scramVerifier(password)}';`);
+    const credentials = JSON.parse(protect(readFileSync(credentialsPath), true).toString('utf8'));
+    credentials.passwords[provisioner] = password;
+    writeFileSync(credentialsPath, protect(Buffer.from(JSON.stringify(credentials))));
+  } else {
+    assert.equal(flags, 'true:false:false:false:false:false:false:1', 'Provisioner role attributes drifted');
+    assert.ok(password, 'Provisioner role exists without a stored credential');
+  }
+  assert.match(password, /^[A-Za-z0-9_-]{32,256}$/);
+  return password;
+}
 
 async function verify(state, protectedBefore = snapshot()) {
   validateState(state, localDaemon(), manifestHash());
