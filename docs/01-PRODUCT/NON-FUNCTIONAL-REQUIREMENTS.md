@@ -6,8 +6,15 @@ locked source requirements (including four languages/RTL) remain requirements.
 see [bounded execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18).
 All numeric targets below remain UNMEASURED: skeleton verification is not a
 performance benchmark, frontend test or integrated foundation acceptance.
-Current L03 integration is IN PROGRESS / NOT QUALIFIED and the main database is
-not migrated. No backend test or performance measurement is run by this consolidation.
+Closed L03 technical local integration is IMPLEMENTED / TESTED within bounded
+scope; see [current main recovery evidence](../PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20).
+Main V1 was already applied (count 1); the latest authorized recovery passed with a
+no-op migration (count 0) and 31 real `data-local` HTTP checks. All four technical
+tables remain empty. This is not a performance benchmark or production-readiness
+claim and does not implement user authentication, membership validation, audit,
+Angular or business functionality. Full G2 clean-machine provision reproduction is
+not established; G3–G5 remain open. No backend test or performance measurement is
+run by this documentation update.
 
 Targets below are candidates for review, not guarantees, approved service levels
 or proof that a 2 GB deployment or 500 ms login is achievable.

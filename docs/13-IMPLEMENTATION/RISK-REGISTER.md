@@ -55,8 +55,13 @@ Use the [coverage refinement](../PACK-INVENTORY.md#visual-composition-coverage-r
 [O20–O25 decision register](../00-GOVERNANCE/DECISION-MANAGEMENT.md#4-open-decisions)
 and [future acceptance matrix](../11-QUALITY-AND-TESTING/TEST-STRATEGY.md#visual-composition-acceptance)
 for ownership, scoped decisions and closure evidence, without duplicating their
-contracts. No mitigation or test above is claimed implemented/executed; L03 is
-IN PROGRESS / NOT QUALIFIED and the main database is not migrated.
+contracts. No mitigation or test for these proposed composition contracts is claimed
+implemented/executed. Bounded closed L03 is now locally IMPLEMENTED / TESTED:
+the [recovery evidence](../PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20)
+records exact default/type/column-privilege checks, a packaged no-op and 31 actual
+runtime HTTP checks after the retained default-ACL comparison failure. Main's four
+technical tables remain empty. These checks do not close user-authorization,
+clean-machine provisioning, production recovery or advanced-composition risks.
 
 Responsibility defaults to the project owner for approval and future platform/security maintainers for execution; no team assignment is invented. Close a risk only with evidence linked from a validation gate, or explicitly accept it with an owner decision and bounds.
 

@@ -5,13 +5,15 @@
 
 - **Record reviewed:** 2026-11-17; this is not an approval date for proposed details.
 - **Accountable owner / approval authority:** Project owner.
-- **Tenancy delivery:** NOT IMPLEMENTED; PostgreSQL isolation tests and release evidence remain absent. The separate [L02 no-database skeleton is implemented/tested](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18); no PostgreSQL was touched in L01/L02. The [empty dedicated environment and role checks](../PACK-INVENTORY.md#l03-local-environment-evidence--2026-11-18) now have passing evidence; this is not tenant isolation. Application migrations, RLS, JDBC integration, identity, audit, Angular and backup remain unimplemented; G2 is open.
+- **Tenancy delivery:** Closed L03 technical local JDBC/RLS integration is IMPLEMENTED / TESTED within bounded scope; see [current main recovery evidence](../PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20). Main V1 was already applied (count 1); the latest authorized recovery passed with a no-op migration (count 0) and 31 real `data-local` HTTP checks. This does not implement user authentication, membership validation, audit, Angular or business functionality, or establish production readiness. Full G2 clean-machine provision reproduction is not established; G3–G5 remain open. The [L02 no-database evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18), [initial empty environment](../PACK-INVENTORY.md#l03-local-environment-evidence--2026-11-18), failed attempt and isolated scratch qualification remain historical records; no PostgreSQL was touched in L01/L02.
 
 ## Context
 
 Authority Pro needs tenant isolation in a shared database. At the initial
-decision, no application code existed; the current L02 skeleton deliberately has
-no database or tenancy implementation. Only the technical foundation is in scope.
+decision, no application code existed; the historical L02 skeleton deliberately
+had no database or tenancy implementation. Closed L03 technical local JDBC/RLS
+integration is now implemented/tested within the bounded evidence above, without
+user authentication or membership validation. Only the technical foundation is in scope.
 Future authentication must work before a tenant is selected without creating a
 platform-wide tenant-data bypass.
 
@@ -122,7 +124,7 @@ Check that no global read or support bypass exists.
 
 ## Migration implications
 
-Authority Pro application migrations remain unimplemented; the empty local environment and bounded setup-role checks have passed. Initialize the new project database and environment identities only in the authorized dedicated instance after verifying the endpoint and unused names; abort on collisions. Never migrate or restore into the old database, alter its ACLs, reuse its cluster-wide roles or change its server configuration. Leave the other application and concurrent project untouched. Application migrations, constraints and RLS policies still require scoped approval and validation under ADR-0007's proposed migration process; environment initialization does not approve Flyway.
+Main V1 was already applied (count 1); the latest authorized [main recovery](../PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20) passed with a no-op migration (count 0), not a second application of V1. All four technical tables remain empty. Strict nine-group catalog comparison matches the qualified catalog except exactly two initialized owner-only default ACL rows already present on hardened main and absent from scratch; those grants were not modified. Explicit type/column ACL checks across all three databases passed, without claiming all type usage is denied. The initial empty environment, failed attempt and isolated scratch records remain historical. Other containers, database identities, artifacts and original journals are unchanged. Never migrate or restore into the old database, alter its ACLs, reuse its cluster-wide roles or change its server configuration. Leave the other application and concurrent project untouched. Future migrations, constraints and RLS changes still require scoped approval and validation under ADR-0007's proposed migration process; the bounded recovery evidence grants no new database authority.
 Future tables need the same checks. A later move to per-tenant databases requires
 a separate data migration and isolation review.
 

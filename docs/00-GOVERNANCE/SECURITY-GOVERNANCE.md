@@ -4,17 +4,26 @@
 [owner-confirmed foundation orientations](DECISION-MANAGEMENT.md#owner-confirmation-of-foundation-orientations)
 are binding. Detailed controls and operating policies remain PROPOSED unless
 explicitly approved; this is not blanket approval of this document.
-**Delivery status:** L02 no-database backend skeleton IMPLEMENTED / TESTED only;
-see [execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18).
-Its local HTTP boundary allows only exact GET liveness (200/UP) and readiness
-(503/OUT_OF_SERVICE), denies other requests, retains CSRF, creates no session or
-default user and returns sanitized RFC 9457 errors. This is not implemented
-identity, tenant isolation or audit, nor production-readiness certification.
-No PostgreSQL was touched by L02 and no frontend is implemented. Current L03
-closed application integration is IN PROGRESS / NOT QUALIFIED; the main
-`authority_pro` database is not migrated. Earlier isolated L03 qualification is
-not evidence for current application changes. This consolidation runs no backend
-test and changes no database, permission or security configuration.
+**Delivery status:** L02 no-database backend skeleton and closed L03 technical
+local integration are IMPLEMENTED / TESTED within bounded scope; see
+[L02 execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18) and
+[current L03 main recovery evidence](../PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20).
+The historical L02 local HTTP boundary allows only exact GET liveness (200/UP)
+and readiness (503/OUT_OF_SERVICE), denies other requests, retains CSRF, creates
+no session or default user and returns sanitized RFC 9457 errors; no PostgreSQL
+was touched by L02. Main V1 was already applied (count 1); the latest authorized
+recovery passed with a no-op migration (count 0) and 31 real `data-local` HTTP
+checks. All four technical tables remain empty. In strict nine-group catalog
+comparison, main matches the qualified catalog except exactly two initialized,
+owner-only default ACL rows already present on hardened main and absent from
+scratch; those grants were not modified. Explicit type/column ACL checks across
+all three databases passed; this is not a claim that all type usage is denied.
+Historical empty-environment, failed-attempt and isolated-scratch evidence is
+preserved. User authentication, membership validation, audit, Angular and
+business functionality remain unimplemented; no production readiness is claimed.
+Full G2 clean-machine provision reproduction is not established; G3–G5 remain
+open. This documentation update runs no backend test and changes no database,
+permission or security configuration.
 
 ## 1. Principles
 

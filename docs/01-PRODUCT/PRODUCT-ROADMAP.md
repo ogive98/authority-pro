@@ -1,7 +1,7 @@
 # Product Roadmap
 
-**Decision status:** PROPOSED sequencing within the owner-approved socle-only scope.
-**Delivery status:** Phase-0 documentation exists and the L02 no-database backend skeleton is IMPLEMENTED / TESTED; see [execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18). The remaining L1 capabilities and later levels are not delivered.
+**Decision status:** All supplied catalogue capabilities require inclusion and traceability in the product target; exact design and sequencing remain PROPOSED within the owner-approved socle-only implementation scope.
+**Delivery status:** Phase-0 documentation exists; L02 and bounded local technical L03 are IMPLEMENTED / TESTED. The [canonical L03 recovery evidence](../PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20) records passed recovery and four empty technical tables. Identity, audit and UI are not implemented; full G2 remains open. The remaining L1 capabilities and later levels are not delivered.
 **Boundary:** Build the foundation to receive future modules, never business modules or their tables, rules, screens or demonstrations in this mission.
 
 ## Delivery map
@@ -12,10 +12,20 @@ The [implementation lots](../13-IMPLEMENTATION/IMPLEMENTATION-PHASES.md) define 
 |---|---|---|
 | L1 — Initial executable nucleus | Lots L01–L08; source Phase 1 plus necessary basic UI and operations | Does not claim complete extensibility or production readiness without evidence |
 | L2 — Extensible socle | Proposed lots L09–L11; selected contracts, execution, governance and tools from Phases 2–5 | Technical capabilities only; scope and N0 decisions must be approved |
-| L3 — Advanced optional platform | Selected technical products from later source phases | Unscheduled candidates, not an obligation to implement the entire catalogue |
+| L3 — Advanced platform, selective deployment | Required advanced target capabilities from later source phases | Unscheduled, separately gated slices; required inclusion is not simultaneous implementation, universal installation or all-profile support |
 | Business ecosystem | Source Phase 6 and business/industry portions of Phase 9 | Outside this mission; no implementation lots or demonstration modules |
 
 These levels are distinct from governance N0/N1/N2. Four languages (FR, EN, IT, AR with RTL) remain required; no reduced language rollout is approved.
+
+## Required target, gated delivery
+
+The [required catalogue](../PACK-INVENTORY.md#required-target-catalogue--2026-11-21), [architectural foundations and twelve logical layers](../02-ARCHITECTURE/TARGET-ARCHITECTURE.md#architectural-foundations-and-logical-layers) and [integration authorization](../00-GOVERNANCE/DECISION-MANAGEMENT.md#catalogue-and-layer-integration-authorization--2026-11-21) extend the retained vision, C01–C58 and VC01–VC18. All source-A families and named capabilities, all nine node categories, source-B layer responsibilities and cross-cutting requirements must remain traceable. The [product family map](PRODUCT-VISION.md#10-required-catalogue-and-architectural-product-model) summarizes their purpose; deferral is not deletion.
+
+Required inclusion does not mean every capability is installed, active, entitled or supported in every profile. Earlier candidate/optional wording denotes separately selected design/delivery or installation and profile choices, not permission to discard catalogue requirements. Exact contracts, providers, resource budgets, milestones and commercial offerings need decisions; there is no all-at-once delivery commitment. Catalogue amendments must record an explicit target decision, not silently remove an unscheduled row.
+
+The initial architecture remains Modular Monolith + DDD + Hexagonal + PBC (Packaged Business Capabilities, mapped to the historical Plugin-Based Components formulation), not twelve microservices or hundreds of new engines. UAM, registry, domain and execution authorities stay distinct and shared by visual, headless and AI clients. Application Studio is an added application-composition workspace over the same UAM; Development, Quality, Environment and Release remain, alongside analytics and AI.
+
+The [catalogue priority crosswalk](../13-IMPLEMENTATION/IMPLEMENTATION-PHASES.md#catalogue-priorities-and-current-lots) reconciles source A P0–P2 (canonical catalogue U), source B P0–P8 (canonical architecture A) and existing L01–L11/L3 without renumbering. The detailed L04 atomic-audit contract is **drafted with D1–D6 approved on 2026-11-21; implementation remains separately authorized**, then L05/L06/L07/L08 and the gated extensibility/composition trajectory. Baseline audit, reliability and security cannot be delayed to a source priority label. Required target coverage does not broaden L1 acceptance or require all twenty source-A P0 foundations as implemented engines before L1 exits. Business nodes remain references to future providers, not authorization for source-B P3 business modules or an ERP demonstration.
 
 ## Phase 0 — Foundation (historical baseline; review remains distinct)
 
@@ -23,13 +33,13 @@ Historical scope: monorepo organization, normative documentation, coverage/owner
 
 Proposed documentary exit: review contradictions, separate approvals from proposals and link actual local documentation-test evidence. A local CI definition is not an executed remote workflow. Compatibility spikes and G1 decisions preceded L02 baseline pinning; neither those steps nor L02 alone establish delivery of the whole socle.
 
-## Phase 1 — Platform socle (L02 skeleton tested; integrated L1 incomplete)
+## Phase 1 — Platform socle (L02 and bounded L03 tested; integrated L1 incomplete)
 
 L1 proposed scope: backend skeleton, validated configuration and probes, separate database roles/migrations, verified tenant/company/site context, audit atomicity, closed operator provisioning, sessions/CSRF, permissions, minimal compiled registry and Angular technical shell. Audit protection is integrated before provisioning or sensitive writes are exposed. No public setup endpoint.
 
 Minimal logs, health, security controls, data/secret lifecycle requirements and backup/restore accompany their first affected slices. FR/EN/IT/AR, RTL, keyboard access and themes are tested with the shell. Phase 3 cannot be used to postpone mandatory baseline controls.
 
-Proposed exit: G1 is an approval gate only; implemented L1 requires evidence for [G2–G4](../13-IMPLEMENTATION/VALIDATION-GATES.md) and a bounded G5 readiness review. L02 skeleton verification passed, but full G2 remains open until the database-bearing slice and no integrated L1 acceptance is claimed. The later closed L03 integration is authorized and in progress; its current application qualification/restore must pass before the first main migration, without expanding database access or treating scratch evidence as application acceptance. Account recovery, privileged MFA and other open deployment requirements must be resolved before any production-opening decision.
+Proposed exit: G1 is an approval gate only; implemented L1 requires evidence for [G2–G4](../13-IMPLEMENTATION/VALIDATION-GATES.md) and a bounded G5 readiness review. L02 verification and the selected local technical L03 slice passed; [L03 recovery](../PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20) preserves the initial failed attempt and records main V1, four empty technical tables, strict privileges, a packaged no-op and 31 data-local HTTP checks. Full G2 remains open: local persistence acceptance does not prove clean-machine provisioning, authenticated membership isolation, audit, UI or production recovery. No integrated L1 acceptance is claimed. Next is the detailed L04 audit contract; identity, audit and UI remain unimplemented. Account recovery, privileged MFA and other open deployment requirements must be resolved before any production-opening decision.
 
 ## Later phases — vision only, not authorized
 
@@ -82,17 +92,17 @@ The owner requested retention and progressive documentation of the additional di
 | Stage | Retained outcome | Entry / proof boundary |
 |---|---|---|
 | Design now | One product with explicit deployment, topology, connectivity and resource dimensions; profile compatibility and operational contracts | [Deployment capability matrix](../02-ARCHITECTURE/DEPLOYMENT-ARCHITECTURE.md#deployment-capability-matrix); existing manifests and runtime remain unchanged |
-| Finish the nucleus | L03–L08 application isolation, audit, identity, Angular and recovery | Preserve current gates and technical-only scope; the isolated development database is not a complete distribution |
+| Finish the nucleus | Build on bounded L03; L04 audit contract decisions approved, then separately authorized L04–L08 audit, identity, inventory, Angular and integrated recovery | Preserve full G2 and other current gates and technical-only scope; local L03 acceptance is not a complete distribution |
 | Qualify hosted and private installations | Repeatable independent installation, same-origin/TLS, supported artifacts, measured capacity and restore; scale-out when selected | Completed L1 plus selected release/environment controls; no capacity or availability claim before load/failure tests |
 | Distribute and operate independently | Windows installer, controlled updates, optional desktop shell, safe fleet supervision and offline entitlement contracts | Supported OS/runtime, signed artifacts, installation identity, customer authority and interruption/recovery evidence; no business billing |
 | Add selected hybrid and placement capabilities | Autonomous local/edge profiles, selective synchronization, cells and controlled tenant movement | Per-operation consistency and revocation, resource limits, identity/placement security and tested migration; not automatic table replication |
 | Qualify advanced resilience | Cross-provider recovery, then multi-region or more advanced topologies where justified | Measured RPO/RTO, residency and operating-cost requirements; explicit write authority and fencing |
 
-Portable recovery can be selected before fleet or hybrid work; independent capabilities need not wait for every earlier advanced feature. One codebase does not mean every module works in every profile: unsupported capabilities must be declared and rejected before activation. Retained candidates remain visible in the matrix until explicitly selected, rejected or superseded with a recorded reason. Kubernetes, a broker, distributed cache and multi-cloud active-active are not prerequisites. Future domain-specific synchronization belongs to future module contracts, not invented business models in the socle.
+Portable recovery can be selected before fleet or hybrid work; independent capabilities need not wait for every earlier advanced feature. One codebase does not mean every module works in every profile: unsupported capabilities must be declared and rejected before activation. Required capabilities remain visible in the matrix while their detailed designs, installation and supported-profile choices are selected or revised. Rejecting a design option does not remove its capability from the required target; changing the target requires an explicit recorded decision. Kubernetes, a broker, distributed cache and multi-cloud active-active are not prerequisites. Future domain-specific synchronization belongs to future module contracts, not invented business models in the socle.
 
 ## Visual composition trajectory
 
-**PROPOSED / NOT IMPLEMENTED.** The [retained product vision](PRODUCT-VISION.md#9-retained-composition-and-developer-vision) and [VC coverage](../PACK-INVENTORY.md#visual-composition-coverage-refinement) extend, rather than replace, the source phases and C01–C58. The [design/delivery gates](../13-IMPLEMENTATION/IMPLEMENTATION-PHASES.md#visual-composition-design-and-delivery-gates) own the sequence: finish the nucleus; select common model/extension contracts; qualify a technical slice; add a bounded visualizer/composer; then separately selected reusable development, distribution and AI capabilities. These are dependency recommendations, not dates or blanket delivery authorization.
+**REQUIRED target coverage / sequencing PROPOSED / NOT IMPLEMENTED.** The [retained product vision](PRODUCT-VISION.md#9-retained-composition-and-developer-vision) and [VC coverage](../PACK-INVENTORY.md#visual-composition-coverage-refinement) extend, rather than replace, the source phases and C01–C58. The [design/delivery gates](../13-IMPLEMENTATION/IMPLEMENTATION-PHASES.md#visual-composition-design-and-delivery-gates) own the sequence: finish the nucleus; select common model/extension contracts; qualify a technical slice; add a bounded visualizer/composer; then separately selected reusable development, distribution and AI capabilities. These are dependency recommendations, not dates or blanket delivery authorization.
 
 | Source milestone | Retained placement |
 |---|---|
@@ -103,7 +113,7 @@ Portable recovery can be selected before fleet or hybrid work; independent capab
 | E P5 Marketplace; E P6 AI Studio | Optional independent product slices over the common governed model; retain commercial vision without adding billing to Core |
 | E P7 advanced platform; M progressive implementation | Selected offline/devices/operations/advanced capabilities with measured security, resource and recovery evidence |
 
-M's six composition studios and Basic/Advanced/Developer modes coexist with the original Studio lifecycle areas. Neither analytics nor AI is removed by terminology reconciliation. All seven M scenarios remain in [future acceptance](../11-QUALITY-AND-TESTING/TEST-STRATEGY.md#visual-composition-acceptance); no functionality is treated as discarded merely because its implementation is deferred.
+M's six composition studios and Basic/Advanced/Developer modes coexist with the original Studio lifecycle areas. Source B adds Application Studio for application-wide composition over the same UAM, not replacement of Development, Quality, Environment or Release. Neither analytics nor AI is removed by terminology reconciliation. All seven M scenarios remain in [future acceptance](../11-QUALITY-AND-TESTING/TEST-STRATEGY.md#visual-composition-acceptance); no functionality is treated as discarded merely because its implementation is deferred.
 
 ## Rules
 

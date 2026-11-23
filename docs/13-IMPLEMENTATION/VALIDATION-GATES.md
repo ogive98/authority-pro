@@ -1,7 +1,7 @@
 # Validation Gates
 
 **Decision status:** PROPOSED gate criteria.
-**Runtime status:** L02 no-database build and its 69 tests passed locally, including an offline clean repeat. Full G2–G5, integrated application isolation and browser acceptance remain open; see [execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18).
+**Runtime status:** L02 and bounded closed L03 integration passed locally; see [main recovery evidence](../PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20). Full G2 fresh-clone/clean-machine provisioning, G3–G5 authenticated isolation, audit, browser and production acceptance remain open.
 
 ## G0 — Documentation and contracts
 
@@ -25,7 +25,7 @@ Fresh local dependency installation and build succeed; application starts agains
 
 L02 exits on the [approved no-database skeleton contract](../adr/ADR-0011-api-versioning.md#l02-local-http-approval--2026-11-18), not the integrated startup above: selected JDK/wrapper build, exact five-root empty graph, negative boundary fixtures, validated local startup, status-only probes with readiness 503 and denial elsewhere; no account, session, datasource or migration. An occupied port must not lead to stopping another service. None of this claims full G2. Completion of G2 requires actual PostgreSQL role/migration integration under separately approved application mechanics; L03 does not require full G2 as an entry condition. Both slices require safe errors/logs and bounded configuration; data/credential separation, backup/restore and database security checks begin with L03. L08 repeats their integrated evidence rather than introducing controls at the end.
 
-The L01/L02 no-database evidence remains historical. The authorized L03 environment initialization is not Flyway approval or implemented tenant logic and cannot close G2. The separately authorized closed L03 application migrations/RLS/JDBC integration is IN PROGRESS: [local application qualification](../PACK-INVENTORY.md#l03-application-qualification-checkpoint--2026-11-20) passed 82 backend tests, 111 persistence checks and 24 restored-target checks, but the main database is not migrated and valid credential-bearing packaged launches remain untested. This checkpoint does not close L03 or G2; identity, audit and Angular remain unimplemented. The subsequently authorized [isolated qualification](../PACK-INVENTORY.md#l03-isolated-qualification-evidence--2026-11-19) passed technical Flyway/JDBC/RLS and same-cluster restore checks only; it does not close G2 or production recovery acceptance. The [environment evidence](../PACK-INVENTORY.md#l03-local-environment-evidence--2026-11-18) records 22 passing tooling tests, the empty dedicated database, actual host authentication, 11 negative privilege checks and a rolled-back DDL probe. Those results do not demonstrate tenant isolation or application integration.
+The L01/L02 no-database evidence remains historical. The authorized L03 environment initialization is not Flyway approval or implemented tenant logic and cannot close G2. The separately authorized closed L03 application migrations/RLS/JDBC integration is locally IMPLEMENTED / TESTED: [application qualification](../PACK-INVENTORY.md#l03-application-qualification-checkpoint--2026-11-20) passed 82 backend tests, 111 persistence checks and 24 restored-target checks. The later [main recovery](../PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20) passed strict privilege/catalog checks, packaged no-op and 31 actual data-local HTTP checks with four empty technical tables. This closes the selected local technical L03 scope, not full G2 fresh-clone/clean-machine provisioning; identity, audit and Angular remain unimplemented. The subsequently authorized [isolated qualification](../PACK-INVENTORY.md#l03-isolated-qualification-evidence--2026-11-19) passed technical Flyway/JDBC/RLS and same-cluster restore checks only; it does not close G2 or production recovery acceptance. The [environment evidence](../PACK-INVENTORY.md#l03-local-environment-evidence--2026-11-18) records 22 passing tooling tests, the empty dedicated database, actual host authentication, 11 negative privilege checks and a rolled-back DDL probe. Those results do not demonstrate tenant isolation or application integration.
 
 ## G3 — Identity and isolation
 
@@ -93,10 +93,12 @@ Before **each** selected slice:
    relevant G2–G5/extension gates. Separate document review, inert technical proof,
    business acceptance and production qualification; unrun cases remain NOT RUN.
 
-**Current baseline:** L03 closed application integration is IN PROGRESS / NOT
-QUALIFIED; the main `authority_pro` database is not migrated. Earlier L02 and
-isolated L03 evidence remains historical and bounded, not qualification of current
-L03 changes. No backend test is run by this documentation consolidation.
+**Current baseline:** bounded closed L03 integration is locally IMPLEMENTED / TESTED.
+The [authorized recovery](../PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20)
+passed strict privilege checks, a packaged no-op and 31 actual data-local HTTP
+checks while preserving four empty technical tables and the original failed claim.
+Fresh-clone/clean-machine provisioning remains unproven, so this does not claim
+full G2; authenticated isolation, audit, browser and production gates remain open.
 
 ## Evidence format
 

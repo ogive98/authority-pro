@@ -2,9 +2,12 @@
 
 **Decision status:** APPROVED bounded L02 root model and boundary tooling design
 ([2026-11-18 approval](DECISION-MANAGEMENT.md#l02-skeleton-decisions--2026-11-18)); future business rules remain PROPOSED. Modular monolith,
-DDD, hexagonal architecture, Plugin-Based Components and strict ownership remain
+DDD, hexagonal architecture, the historical Plugin-Based Components approach and strict ownership remain
 binding source principles; see the [approval basis](DECISION-MANAGEMENT.md#approval-basis).
-**Delivery status:** Bounded L02 package discovery and local boundary enforcement IMPLEMENTED / TESTED; see [execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18). Functional module contracts and integrated foundation remain incomplete. L03 is in progress; this documentation review runs no application tests or remote CI.
+The owner's product term Packaged Business Capabilities and twelve logical layers are
+[explicitly reconciled](../adr/ADR-0002-modular-monolith.md#product-and-logical-layer-clarification--2026-11-21),
+not permission to change the approved graph, execute plugins or replace the architecture.
+**Delivery status:** Bounded L02 package discovery and local boundary enforcement IMPLEMENTED / TESTED; see [execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18). Functional module contracts and the full foundation remain incomplete. Bounded closed L03 is locally qualified under the [main recovery evidence](../PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20); authenticated identity/audit/UI and full G2–G5 remain open. This documentation review runs no application tests or remote CI.
 **Scope:** Structural rules for the backend, frontend and module ecosystem.
 
 ## 1. Package model (APPROVED for bounded L02)

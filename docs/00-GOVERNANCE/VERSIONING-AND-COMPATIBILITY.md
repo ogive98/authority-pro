@@ -99,13 +99,20 @@ The runnable L02 build and clean verification do not prove frontend,
 database/migration, session-store integration or production support. Those slices
 still require remaining version selections and reproducible compatibility evidence;
 offline L02 clean verification also passed as recorded in the execution evidence.
-The dedicated-instance approval is environment initialization only, not general
-Flyway adoption or implemented tenant logic. Subsequent isolated scratch qualification
-provides bounded JDBC/RLS, migration and same-cluster restore evidence; it is not a
-delivered application capability or production backup/recovery proof. L03 application
-JDBC/RLS integration is IN PROGRESS, not delivered, and no main-application migration
-baseline is established. Functional identity/audit, Angular and full application
-compatibility acceptance are not established by L02 or that scratch evidence; G2 is open.
+The original dedicated-instance approval covered environment initialization only,
+not general Flyway adoption or implemented tenant logic. Subsequent isolated scratch
+qualification remains bounded historical JDBC/RLS, migration and same-cluster restore
+evidence, not production backup/recovery proof. Closed L03 technical local JDBC/RLS
+integration is now IMPLEMENTED / TESTED within bounded scope; see
+[current main recovery evidence](../PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20).
+Main V1 was already applied (count 1); the latest authorized recovery passed with a
+no-op migration (count 0) and 31 real `data-local` HTTP checks. Fresh evidence is 82
+backend tests (75 + 7) and 67 pure checks (18 docs + 22 environment + 27 local-data);
+previous 111 persistence and 24 restore checks remain separate evidence, not fresh
+reruns. User authentication, membership validation, audit, Angular and business
+functionality remain unimplemented; neither full application compatibility nor
+production readiness is established. Full G2 clean-machine provision reproduction
+is not established; G3–G5 remain open.
 
 ## 8. Deprecation policy
 

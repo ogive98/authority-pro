@@ -26,8 +26,9 @@ without requiring distributed deployment now.
 
 The approved direction is a Spring Boot modular monolith: one backend deployment
 unit, organized around domain boundaries using DDD and hexagonal architecture.
-PBC means Plugin-Based Components with explicit contracts; it does not imply
-hot loading or permission to run third-party code. Angular is the frontend.
+The original technical term PBC means Plugin-Based Components with explicit
+contracts; the later product terminology is reconciled below. Neither wording
+implies hot loading or permission to run third-party code. Angular is the frontend.
 
 Propose domain/application code behind ports, infrastructure adapters outside
 those boundaries, and explicit exported APIs/events between components. Avoid
@@ -45,6 +46,18 @@ Only create `api`, `domain`, `application` and `infrastructure` packages when re
 L02 must assert the exact five discovered names, then verify its empty graph and private boundaries. Test-only technical fixtures must prove that undeclared cross-module edges, cycles and private-package imports fail, while an explicitly allowed fixture contract passes. These fixtures are not production exports or business modules. Configure annotation processing/output explicitly so verification cannot write into another workspace.
 
 `ApplicationModules.verify()` and ArchUnit checks are **IMPLEMENTED / TESTED for L02**: exactly five compiled `package-info` closed roots and zero dependency edges, with positive/negative boundary fixtures. This local build evidence does not establish remote CI execution or tenant authorization. Database schemas, future functional contracts and runtime lifecycle mechanisms remain separately gated.
+
+### Product and logical layer clarification — 2026-11-21
+
+**Approval basis:** the owner's explicit "integre aussi tt ca" instruction and reaffirmation of Modular Monolith, DDD, Hexagonal Architecture and **Packaged Business Capabilities**, followed by the twelve-layer supplement; see the [bounded documentation authorization](../00-GOVERNANCE/DECISION-MANAGEMENT.md#catalogue-and-layer-integration-authorization--2026-11-21). This addendum records a terminology/responsibility clarification, not an N0 mechanism replacement, completed independent review or new execution permission.
+
+The four principles answer different questions: one backend deployment unit; cohesive domain boundaries and language; inward code dependencies through ports/adapters; and identifiable, versioned, governed capability packaging. The original blueprint's **Plugin-Based Components** remains the historical technical formulation. **Packaged Business Capabilities** is the requested product meaning; the correspondence preserves the existing explicit-contract, compiled-first-party and data-ownership boundaries rather than introducing a second PBC runtime. The earlier source variant "Platform Business Capabilities" is not a separate adopted mechanism. No `kind`, manifest version, API identifier, package path or trusted-execution setting changes here.
+
+The [twelve logical layers](../02-ARCHITECTURE/TARGET-ARCHITECTURE.md#architectural-foundations-and-logical-layers) classify responsibilities, not twelve modules, Maven artifacts, applications or microservices. A feature is not necessarily a workflow; a module can provide several reusable nodes/capabilities; a library or adapter need not become a PBC. UAM is the composition definition, not graphical layout or a copy of all domain/runtime state. The editor and runtime remain separate, and installed, activated, entitled, configured, published and authorized are independent conditions.
+
+**Impact:** documentation and source traceability only; the existing five roots and their allowed graph remain unchanged. Retain Angular, the single Spring Boot artifact and PostgreSQL; no source folder reorganization, shared-kernel creation, new infrastructure or business examples are implemented. Alternatives rejected are replacing the baseline with a global twelve-tier call chain, creating one module per engine name, and adopting microservices or in-process untrusted plugins by inference.
+
+**Acceptance and migration:** [module internals](../02-ARCHITECTURE/BACKEND-ARCHITECTURE.md#module-internals-and-dependency-direction) specify the proposed private structure; [catalogue/layer acceptance](../11-QUALITY-AND-TESTING/TEST-STRATEGY.md#catalogue-and-layer-acceptance) retains exact export, domain-inward and single-authority tests for later slices. No database/code migration or new architectural test execution occurs in this clarification. Any later extraction needs its own measured justification, ADR, ownership/data migration, authorization/consistency review and recovery plan; this record does not approve it.
 
 ## Consequences
 
@@ -67,9 +80,10 @@ extensions require a separate future execution model under ADR-0008.
 
 L02 real discovery, zero-edge verification and positive/negative boundary fixtures
 passed as part of the canonical clean verification linked above. Future functional
-ports, exported contracts and persistence boundaries need their own tests. Tenant
-isolation against PostgreSQL remains untested; local build enforcement is not a
-claim of remote CI execution or integrated application security.
+ports and exported contracts need their own tests. Later [closed L03 evidence](../PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20)
+qualifies bounded PostgreSQL/JDBC/RLS integration, not authenticated membership
+checks or full application security. Neither local evidence nor this clarification
+claims remote CI execution.
 
 ## Migration implications
 

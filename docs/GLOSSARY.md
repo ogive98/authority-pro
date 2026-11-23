@@ -11,7 +11,7 @@ Definitions describe the intended platform, not delivered functionality.
 | **Thunder Core** | Business-neutral technical foundation: bootstrap, runtime, registries, tenancy, identity, audit, contracts. |
 | **Thunder Control** | Administration layer for the platform. It never bypasses module contracts or authorization. |
 | **Socle** | The planned Phase 0/1 business-neutral foundation, required before any separately authorized business module; not delivered today. |
-| **PBC** | Plugin-Based Components, as defined by the blueprint: independently governed components with declared contracts, ownership, dependencies and lifecycle. |
+| **PBC** | Packaged Business Capabilities in the owner's 2026-11-21 product terminology: identifiable, versioned, governed capabilities packaged with contracts, ownership, dependencies and lifecycle; the immutable blueprint's technical formulation is Plugin-Based Components. This correspondence does not grant hot loading, independent deployment or new module/permission boundaries; see ADR-0002. |
 | **Module** | A bounded unit of capability owning its domain logic and data. In the modular monolith it need not be an independently deployed service. |
 | **Plugin** | An extension that augments the platform or a module without owning a business domain. |
 | **Extension** | Any governed addition: UI extension, adapter, automation package, template, localization pack. |
@@ -28,7 +28,7 @@ Definitions describe the intended platform, not delivered functionality.
 | **Company** | Entity within an organization with potentially distinct user grants, configuration and modules; not a separate tenant by default. |
 | **Site** | Physical or logical location belonging to a company within an organization tenant. |
 | **Membership** | Proposed association of a user with an organization and scoped grants; company/site roles and permissions remain to be approved. |
-| **RLS** | PostgreSQL Row-Level Security. Verify isolation under a restricted non-owner, non-superuser, NOBYPASSRLS runtime role; bounded scratch qualification exists, while closed L03 application integration is in progress and authenticated application isolation remains unqualified. |
+| **RLS** | PostgreSQL Row-Level Security. Bounded closed L03 verifies technical isolation under a restricted non-owner, non-superuser, NOBYPASSRLS runtime role; authenticated membership authorization and full application isolation remain unqualified. |
 | **Control plane** | Proposed narrowly authorized identity and platform-metadata administration. It grants no automatic tenant business-data access and is not a global RLS bypass. |
 | **Tenant plane** | Proposed tenant-scoped operations requiring verified user/tenant authorization and transaction-local database context, including company/site restrictions. |
 | **Migration role** | Proposed database role for schema changes, separate from runtime credentials and unavailable to ordinary requests/jobs. |
@@ -48,10 +48,15 @@ Definitions describe the intended platform, not delivered functionality.
 
 | Term | Proposed meaning |
 |---|---|
-| **UAM / Application Model** | Universal Application Model: versioned semantic definition referencing owned data, UI, processes, contracts, permissions, integrations and deployment requirements; distinct from canvas layout, operational values and execution state. |
+| **UAM / Application Model** | Universal Application Model, also called Unified Application Model in the twelve-layer source: one versioned semantic composition definition referencing owned data/UI/process contracts, permissions, integrations and deployment requirements; distinct from canvas layout, domain values and provider execution state, not a second central database. |
 | **Visualizer** | Permission-filtered view of declared capabilities and observed application state, with real authorized navigation; not automatic conversion of arbitrary Java into editable graphs. |
 | **Node / LEGO component** | Typed versioned provider contract with declared ports, configuration, errors, permissions, dependencies, provenance and budgets; not an arbitrary script or new table. |
-| **Port** | Named typed input/output with direction, required status, cardinality and declared connection semantics. |
+| **Node port** | Named typed graph input/output with direction, required status, cardinality and declared connection semantics; not a hexagonal architecture port. |
+| **Hexagonal port** | Module-owned application/domain interface expressing an incoming use case or required outgoing service; an adapter implements or invokes it without reversing code dependencies. |
+| **Feature** | A governed user/application capability that may be a UI contribution, validation, command or process; not necessarily a workflow. |
+| **Logical layer** | Responsibility grouping in the twelve-layer map; not a deployable, Java module, allowed import edge or delivery/governance level. |
+| **Required target capability** | Must remain individually traced in the long-term product target; separate from current implementation authorization and optional availability by installation/profile. |
+| **Application Studio** | Whole-application composition workspace over the same governed UAM; complements Data/Process/Interface/Integration/Intelligence/Development and Studio lifecycle areas rather than replacing them. |
 | **Composite** | Encapsulated reusable subgraph with explicit public ports/parameters, pinned child versions and validated nesting/resource limits. |
 | **Extension point / feature injection** | Owned versioned contribution contract for an existing screen or capability; never arbitrary DOM, SQL or private-source mutation. |
 | **Composition studios** | Data, Process, Interface, Integration, Intelligence and Development workspaces over common contracts; not replacements for Studio's existing Design/Development/AI/Quality/Environment/Release responsibilities. |
@@ -62,7 +67,7 @@ Definitions describe the intended platform, not delivered functionality.
 | **Installed / enabled / configured / entitled / published** | Independent availability dimensions; presence, permission, license, valid bindings and a reviewed revision must never be collapsed into one status. |
 | **Architectural readiness** | Reviewed contracts, ownership, decisions and planned acceptance for a selected capability; not implementation, successful tests, release or production readiness. |
 
-PBC continues to mean **Plugin-Based Components**. The second complement's expansion "Platform Business Capabilities" is not adopted. Resource profiles and deployment profiles are separate dimensions, and governance N0/N1/N2 is not delivery L1/L2/L3. Deferred functions remain requirements; deferral does not mean deletion.
+The [2026-11-21 clarification](adr/ADR-0002-modular-monolith.md#product-and-logical-layer-clarification--2026-11-21) records **Packaged Business Capabilities** as the requested product wording while preserving the immutable blueprint's **Plugin-Based Components** technical lineage and compiled-first-party boundary. The earlier "Platform Business Capabilities" wording is not a separate adopted mechanism. No executable name, trust policy or manifest is renamed. Resource profiles and deployment profiles are separate dimensions; governance N0/N1/N2, delivery L1/L2/L3, twelve logical layer numbers and each source's P0 priority sequence are different namespaces. Required target capabilities remain traced even when their detailed design or delivery is deferred; optional use is not permission to delete them.
 
 ## Naming rules
 

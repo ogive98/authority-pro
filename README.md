@@ -3,9 +3,14 @@
 Independent Angular + Spring Boot platform foundation. Business-neutral Thunder Core,
 modular monolith, DDD, hexagonal architecture and Plugin-Based Components.
 
-**Current state: L02 backend skeleton and an independent local PostgreSQL environment
-implemented and tested. No application database integration, identity, audit service,
-frontend, business module, release or hosted deployment exists yet.**
+**Current state: L02, bounded closed L03, the L04 audit engine and the L05
+identity/access surface are locally implemented and tested.** Main V1 has four empty
+technical tables; L04 and L05 run only against their isolated test databases (V1→V4
+for L05, `checks=36`) and the closed data-local HTTP launch passed.
+See the [recovery evidence and retained failure](docs/PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20)
+and [L05 implementation evidence](docs/04-PLATFORM-ENGINES/IDENTITY-AND-ACCESS.md#1013-isolated-implementation-evidence--2026-11-23).
+No frontend, business module, main-database V2–V4 migration, release or hosted
+deployment exists.
 
 ## Decisions
 
@@ -95,7 +100,9 @@ process normally when finished; do not expose it beyond loopback.
 
 The [separate environment authorization](docs/00-GOVERNANCE/DECISION-MANAGEMENT.md#l03-local-environment-authorization--2026-11-18)
 and [executed checks](docs/PACK-INVENTORY.md#l03-local-environment-evidence--2026-11-18)
-cover only an empty development database, not completed L03 application persistence.
+record the original empty environment. The main database now contains V1's empty
+technical tables; its [bounded local recovery passed](docs/PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20).
+Do not rerun either claimed main command or delete the original or recovery journals.
 
 | Item | Dedicated Authority Pro setting |
 |---|---|

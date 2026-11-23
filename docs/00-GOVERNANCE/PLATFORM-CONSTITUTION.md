@@ -4,12 +4,12 @@
 [approval record](DECISION-MANAGEMENT.md#approval-basis), including the
 [owner-confirmed foundation orientations](DECISION-MANAGEMENT.md#owner-confirmation-of-foundation-orientations), are binding; additional
 policy and implementation details below remain PROPOSED.
-**Delivery status:** L02 no-database backend skeleton IMPLEMENTED / TESTED; see
-[bounded execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18).
-The integrated foundation remains incomplete: no PostgreSQL operations, frontend,
-identity, audit, protected inventory or business feature is delivered. No release
-or deployment is claimed. Phase-0 documentation and disposable compatibility
-probes alone did not establish application delivery.
+**Delivery status:** L02 and bounded closed L03 are locally IMPLEMENTED / TESTED;
+[main recovery evidence](../PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20)
+records the applied V1 and four empty technical tables. The full foundation remains
+incomplete: authenticated identity/membership enforcement, audit, protected inventory,
+frontend and business features are not delivered. Full G2–G5 and production remain
+open; documentary coverage, isolated probes and this clarification cannot close them.
 **Scope:** Every developer, AI agent, module, plugin and extension of Authority Pro.
 **Authority:** Locked [blueprint](../MASTER-BLUEPRINT.md) principles and explicit
 owner approvals prevail. This document does not approve its own proposals.
@@ -43,8 +43,11 @@ where appropriate. The bounded L02 toolchain and Modulith/ArchUnit pins are
 approved and tested under [ADR-0010](../adr/ADR-0010-java-spring-versions.md).
 Persistence tooling remains separately gated and is excluded from L02.
 
-2.3 Approved data strategy: shared PostgreSQL with `tenant_id` and RLS.
-Database versions, Flyway and migration mechanics remain PROPOSED; versioned
+2.3 Approved data strategy: shared PostgreSQL with `tenant_id` and RLS within
+Authority Pro's dedicated instance, never a shared server with another project.
+PostgreSQL 16.15 and the bounded closed L03 JDBC/Flyway integration have their
+[recorded approvals](DECISION-MANAGEMENT.md#l03-closed-application-integration-authorization--2026-11-19);
+broader operational and authenticated policies remain separately gated. Versioned
 safe migrations and module ownership remain source requirements.
 
 2.4 Locked contracts: REST, versioned public APIs and OpenAPI documentation.
@@ -53,10 +56,15 @@ errors. The bounded L02 RFC 9457 envelope is approved and tested; later
 selector/header and integrated error contracts remain PROPOSED.
 
 2.5 Locked architecture: modular monolith, DDD, hexagonal architecture and
-Plugin-Based Components. Approved foundation orientation: compiled first-party
-components with explicit contracts, not arbitrary hot-loaded plugins. Replacing
-this baseline or adopting microservices as the default requires explicit approval
-with an RFC and ADR. Tool recommendations remain PROPOSED.
+the blueprint's Plugin-Based Components approach. The owner's later product term
+**Packaged Business Capabilities** is explicitly reconciled in
+[ADR-0002](../adr/ADR-0002-modular-monolith.md#product-and-logical-layer-clarification--2026-11-21),
+without changing this technical boundary. Approved foundation orientation: compiled
+first-party components with explicit contracts, not arbitrary hot-loaded plugins.
+The twelve logical responsibility layers complement these principles; they are not
+twelve deployables or a replacement dependency graph. Replacing this baseline or
+adopting microservices as the default requires explicit approval with an RFC and ADR.
+Tool recommendations remain PROPOSED.
 
 ## Article 3 — Business-neutral core
 
@@ -97,8 +105,9 @@ cycle (see Versioning and Compatibility).
 ## Article 6 — Multi-tenancy
 
 6.1 Approved strategy: every tenant-scoped record must carry a `tenant_id` and
-be protected by PostgreSQL Row-Level Security in a shared database. This is
-PLANNED / NOT IMPLEMENTED, not a statement that protected tables exist.
+be protected by PostgreSQL Row-Level Security in the project's shared-tenant
+database. Bounded L03 implements four empty technical tables with RLS; this does
+not establish authenticated authorization or complete isolation across future services.
 
 6.2 Tenant isolation must be enforced and tested in the database, application,
 API, caches, search, files and background jobs. Frontend filtering is never a
@@ -110,10 +119,11 @@ and revocable.
 
 6.4 Approved orientation: restricted PostgreSQL runtime privileges, RLS and
 transaction-local tenant context derived from verified tenant/user authorization.
-PROPOSED details: tenant = organization with a company/site hierarchy, exact
-schema, policies and grants, and role/credential separation using a non-superuser,
-non-owner, NOBYPASSRLS runtime role distinct from migration credentials.
-Control-plane administration grants no universal RLS bypass.
+The bounded technical organization/company/site/membership schema and separated
+non-superuser, non-owner, NOBYPASSRLS runtime role are qualified in L03. Deriving
+context from authenticated membership and enforcing company/site grants still
+requires the separately approved L05 contracts. Broader schema/operational policies
+remain PROPOSED. Control-plane administration grants no universal RLS bypass.
 
 ## Article 7 — Security by default
 
@@ -190,8 +200,10 @@ migration.
 for N0 changes, destructive migrations, package publication, production
 deployment and access to sensitive data.
 
-12.3 AI features are optional platform capabilities and never bypass
-authorization or validation.
+12.3 AI use and installation remain optional; the [required target catalogue](../PACK-INVENTORY.md#required-target-catalogue--2026-11-21)
+retains the requested AI capabilities as product requirements without authorizing
+their implementation now. AI never bypasses authorization or validation, and Core
+operation must not depend on an AI provider.
 
 ## Article 13 — Amendments
 

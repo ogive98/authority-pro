@@ -121,6 +121,8 @@ The first socle should avoid a distributed settings cache. Reads resolve from au
 5. Reads expose effective provenance and revision so administrators can explain inherited values.
 6. Definition changes use compatible rollout/migration planning. Removing/renaming a key does not silently discard stored values or reset security policy. Rollback checks old-binary compatibility first.
 
+The required target additionally includes configuration drift detection: compare an approved expected revision/profile with observed effective values, source revisions, freshness and restart-pending state, without exposing secrets. Legitimate scoped overrides are not drift; stale or missing observations are unknown, not proof of conformity. Detection never silently resets settings or installs a patch; correction requires the normal authorized, revision-checked and audited change path. Detailed [catalogue contracts](MODULE-RUNTIME.md#11-required-catalogue-refinements) and their negative tests remain proposed and NOT IMPLEMENTED.
+
 Feature flags and company module enablement remain separate policies. Configuration does not install a module, grant a permission, establish an entitlement or bypass a mandatory security check. Deferred entitlement engines must fail closed at their future boundary; this engine must not return a permissive fabricated license state.
 
 ## 6. Security and failure behavior

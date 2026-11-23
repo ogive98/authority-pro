@@ -4,14 +4,15 @@
 - **Approval basis:** [Closed L03 authorization — 2026-11-19](../00-GOVERNANCE/DECISION-MANAGEMENT.md#l03-closed-application-integration-authorization--2026-11-19).
 - **Record reviewed:** 2026-11-19.
 - **Accountable owner / approval authority:** Project owner.
-- **Application delivery:** IN PROGRESS, not released. The [application qualification checkpoint](../PACK-INVENTORY.md#l03-application-qualification-checkpoint--2026-11-20) records 82 passing backend tests, 111 application persistence checks and 24 restored-target checks. Main-database migration and valid credential-bearing packaged launches remain unexecuted; this is not full L03 acceptance. The earlier [isolated scratch qualification](../PACK-INVENTORY.md#l03-isolated-qualification-evidence--2026-11-19) remains separate historical evidence.
+- **Application delivery:** Bounded closed L03 locally IMPLEMENTED / TESTED, not released. The [application qualification checkpoint](../PACK-INVENTORY.md#l03-application-qualification-checkpoint--2026-11-20) records 82 passing backend tests, 111 application persistence checks and 24 restored-target checks. The subsequent main attempt applied V1 but failed comparison of pre-existing default ACLs; that failure remains intact. The [authorized recovery](../PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20) then passed exact privilege/catalog checks, packaged no-op and 31 actual data-local HTTP checks while preserving four empty technical tables. This is not authenticated isolation, full clean-machine G2 or production acceptance. The earlier [isolated scratch qualification](../PACK-INVENTORY.md#l03-isolated-qualification-evidence--2026-11-19) remains separate historical evidence.
 
 ## Context
 
 The approved shared PostgreSQL strategy needs reproducible schema, constraint,
 role/grant and RLS evolution. Authority Pro now has a closed backend skeleton;
-the first application migration is being integrated and has not been applied to
-the main database. Current work is the technical foundation, not business schemas.
+the first application migration is applied to the main database, and its
+bounded local post-migration acceptance passed through the authorized recovery. Current work is the technical foundation,
+not business schemas.
 
 ## Options considered
 
