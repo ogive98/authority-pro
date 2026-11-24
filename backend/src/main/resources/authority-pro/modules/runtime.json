@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "0.1.0",
+  "id": "runtime",
+  "version": "0.1.0",
+  "kind": "platform-module",
+  "trust": "first-party",
+  "execution": "compiled-first-party",
+  "dependencies": [],
+  "capabilities": {
+    "provides": [],
+    "requires": []
+  },
+  "permissions": [],
+  "dataOwnership": {
+    "resources": []
+  },
+  "ui": {
+    "contributions": []
+  }
+}

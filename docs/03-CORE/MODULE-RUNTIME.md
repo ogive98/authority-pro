@@ -1,7 +1,7 @@
 # Module Runtime
 
 **Document status: Bounded L02 discovery/boundary design APPROVED; other contracts PROPOSED.**\
-**Capability status: L02 five-root/zero-edge structure IMPLEMENTED / TESTED only; functional inventory and lifecycle remain NOT IMPLEMENTED.** See [execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18).\
+**Capability status: L02 five-root/zero-edge structure IMPLEMENTED / TESTED only; L06 protected compiled inventory IMPLEMENTED / TESTED against an isolated V5 database on 2026-11-24; lifecycle remains NOT IMPLEMENTED.** See [L06 evidence](../PACK-INVENTORY.md#l06-protected-inventory-evidence--2026-11-24) and [execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18).\
 **Governance: N0. Proposed owner: runtime maintainer; approval authority: project owner.**
 
 ## 1. Purpose, source and scope
@@ -131,6 +131,36 @@ Required tests include valid/invalid fixtures, unknown top-level and nested fiel
 L02 has bounded compiled-root discovery and boundary-test evidence, not a functional registry. Later runtime acceptance requires an approved supported-subset decision, a named-export map, structural and semantic validators, and tests of the actual functional contracts. Fixture parsing or schema validation alone does not satisfy semantic validation. L02 evidence does not establish inventory, manifest processing or lifecycle capabilities.
 
 Owner gates: root/package layout, precise dependency DAG, ownership/resources, permission catalogue, schema versioning policy and release compatibility record. Future package categories and untrusted execution require separate ADRs, not enum additions without a threat model.
+
+### L06 approved subset — 2026-11-24
+
+The owner approved the L06 implementation subset recorded in the
+[decision register](../00-GOVERNANCE/DECISION-MANAGEMENT.md#l06-protected-inventory-decisions-approved--2026-11-24):
+
+| Decision | Approved content |
+|---|---|
+| Manifest | Exactly `0.1.0` and its eleven fields; unknown fields rejected; compiled resources only; exact versions; SHA-256 digest of the compiled bytes; build revision injected at build, not a manifest field; release record separate |
+| Exports and permissions | Named exports remain empty (no dependency/capability declarations); one added permission `platform.inventory.read` (control-plane scope, `TENANT_OWNER` only) plus the five existing codes; ownership map from V1–V4 |
+| Inventory view | `GET /api/v1/platform/inventory` authenticated and authorized in `data-local` only; listed fields only; no paths, secrets, tenant data or stack traces; 503 fail-closed; administrative transitions audited; reads not critical-audited; authorization refusals recorded in `audit.security_attempts` |
+
+V5, if required, applies only to a dedicated isolated test database; the main
+database stays at V1 and no main migration is authorized.
+
+#### L06 implementation evidence — 2026-11-24
+
+The five descriptors are compiled classpath resources under `authority-pro/modules/`,
+with the build revision at `authority-pro/build.properties`. They are not under
+`META-INF/`: Spring Boot 4 relocates only `META-INF/services/`, `META-INF/aop.xml`
+and `*.kotlin_module` into `BOOT-INF/classes/`, so an arbitrary `META-INF` path
+would be packaged outside the application classpath. A strict structural and
+semantic validator assembles an immutable catalogue; any defect makes it
+unavailable as a whole. `access` owns the `@Order(2)` authorization chain and
+records refusals in `audit.security_attempts`, while `runtime` serves
+`GET /api/v1/platform/inventory`; no cross-root Java edge is introduced. V5 adds
+`platform.inventory.read` and its `TENANT_OWNER` grant only. Verification:
+151 unit/HTTP/architecture tests and seven packaged-JAR integration tests passed
+offline, and the isolated qualifier reported 12 checks on V1→V5 while the main
+database remained at V1. See [L06 evidence](../PACK-INVENTORY.md#l06-protected-inventory-evidence--2026-11-24).
 
 ## 9. Deferred workflow and automation contracts
 

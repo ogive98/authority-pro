@@ -32,12 +32,15 @@ class PermissionEvaluatorTest {
 
     @Test
     void eachRoleGrantsExactlyItsCatalogue() {
-        assertEquals(5, evaluator.permissionsOf(Set.of(RoleCode.TENANT_OWNER)).size());
+        assertEquals(6, evaluator.permissionsOf(Set.of(RoleCode.TENANT_OWNER)).size());
         assertEquals(ADMIN, evaluator.permissionsOf(Set.of(RoleCode.TENANT_ADMIN)));
         assertEquals(AUDITOR, evaluator.permissionsOf(Set.of(RoleCode.TENANT_AUDITOR)));
         assertTrue(evaluator.allows(Set.of(RoleCode.TENANT_AUDITOR), AUDIT_READ_TENANT));
         assertFalse(evaluator.allows(Set.of(RoleCode.TENANT_ADMIN), AUDIT_READ_TENANT));
         assertFalse(evaluator.allows(Set.of(RoleCode.TENANT_OWNER), null));
+        assertTrue(evaluator.allows(Set.of(RoleCode.TENANT_OWNER), Permission.PLATFORM_INVENTORY_READ));
+        assertFalse(evaluator.allows(Set.of(RoleCode.TENANT_ADMIN), Permission.PLATFORM_INVENTORY_READ));
+        assertFalse(evaluator.allows(Set.of(RoleCode.TENANT_AUDITOR), Permission.PLATFORM_INVENTORY_READ));
     }
 
     @Test

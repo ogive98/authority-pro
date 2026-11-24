@@ -327,3 +327,46 @@ The two former external blockers were resolved inside the same isolated authoriz
 Implementation decisions D7–D12 were decided and recorded in [Identity and Access §10.10](../04-PLATFORM-ENGINES/IDENTITY-AND-ACCESS.md#1010-owner-decisions-before-implementation): SPA-compatible CSRF cookie and header handling, own-profile content without language/theme or permission enumeration, per-source throttling instead of a durable account lock, absolute 8-hour lifetime from session creation, 3-session oldest-eviction, and local cookies without `Secure` pending TLS deployment.
 
 Verification: offline `mvn clean verify` passed 128 unit/HTTP/architecture tests and seven packaged-JAR integration tests with zero failures or skips; `npm run identity:l05` reported `IDENTITY_QUALIFICATION_OK checks=36` against `authority_pro_l05_identity_test` (V1→V4), evidence `tmp/l05-identity/run-8bf7c9af-8b5b-46d2-9137-61febcddf21e.json`; details in [Identity and Access §10.13](../04-PLATFORM-ENGINES/IDENTITY-AND-ACCESS.md#1013-isolated-implementation-evidence--2026-11-23). Main database, other databases, containers and earlier evidence were fingerprinted unchanged. Commit and push to origin `main` were authorized by the owner and are the remaining delivery step; main-database migration, production deployment and real-browser acceptance stay separate.
+
+### L06 protected inventory decisions approved — 2026-11-24
+
+The owner approved the three implementation points for L06 after reviewing the
+PROPOSED contracts in [Module Runtime §4–§8](../03-CORE/MODULE-RUNTIME.md) and
+[Identity and Access §10.7](../04-PLATFORM-ENGINES/IDENTITY-AND-ACCESS.md#107-permission-evaluation-and-administrative-changes):
+
+1. **Manifest subset frozen.** The foundation manifest stays exactly `0.1.0`
+   with its eleven existing fields; unknown fields are rejected; only compiled
+   first-party resources are discovered; the descriptor digest is SHA-256 over
+   the exact compiled bytes; the build revision is injected by the build and is
+   not a manifest field; the release record stays a separate reviewed artifact;
+   only exact versions are accepted.
+2. **Named exports stay empty.** No dependency or capability export is declared
+   for the five roots in L06. The inventory permission catalogue adds exactly
+   one code, `platform.inventory.read`, with control-plane scope and a
+   `TENANT_OWNER`-only grant, alongside the five existing codes and ten existing
+   grants; the ownership map is derived from V1–V4 migrations only.
+3. **Read-only protected surface.** `GET /api/v1/platform/inventory` requires an
+   authenticated, authorized session, runs only in `data-local` mode and serves
+   data-local facts only: module id, version, digest, lifecycle, availability
+   reason, dependencies, capabilities, permissions and data ownership. It
+   exposes no filesystem paths, secrets, tenant data or stack traces, fails
+   closed with 503 when descriptors cannot be trusted, audits administrative
+   transitions, does not write critical audit for reads, and records
+   authorization refusals in `audit.security_attempts`.
+
+Execution constraints recorded with this approval: no main/production
+migration and no replay of `migrate-main`/`recover-main`; L06 schema changes
+(V5) are exercised only on a dedicated isolated test database; the main
+`authority_pro` database remains at V1; other projects' containers and
+databases are untouched; all L04/L05 `run-*.json` evidence is preserved.
+
+Implementation followed those constraints on 2026-11-24. Offline
+`mvn clean verify` passed 151 unit/HTTP/architecture tests and seven
+packaged-JAR integration tests; `npm run inventory:l06` passed 12 isolated
+checks on V1→V5 and `npm run identity:l05` still passed 36 checks against the
+retained V4 database. Descriptors live at classpath `authority-pro/modules/`
+because Spring Boot 4 does not relocate arbitrary `META-INF` resources into
+`BOOT-INF/classes/`. Evidence is recorded in
+[L06 protected inventory evidence](../PACK-INVENTORY.md#l06-protected-inventory-evidence--2026-11-24).
+Lifecycle, enablement, real-browser acceptance and any main-database migration
+were not performed.

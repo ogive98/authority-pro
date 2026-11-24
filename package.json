@@ -13,6 +13,7 @@
     "environment:verify": "node tools/local-environment.mjs verify",
     "audit:l04": "node tools/l04-audit.mjs qualify",
     "identity:l05": "node tools/l05-identity.mjs qualify",
+    "inventory:l06": "node tools/l06-inventory.mjs qualify",
     "test:environment": "node --test tools/local-environment.test.mjs",
     "test": "node --test tools/validate-docs.test.mjs tools/local-environment.test.mjs tools/local-data.test.mjs"
   },

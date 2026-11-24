@@ -15,10 +15,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.JarFile;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class PackagedSkeletonIT {
     private static final Path JAR = Path.of(System.getProperty("skeleton.jar")).toAbsolutePath();
     private static final List<String> REQUIRED = List.of("spring-jdbc-7.0.10.jar", "HikariCP-7.0.2.jar",
@@ -32,6 +36,7 @@ class PackagedSkeletonIT {
             "spring-modulith-events-", "junit-", "spring-boot-test-");
 
     @Test
+    @Order(5)
     void servingArtifactPinsExplicitDatabaseLibrariesWithoutAutoconfigurationOrExcludedEngines() throws Exception {
         assertThat(JAR).isRegularFile();
         try (var archive = new JarFile(JAR.toFile())) {
@@ -52,6 +57,7 @@ class PackagedSkeletonIT {
     }
 
     @Test
+    @Order(6)
     void packagedContentMatchesCompiledClassesAndRecordsItsDigest() throws Exception {
         Path classes = JAR.getParent().resolve("classes");
         try (var archive = new JarFile(JAR.toFile()); var files = Files.walk(classes)) {
@@ -75,6 +81,7 @@ class PackagedSkeletonIT {
     }
 
     @Test
+    @Order(4)
     void packagedLauncherRefusesMissingModeAndSecurityOverrides() throws Exception {
         assertRefused(Map.of(), List.of(), List.of(), "MODE_REQUIRED");
         assertRefused(Map.of("AUTHORITY_PRO_MODE", "private-input"), List.of(), List.of(), "MODE_INVALID");
@@ -87,6 +94,7 @@ class PackagedSkeletonIT {
     }
 
     @Test
+    @Order(3)
     void databaseModesRefuseTargetAndPasswordOverridesWithoutEchoingValues() throws Exception {
         for (String mode : List.of("data-local", "migrate-local")) {
             for (String key : List.of("AUTHORITY_PRO_DATABASE", "AUTHORITY_PRO_PASSWORD", "PGPASSWORD",
@@ -102,6 +110,7 @@ class PackagedSkeletonIT {
     }
 
     @Test
+    @Order(1)
     void databaseModesRefuseMalformedStdinBeforeAnyConnectionOrServlet() throws Exception {
         try (var socket = reservePort()) {
             for (String mode : List.of("data-local", "migrate-local")) {
@@ -125,6 +134,7 @@ class PackagedSkeletonIT {
     }
 
     @Test
+    @Order(2)
     void occupiedPortFailsWithoutDisplacingItsOwner() throws Exception {
         try (var socket = reservePort()) {
             var run = start(Map.of("AUTHORITY_PRO_MODE", "skeleton-local"), List.of(), List.of(), false);
@@ -141,6 +151,7 @@ class PackagedSkeletonIT {
     }
 
     @Test
+    @Order(7)
     void actualJarIgnoresAmbientFilesAndServesOnlyClosedLocalProbes() throws Exception {
         try (var reservation = reservePort()) {
             assertThat(reservation.isBound()).isTrue();

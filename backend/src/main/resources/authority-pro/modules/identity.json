@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "0.1.0",
+  "id": "identity",
+  "version": "0.1.0",
+  "kind": "platform-module",
+  "trust": "first-party",
+  "execution": "compiled-first-party",
+  "dependencies": [],
+  "capabilities": {
+    "provides": [],
+    "requires": []
+  },
+  "permissions": [],
+  "dataOwnership": {
+    "resources": [
+      { "name": "users", "scope": "control-plane" },
+      { "name": "password_credentials", "scope": "control-plane" },
+      { "name": "provisioning_guard", "scope": "control-plane" },
+      { "name": "spring_session", "scope": "control-plane" },
+      { "name": "spring_session_attributes", "scope": "control-plane" }
+    ]
+  },
+  "ui": {
+    "contributions": []
+  }
+}

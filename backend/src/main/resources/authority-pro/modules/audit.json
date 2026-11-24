@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "0.1.0",
+  "id": "audit",
+  "version": "0.1.0",
+  "kind": "platform-module",
+  "trust": "first-party",
+  "execution": "compiled-first-party",
+  "dependencies": [],
+  "capabilities": {
+    "provides": [],
+    "requires": []
+  },
+  "permissions": [],
+  "dataOwnership": {
+    "resources": [
+      { "name": "tenant_records", "scope": "tenant" },
+      { "name": "control_plane_records", "scope": "control-plane" },
+      { "name": "security_attempts", "scope": "control-plane" }
+    ]
+  },
+  "ui": {
+    "contributions": []
+  }
+}

@@ -517,6 +517,19 @@ Documentation-only step; no file, code, service, database, container or browser 
 - `git diff --check` passed with only the usual CRLF notices. Preexisting L03 tooling and blueprint hashes were unchanged: blueprint `f9114147a32429e0b923902129cef6b1446ac268`, runner `c21d17392b1b8c5a126cfc19d59d66ece922d463`, tests `a1ae6a45655c58d6089e2daebf8c85f90fc418de`, diff SHA-256 `ba6d5acc067966a9f3775bcf6b91f032bd5e723b136377e2eb1ec899b45611e1`.
 - No backend build, database connection, migration, service start, browser test, commit or push was performed for this integration. The claimed L03 migration/recovery commands remain non-repeatable per the preceding evidence.
 
+## L06 protected inventory evidence — 2026-11-24
+
+**Status:** protected compiled inventory IMPLEMENTED / TESTED against the isolated `authority_pro_l06_inventory_test` database (V1→V5). The main `authority_pro` database remains at V1; neither `migrate-main` nor `recover-main` was replayed. Lifecycle, enablement, real-browser UI and production deployment remain unimplemented.
+
+- Offline `clean verify` passed **151 unit/HTTP/architecture tests and seven packaged-JAR integration tests**, zero failures/errors/skips. The packaged JAR keeps the five descriptors and build revision at `BOOT-INF/classes/authority-pro/`; metadata moved out of `META-INF/` because Spring Boot 4 relocates only `META-INF/services/`, `META-INF/aop.xml` and `*.kotlin_module` into the nested classpath. Packaged artifact SHA-256: `8be7a3d6ae8475fed07de250417fc001e4087183975b23bbdd35fec857880a55`.
+- `npm run inventory:l06` reported **`INVENTORY_QUALIFICATION_OK checks=12`** on `authority_pro_l06_inventory_test`; evidence `tmp/l06-inventory/run-9ae5eedd-c8ef-4e0a-a481-497436487e70.json`. Checks covered owner/migrator identity, five migration rows including `V5__platform_inventory_permission.sql`, the 11-grant catalogue with six `TENANT_OWNER` grants, rejection of an unknown permission code, runtime pool validation, runtime SELECT-only reads, a TENANT_OWNER grant, auditor/member denials recorded in `audit.security_attempts`, and refusal of runtime writes to the grant catalogue.
+- V5 only drops and re-creates the permission-code check constraint with six codes and inserts `platform.inventory.read` for `TENANT_OWNER`. No table, column, RLS policy or runtime write privilege is added; authorization still resolves through the database-loaded catalogue and active assignments, failing closed as 503 on store failure.
+- Regression proof: `npm run identity:l05` still reported **`IDENTITY_QUALIFICATION_OK checks=36`** on `authority_pro_l05_identity_test` (retained at V4) with new evidence `tmp/l05-identity/run-88ff13df-0295-48e6-9427-00956fe6757d.json`; earlier L04/L05 evidence files were not overwritten.
+- The guard tool fingerprinted main and every other database unchanged before and after, verified the dedicated database owner/marker and restricted CONNECT/ACL state, and rechecked protected containers. No credential value, path or stack trace appears in inventory payloads or evidence.
+- `npm test` passed 67 pure tests and `npm run check:docs` reported zero errors over 53 documents, 50 Markdown files, 798 local links and nine diagrams.
+
+**Remaining scope:** lifecycle transitions, enablement, extension/version compatibility, Angular consumption, real-browser acceptance and production migration remain separately gated. The inventory view is read-only and exposes no tenant data.
+
 ## Verification boundaries
 
 Automated checks cover current links/anchors, index coverage, JSON Schema plus

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "0.1.0",
+  "id": "access",
+  "version": "0.1.0",
+  "kind": "platform-module",
+  "trust": "first-party",
+  "execution": "compiled-first-party",
+  "dependencies": [],
+  "capabilities": {
+    "provides": [],
+    "requires": []
+  },
+  "permissions": [
+    { "id": "audit.read.tenant", "scope": "tenant" },
+    { "id": "audit.read.control_plane", "scope": "control-plane" },
+    { "id": "security.attempts.read", "scope": "control-plane" },
+    { "id": "tenancy.settings.manage", "scope": "tenant" },
+    { "id": "access.membership.manage", "scope": "tenant" },
+    { "id": "platform.inventory.read", "scope": "control-plane" }
+  ],
+  "dataOwnership": {
+    "resources": [
+      { "name": "roles", "scope": "control-plane" },
+      { "name": "role_permissions", "scope": "control-plane" },
+      { "name": "membership_roles", "scope": "tenant" }
+    ]
+  },
+  "ui": {
+    "contributions": []
+  }
+}

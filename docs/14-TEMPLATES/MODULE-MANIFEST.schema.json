@@ -127,6 +127,13 @@
       "maxLength": 128,
       "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)+$"
     },
+    "permissionId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 128,
+      "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+$",
+      "description": "Exact named permission code from the access catalogue, e.g. audit.read.control_plane; declarations never grant the permission."
+    },
     "releaseVersion": {
       "type": "string",
       "maxLength": 32,
@@ -169,7 +176,7 @@
       "required": ["id", "scope"],
       "properties": {
         "id": {
-          "$ref": "#/$defs/contractId"
+          "$ref": "#/$defs/permissionId"
         },
         "scope": {
           "type": "string",
@@ -212,7 +219,7 @@
           "description": "Symbolic key of a statically compiled Angular route, not a URL or executable expression."
         },
         "permission": {
-          "$ref": "#/$defs/contractId",
+          "$ref": "#/$defs/permissionId",
           "description": "Must resolve to a declared permission during semantic validation; never replaces backend authorization."
         }
       }

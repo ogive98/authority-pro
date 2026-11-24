@@ -25,8 +25,9 @@ public final class LocalDatabase {
     private static final String MIGRATOR = "authority_pro_migrator";
     private static final String AUDIT_TEST_DATABASE = "authority_pro_l04_audit_test";
     private static final String IDENTITY_TEST_DATABASE = "authority_pro_l05_identity_test";
+    private static final String INVENTORY_TEST_DATABASE = "authority_pro_l06_inventory_test";
     private static final Set<String> DATABASES = Set.of(DATABASE, "authority_pro_l03_app_test",
-            "authority_pro_l03_app_restore", AUDIT_TEST_DATABASE, IDENTITY_TEST_DATABASE);
+            "authority_pro_l03_app_restore", AUDIT_TEST_DATABASE, IDENTITY_TEST_DATABASE, INVENTORY_TEST_DATABASE);
 
     private enum Profile { MAIN, AUDIT, IDENTITY }
 
@@ -124,16 +125,24 @@ public final class LocalDatabase {
         return migrate(IDENTITY_TEST_DATABASE, password);
     }
 
+    public static int migrateInventoryTest(String password) {
+        return migrate(INVENTORY_TEST_DATABASE, password);
+    }
+
     private static int migrate(String database, String password) {
-        // The main database stays at V1 until a separate L05 main-migration authorization.
-        if (!AUDIT_TEST_DATABASE.equals(database) && !IDENTITY_TEST_DATABASE.equals(database)) throw refused();
+        // The main database stays at V1 until a separate main-migration authorization.
+        if (!AUDIT_TEST_DATABASE.equals(database) && !IDENTITY_TEST_DATABASE.equals(database)
+                && !INVENTORY_TEST_DATABASE.equals(database)) {
+            throw refused();
+        }
         try (HikariDataSource source = migrationDataSource(database, password)) {
-            Flyway migration = AUDIT_TEST_DATABASE.equals(database)
-                    ? flyway(source, "2")
+            // L05 evidence is frozen at V4; the L06 inventory database owns the V5 extension.
+            Flyway migration = AUDIT_TEST_DATABASE.equals(database) ? flyway(source, "2")
+                    : IDENTITY_TEST_DATABASE.equals(database) ? flyway(source, "4")
                     : flyway(source, null);
             migration.validate();
             int count = migration.migrate().migrationsExecuted;
-            verifySchema(source, IDENTITY_TEST_DATABASE.equals(database) ? Profile.IDENTITY : Profile.AUDIT);
+            verifySchema(source, AUDIT_TEST_DATABASE.equals(database) ? Profile.AUDIT : Profile.IDENTITY);
             return count;
         } catch (RuntimeException exception) {
             throw refused();
@@ -343,7 +352,9 @@ public final class LocalDatabase {
 
     private static Profile profile(Connection connection) throws SQLException {
         String database = textValue(connection, "SELECT current_database()");
-        if (IDENTITY_TEST_DATABASE.equals(database)) return Profile.IDENTITY;
+        if (IDENTITY_TEST_DATABASE.equals(database) || INVENTORY_TEST_DATABASE.equals(database)) {
+            return Profile.IDENTITY;
+        }
         if (AUDIT_TEST_DATABASE.equals(database)) return Profile.AUDIT;
         return Profile.MAIN;
     }
@@ -429,11 +440,13 @@ public final class LocalDatabase {
                 FROM public.flyway_schema_history
                 """;
             case IDENTITY -> """
-                SELECT count(*) = 4 AND bool_and(success AND type = 'SQL' AND checksum IS NOT NULL)
+                SELECT count(*) BETWEEN 4 AND 5 AND bool_and(success AND type = 'SQL' AND checksum IS NOT NULL)
                     AND count(*) FILTER (WHERE version = '1' AND script LIKE 'V1\\_\\_%' ESCAPE '\\') = 1
                     AND count(*) FILTER (WHERE version = '2' AND script LIKE 'V2\\_\\_%' ESCAPE '\\') = 1
                     AND count(*) FILTER (WHERE version = '3' AND script LIKE 'V3\\_\\_%' ESCAPE '\\') = 1
                     AND count(*) FILTER (WHERE version = '4' AND script LIKE 'V4\\_\\_%' ESCAPE '\\') = 1
+                    AND count(*) FILTER (WHERE version = '5' AND script LIKE 'V5\\_\\_%' ESCAPE '\\')
+                        = count(*) FILTER (WHERE version = '5')
                 FROM public.flyway_schema_history
                 """;
         });
@@ -489,10 +502,13 @@ public final class LocalDatabase {
                 FROM access.roles
                 """);
         require(connection, """
-                SELECT count(*) = 10
-                    AND count(*) FILTER (WHERE role_code = 'TENANT_OWNER') = 5
+                SELECT count(*) BETWEEN 10 AND 11
+                    AND count(*) FILTER (WHERE role_code = 'TENANT_OWNER') BETWEEN 5 AND 6
                     AND count(*) FILTER (WHERE role_code = 'TENANT_ADMIN') = 2
                     AND count(*) FILTER (WHERE role_code = 'TENANT_AUDITOR') = 3
+                    AND NOT EXISTS (
+                        SELECT 1 FROM access.role_permissions
+                        WHERE permission_code = 'platform.inventory.read' AND role_code <> 'TENANT_OWNER')
                 FROM access.role_permissions
                 """);
         require(connection, """

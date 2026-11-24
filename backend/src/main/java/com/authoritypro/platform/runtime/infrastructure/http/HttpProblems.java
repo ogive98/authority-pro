@@ -30,6 +30,7 @@ public final class HttpProblems implements AuthenticationEntryPoint, AccessDenie
         BAD_REQUEST("bad-request", "The request could not be accepted."),
         VALIDATION_FAILED("validation-failed", "The request did not pass validation."),
         REQUEST_REJECTED("request-rejected", "The request could not be completed."),
+        INVENTORY_UNAVAILABLE("inventory-unavailable", "The module catalogue is unavailable."),
         INTERNAL_ERROR("internal-error", "An unexpected error occurred.");
 
         private final String type;

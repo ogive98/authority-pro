@@ -28,6 +28,15 @@ public final class PermissionEvaluator {
         return false;
     }
 
+    /** Any active membership assignment whose role grants the permission; scope is resolved elsewhere. */
+    public boolean anyAllows(java.util.Collection<MembershipAssignment> assignments, Permission permission) {
+        if (assignments == null || permission == null) return false;
+        for (MembershipAssignment assignment : assignments) {
+            if (grants.getOrDefault(assignment.role(), Set.of()).contains(permission)) return true;
+        }
+        return false;
+    }
+
     public Set<Permission> permissionsOf(Set<RoleCode> roles) {
         var result = EnumSet.noneOf(Permission.class);
         if (roles != null) {

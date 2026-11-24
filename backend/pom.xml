@@ -21,6 +21,7 @@
     <archunit.version>1.4.2</archunit.version>
     <springdoc.version>3.2.0</springdoc.version>
     <project.build.outputTimestamp>2026-11-18T00:00:00Z</project.build.outputTimestamp>
+    <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
   </properties>
   <dependencies>
     <dependency>
@@ -124,6 +125,26 @@
         <configuration>
           <proc>none</proc>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>build-revision</id>
+            <phase>process-resources</phase>
+            <goals><goal>copy-resources</goal></goals>
+            <configuration>
+              <outputDirectory>${project.build.outputDirectory}/authority-pro</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/build</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "0.1.0",
+  "id": "tenancy",
+  "version": "0.1.0",
+  "kind": "platform-module",
+  "trust": "first-party",
+  "execution": "compiled-first-party",
+  "dependencies": [],
+  "capabilities": {
+    "provides": [],
+    "requires": []
+  },
+  "permissions": [],
+  "dataOwnership": {
+    "resources": [
+      { "name": "tenants", "scope": "tenant" },
+      { "name": "companies", "scope": "tenant" },
+      { "name": "sites", "scope": "tenant" },
+      { "name": "memberships", "scope": "tenant" }
+    ]
+  },
+  "ui": {
+    "contributions": []
+  }
+}
