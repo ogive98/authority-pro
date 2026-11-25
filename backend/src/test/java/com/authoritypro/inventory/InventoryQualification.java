@@ -1,7 +1,19 @@
 package com.authoritypro.inventory;
 
+import com.authoritypro.platform.access.application.AuditAccessPolicy;
 import com.authoritypro.platform.access.application.InventoryAccessPolicy;
+import com.authoritypro.platform.access.application.ScopedAccess;
+import com.authoritypro.platform.access.application.ScopedAccessReader;
+import com.authoritypro.platform.access.domain.Permission;
+import com.authoritypro.platform.access.domain.RoleCode;
+import com.authoritypro.platform.access.infrastructure.persistence.JdbcAuditAccessPolicy;
 import com.authoritypro.platform.access.infrastructure.persistence.JdbcInventoryAccessPolicy;
+import com.authoritypro.platform.access.infrastructure.persistence.JdbcScopedAccessReader;
+import com.authoritypro.platform.audit.application.AuditRecordReader;
+import com.authoritypro.platform.audit.domain.AuditAction;
+import com.authoritypro.platform.audit.domain.AuditQuery;
+import com.authoritypro.platform.audit.domain.AuditRecordView;
+import com.authoritypro.platform.audit.infrastructure.persistence.JdbcAuditRecordReader;
 import com.authoritypro.platform.runtime.infrastructure.persistence.LocalDatabase;
 import com.zaxxer.hikari.HikariDataSource;
 import java.io.BufferedReader;
@@ -15,6 +27,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -30,6 +43,7 @@ public final class InventoryQualification {
     private static final UUID USER_MEMBER = UUID.randomUUID();
     private static final UUID TENANT = UUID.randomUUID();
     private static final UUID COMPANY = UUID.randomUUID();
+    private static final UUID RECORD = UUID.randomUUID();
     private static final String LOGIN_PREFIX = "qualification.l06." + UUID.randomUUID() + ".";
     private static PrintStream report;
     private static String activeCheck = "input_contract";
@@ -136,6 +150,59 @@ public final class InventoryQualification {
                 check("runtime_cannot_write_permission_catalogue", () -> expectSql("42501", () -> raw(runtime, false,
                         true, c -> update(c, "INSERT INTO access.role_permissions (role_code, permission_code) "
                                 + "VALUES ('TENANT_AUDITOR', 'platform.inventory.read')"))));
+                check("scoped_reader_resolves_owner_labels_and_grants", () -> {
+                    ScopedAccessReader reader = new JdbcScopedAccessReader(runtime);
+                    ScopedAccess tenant = reader.read(USER_OWNER, TENANT, null).orElseThrow();
+                    require("l06-tenant".equals(tenant.tenantName()));
+                    require(tenant.companyId() == null && tenant.companyName() == null);
+                    require(tenant.roles().contains(RoleCode.TENANT_OWNER));
+                    require(tenant.permissions().contains(Permission.AUDIT_READ_TENANT));
+                    require(tenant.authorizationRevision() == 1);
+                    ScopedAccess company = reader.read(USER_OWNER, TENANT, COMPANY).orElseThrow();
+                    require(COMPANY.equals(company.companyId()));
+                    require("l06-company".equals(company.companyName()));
+                });
+                check("scoped_reader_resolves_auditor_and_hides_unknown_scopes", () -> {
+                    ScopedAccessReader reader = new JdbcScopedAccessReader(runtime);
+                    ScopedAccess auditor = reader.read(USER_AUDITOR, TENANT, null).orElseThrow();
+                    require(auditor.roles().contains(RoleCode.TENANT_AUDITOR));
+                    require(auditor.permissions().contains(Permission.AUDIT_READ_TENANT));
+                    require(reader.read(USER_OWNER, TENANT, UUID.randomUUID()).isEmpty());
+                    require(reader.read(USER_OWNER, UUID.randomUUID(), null).isEmpty());
+                    require(reader.read(USER_MEMBER, TENANT, null).orElseThrow().roles().isEmpty());
+                });
+                check("audit_policy_grants_owner_and_auditor", () -> {
+                    AuditAccessPolicy policy = new JdbcAuditAccessPolicy(runtime);
+                    require(policy.decide(USER_OWNER, TENANT, null) == AuditAccessPolicy.Decision.GRANTED);
+                    require(policy.decide(USER_OWNER, TENANT, COMPANY) == AuditAccessPolicy.Decision.GRANTED);
+                    require(policy.decide(USER_AUDITOR, TENANT, null) == AuditAccessPolicy.Decision.GRANTED);
+                });
+                check("audit_policy_denies_member_and_records_attempt", () -> {
+                    long before = auditAttempts(migrator);
+                    require(new JdbcAuditAccessPolicy(runtime).decide(USER_MEMBER, TENANT, null)
+                            == AuditAccessPolicy.Decision.DENIED);
+                    eq(before + 1, auditAttempts(migrator));
+                });
+                check("audit_policy_denies_unknown_company_and_records_attempt", () -> {
+                    long before = auditAttempts(migrator);
+                    require(new JdbcAuditAccessPolicy(runtime).decide(USER_OWNER, TENANT, UUID.randomUUID())
+                            == AuditAccessPolicy.Decision.DENIED);
+                    eq(before + 1, auditAttempts(migrator));
+                });
+                check("audit_reader_returns_the_seeded_tenant_record", () -> {
+                    AuditRecordReader reader = new JdbcAuditRecordReader(runtime);
+                    AuditQuery query = new AuditQuery(AuditAction.TENANCY_SETTINGS_UPDATED, null, null, null,
+                            null, null, COMPANY, null, null, 10);
+                    List<AuditRecordView> records = reader.read(USER_OWNER, TENANT, COMPANY, query);
+                    eq(1, records.size());
+                    require(RECORD.equals(records.getFirst().recordId()));
+                    require(TENANT.equals(records.getFirst().tenantId()));
+                });
+                check("audit_reader_is_tenant_isolated", () -> {
+                    AuditRecordReader reader = new JdbcAuditRecordReader(runtime);
+                    AuditQuery query = new AuditQuery(null, null, null, null, null, null, null, null, null, 10);
+                    eq(0, reader.read(USER_OWNER, UUID.randomUUID(), null, query).size());
+                });
                 check("final_runtime_validation", () -> LocalDatabase.verifyRuntime(runtime));
             }
         }
@@ -156,6 +223,12 @@ public final class InventoryQualification {
                     + "VALUES (?, ?, 'TENANT_AUDITOR')", USER_AUDITOR, TENANT);
             context(c, USER_MEMBER, TENANT);
             insertMember(c, USER_MEMBER, "member");
+            context(c, USER_OWNER, TENANT);
+            update(c, "INSERT INTO audit.tenant_records (record_id, action_code, action_version, actor_id, "
+                    + "actor_kind, target_type, target_id, schema_version, metadata, tenant_id, company_id) "
+                    + "VALUES (?, 'tenancy.settings.updated', 1, ?, 'user', 'settings', 'l06-settings', 1, "
+                    + "?::jsonb, ?, ?)", RECORD, USER_OWNER,
+                    "{\"changedKeys\":[\"displayName\"],\"fromRevision\":1,\"toRevision\":2}", TENANT, COMPANY);
             return null;
         }));
     }
@@ -169,6 +242,11 @@ public final class InventoryQualification {
     private static long attempts(HikariDataSource migrator) throws Exception {
         return raw(migrator, true, false, c -> number(c, "SELECT count(*) FROM audit.security_attempts "
                 + "WHERE reason_code = 'authorization_denied' AND source_class = 'inventory'"));
+    }
+
+    private static long auditAttempts(HikariDataSource migrator) throws Exception {
+        return raw(migrator, true, false, c -> number(c, "SELECT count(*) FROM audit.security_attempts "
+                + "WHERE reason_code = 'authorization_denied' AND source_class = 'audit'"));
     }
 
     private static void context(Connection c, UUID user, UUID tenant) throws SQLException {

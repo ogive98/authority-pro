@@ -144,7 +144,8 @@ class HttpBoundaryTest {
             "/actuator/health/%6civeness", "/v3/api-docs", "/v3/api-docs.yaml",
             "/v3/api-docs/swagger-config", "/swagger-ui/index.html", "/swagger-ui.html",
             "/api/v1/auth/login", "/auth/login", "/login", "/logout", "/bootstrap",
-            "/api/v1/bootstrap", "/csrf", "/error", "/fixture/failure"})
+            "/api/v1/bootstrap", "/api/v1/access/bootstrap", "/api/v1/audit/tenant-records", "/csrf",
+            "/error", "/fixture/failure"})
     void everyOtherGetIsForbidden(String path) throws Exception {
         assertProblem(send("GET", path), 403, "ACCESS_DENIED");
     }

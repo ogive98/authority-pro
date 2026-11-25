@@ -13,11 +13,26 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.UUID;
 
 /** Reads the v1 grant catalogue and active membership assignments; unknown codes grant nothing. */
 public final class JdbcAuthorizationCatalog {
+    public OptionalInt activeMembershipRevision(Connection connection, UUID userId, UUID tenantId)
+            throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT authorization_revision FROM tenancy.memberships "
+                        + "WHERE user_id = ? AND tenant_id = ? AND active AND disabled_at IS NULL")) {
+            statement.setQueryTimeout(5);
+            statement.setObject(1, userId);
+            statement.setObject(2, tenantId);
+            try (ResultSet result = statement.executeQuery()) {
+                return result.next() ? OptionalInt.of(result.getInt(1)) : OptionalInt.empty();
+            }
+        }
+    }
+
     public Map<RoleCode, Set<Permission>> catalogue(Connection connection) throws SQLException {
         var grants = new EnumMap<RoleCode, Set<Permission>>(RoleCode.class);
         try (PreparedStatement statement = connection.prepareStatement(
