@@ -27,6 +27,49 @@ export interface ScopedAccess {
   permissions: string[];
 }
 
+export interface ModuleDependency {
+  id: string;
+  version: string;
+}
+
+export interface ModuleCapability {
+  id: string;
+  version: string;
+  contractType: string;
+}
+
+export interface ModuleCapabilities {
+  provides: ModuleCapability[];
+  requires: ModuleCapability[];
+}
+
+export interface ModulePermission {
+  id: string;
+  scope: string;
+}
+
+export interface OwnedResource {
+  name: string;
+  scope: string;
+}
+
+export interface ModuleView {
+  id: string;
+  version: string;
+  digest: string;
+  lifecycle: string;
+  availabilityReason: string;
+  dependencies: ModuleDependency[];
+  capabilities: ModuleCapabilities;
+  permissions: ModulePermission[];
+  dataOwnership: OwnedResource[];
+}
+
+export interface InventoryView {
+  buildRevision: string;
+  modules: ModuleView[];
+}
+
 export interface ProblemDetail {
   type?: string;
   title?: string;

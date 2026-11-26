@@ -39,9 +39,89 @@
       </article>
     </div>
 
+    <section class="inventory" aria-labelledby="inventory-title">
+      <div class="inventory-head">
+        <h2 id="inventory-title">Inventaire de la plateforme</h2>
+        @if (canReadInventory()) {
+          <button type="button" class="ghost" (click)="refreshInventory()" [disabled]="inventoryStatus() === 'loading'">
+            Rafraîchir
+          </button>
+        }
+      </div>
+
+      @if (!canReadInventory()) {
+        <p class="state" role="status">
+          Inventaire non autorisé : la permission <code>{{ inventoryPermission }}</code> n’est pas
+          accordée à cette portée.
+        </p>
+      } @else {
+        @switch (inventoryStatus()) {
+          @case ('loading') {
+            <p class="state" role="status">Chargement de l’inventaire…</p>
+          }
+          @case ('denied') {
+            <p class="state error" role="alert">
+              Le service a refusé l’inventaire pour cette portée.
+            </p>
+          }
+          @case ('unavailable') {
+            <p class="state" role="status">
+              Inventaire indisponible. Réessayez dès son rétablissement.
+            </p>
+            <button type="button" class="ghost" (click)="refreshInventory()">Réessayer</button>
+          }
+          @case ('authentication') {
+            <p class="state error" role="alert">
+              Session expirée. <a routerLink="/login">Se reconnecter</a>.
+            </p>
+          }
+          @case ('error') {
+            <p class="state error" role="alert">
+              L’inventaire n’a pas pu être chargé.
+              @if (inventoryFailure()?.traceId; as trace) {
+                <span class="trace">Référence : {{ trace }}</span>
+              }
+            </p>
+            <button type="button" class="ghost" (click)="refreshInventory()">Réessayer</button>
+          }
+          @case ('ready') {
+            @if (totals(); as totals) {
+              <p class="build">Révision de build <code>{{ inventory()?.buildRevision }}</code></p>
+              <div class="metrics">
+                <article class="metric">
+                  <h3>Modules</h3>
+                  <p class="value">{{ totals.modules }}</p>
+                </article>
+                <article class="metric">
+                  <h3>Permissions</h3>
+                  <p class="value">{{ totals.permissions }}</p>
+                </article>
+                <article class="metric">
+                  <h3>Ressources déclarées</h3>
+                  <p class="value">{{ totals.resources }}</p>
+                </article>
+              </div>
+
+              <h3 class="list-title">Modules compilés</h3>
+              <ul class="modules">
+                @for (module of inventory()?.modules ?? []; track module.id) {
+                  <li>
+                    <span class="id">{{ module.id }}</span>
+                    <span class="version">{{ module.version }}</span>
+                    <span class="life">{{ module.lifecycle }}</span>
+                  </li>
+                } @empty {
+                  <li class="muted">Aucun module compilé.</li>
+                }
+              </ul>
+            }
+          }
+        }
+      }
+    </section>
+
     <p class="note">
-      L’inventaire et l’audit seront branchés dans les lots P4 et P5. Aucun chiffre n’est affiché
-      avant leurs contrats d’écran vérifiés.
+      L’audit sera branché au lot P5. Aucun chiffre n’est affiché avant son contrat d’écran vérifié.
     </p>
   } @else {
     <p class="note">

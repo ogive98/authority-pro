@@ -3,6 +3,7 @@ import { Injectable, signal } from '@angular/core';
 import { catchError, map, of, Subject, switchMap } from 'rxjs';
 import { ApiFailure, toFailure } from '../api/problem';
 import { ScopedAccess } from '../models';
+import { scopeHeaders } from './scope.headers';
 
 export interface ScopeSelection {
   tenantId: string;
@@ -40,10 +41,8 @@ export class ScopeService {
       .pipe(
         switchMap((selection) => {
           if (!selection) return of<Result>({ kind: 'cleared' });
-          const headers: Record<string, string> = { 'X-Authority-Tenant': selection.tenantId };
-          if (selection.companyId) headers['X-Authority-Company'] = selection.companyId;
           return this.http
-            .get<ScopedAccess>('/api/v1/access/bootstrap', { headers })
+            .get<ScopedAccess>('/api/v1/access/bootstrap', { headers: scopeHeaders(selection) })
             .pipe(
               map((scope): Result => ({ kind: 'ok', scope })),
               catchError((error) => of<Result>({ kind: 'failure', failure: toFailure(error) })),
