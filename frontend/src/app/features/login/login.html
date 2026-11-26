@@ -1,0 +1,77 @@
+<main class="login">
+  <section class="card" aria-labelledby="login-title">
+    <p class="wordmark">AUTHORITY</p>
+    <h1 id="login-title">Connexion</h1>
+
+    @if (sessionState() === 'unknown') {
+      <p class="notice" role="status">Vérification de la session…</p>
+    }
+    @if (sessionState() === 'unavailable') {
+      <p class="notice" role="status">Le service est indisponible. Réessayez dès son rétablissement.</p>
+    }
+    @if (sessionState() === 'denied') {
+      <p class="notice" role="status">
+        Le service a refusé cette session. Contactez votre administrateur si le problème persiste.
+      </p>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="field">
+        <label for="login">Identifiant</label>
+        <input
+          id="login"
+          type="text"
+          formControlName="login"
+          autocomplete="username"
+          spellcheck="false"
+          [attr.aria-invalid]="form.controls.login.invalid && form.controls.login.touched"
+          aria-describedby="login-error"
+        />
+        @if (form.controls.login.invalid && form.controls.login.touched) {
+          <p id="login-error" class="field-error">Saisissez votre identifiant.</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="password">Mot de passe</label>
+        <div class="password-row">
+          <input
+            id="password"
+            [type]="showPassword() ? 'text' : 'password'"
+            formControlName="password"
+            autocomplete="current-password"
+            [attr.aria-invalid]="form.controls.password.invalid && form.controls.password.touched"
+            aria-describedby="password-error"
+          />
+          <button
+            type="button"
+            class="ghost"
+            (click)="togglePassword()"
+            [attr.aria-pressed]="showPassword()"
+            [attr.aria-label]="showPassword() ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+          >
+            {{ showPassword() ? 'Masquer' : 'Afficher' }}
+          </button>
+        </div>
+        @if (form.controls.password.invalid && form.controls.password.touched) {
+          <p id="password-error" class="field-error">Saisissez votre mot de passe.</p>
+        }
+      </div>
+
+      @if (failure(); as current) {
+        <div #alert class="alert" role="alert" tabindex="-1">
+          <p>{{ current.message }}</p>
+          @if (current.traceId) {
+            <p class="trace">Référence : {{ current.traceId }}</p>
+          }
+        </div>
+      }
+
+      <button type="submit" class="primary" [disabled]="submitting()">
+        {{ submitting() ? 'Connexion…' : 'Se connecter' }}
+      </button>
+    </form>
+
+    <p class="hint">Aucun compte par défaut. Les identifiants sont fournis par votre administrateur.</p>
+  </section>
+</main>

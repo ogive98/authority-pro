@@ -1,0 +1,22 @@
+<a class="skip" href="#main">Aller au contenu</a>
+
+<header class="topbar">
+  <a class="wordmark" routerLink="/app/tenants">AUTHORITY</a>
+  <p class="scope" aria-live="polite">{{ scopeLabel() }}</p>
+  <div class="account">
+    <span class="user">{{ profile()?.displayName ?? 'Session inconnue' }}</span>
+    <button type="button" class="secondary" (click)="logout()" [disabled]="loggingOut()">
+      {{ loggingOut() ? 'Déconnexion…' : 'Se déconnecter' }}
+    </button>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="nav" aria-label="Navigation principale">
+    <a routerLink="/app/overview" routerLinkActive="active">Vue d’ensemble</a>
+    <a routerLink="/app/tenants" routerLinkActive="active">Portée</a>
+  </nav>
+  <main id="main" class="content" tabindex="-1">
+    <router-outlet />
+  </main>
+</div>

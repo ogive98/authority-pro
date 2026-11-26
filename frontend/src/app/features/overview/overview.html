@@ -1,0 +1,51 @@
+<section class="page" aria-labelledby="overview-title">
+  <h1 id="overview-title">Vue d’ensemble</h1>
+
+  @if (access(); as scope) {
+    <div class="grid">
+      <article class="card">
+        <h2>Portée active</h2>
+        <dl>
+          <dt>Tenant</dt>
+          <dd>{{ scope.tenantName }}</dd>
+          <dt>Société</dt>
+          <dd>{{ scope.companyName ?? 'Toute l’entreprise' }}</dd>
+          <dt>Révision</dt>
+          <dd>{{ scope.authorizationRevision }}</dd>
+        </dl>
+        <a routerLink="/app/tenants">Changer de portée</a>
+      </article>
+
+      <article class="card">
+        <h2>Rôles</h2>
+        <ul class="chips">
+          @for (role of scope.roles; track role) {
+            <li class="chip">{{ role }}</li>
+          } @empty {
+            <li class="chip muted">Aucun rôle</li>
+          }
+        </ul>
+      </article>
+
+      <article class="card wide">
+        <h2>Permissions effectives</h2>
+        <ul class="chips">
+          @for (permission of scope.permissions; track permission) {
+            <li class="chip">{{ permission }}</li>
+          } @empty {
+            <li class="chip muted">Aucune permission à cette portée</li>
+          }
+        </ul>
+      </article>
+    </div>
+
+    <p class="note">
+      L’inventaire et l’audit seront branchés dans les lots P4 et P5. Aucun chiffre n’est affiché
+      avant leurs contrats d’écran vérifiés.
+    </p>
+  } @else {
+    <p class="note">
+      Aucune portée active. <a routerLink="/app/tenants">Choisir une portée</a>.
+    </p>
+  }
+</section>

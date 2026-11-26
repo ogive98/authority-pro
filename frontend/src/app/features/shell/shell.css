@@ -1,0 +1,153 @@
+.skip {
+  position: absolute;
+  left: 12px;
+  top: -48px;
+  z-index: 10;
+  padding: 8px 12px;
+  background: var(--text-primary);
+  color: var(--surface-app);
+  border-radius: 6px;
+}
+
+.skip:focus {
+  top: 12px;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 12px 24px;
+  background: var(--surface-navigation);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.wordmark {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.scope {
+  flex: 1;
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.secondary {
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid var(--border-control);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.secondary:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  min-height: calc(100dvh - 53px);
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 12px;
+  background: var(--surface-navigation);
+  border-right: 1px solid var(--border-subtle);
+}
+
+.nav a {
+  padding: 10px 12px;
+  border-left: 2px solid transparent;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.nav a:hover {
+  background: var(--surface-panel);
+  color: var(--text-primary);
+}
+
+.nav a.active {
+  border-left-color: var(--state-active);
+  background: var(--surface-panel);
+  color: var(--text-primary);
+}
+
+.content {
+  min-width: 0;
+  padding: 24px;
+}
+
+.content:focus {
+  outline: none;
+}
+
+@media (max-width: 800px) {
+  .topbar {
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    padding: 10px 16px;
+  }
+
+  .scope {
+    order: 3;
+    flex-basis: 100%;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .nav {
+    flex-direction: row;
+    border-right: none;
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 8px 12px;
+  }
+
+  .nav a {
+    border-left: none;
+    border-bottom: 2px solid transparent;
+  }
+
+  .nav a.active {
+    border-left-color: transparent;
+    border-bottom-color: var(--state-active);
+  }
+
+  .content {
+    padding: 16px;
+  }
+}

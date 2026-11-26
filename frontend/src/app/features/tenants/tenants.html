@@ -1,0 +1,70 @@
+<section class="page" aria-labelledby="scope-title">
+  <header class="page-head">
+    <div>
+      <h1 id="scope-title">Sélection de portée</h1>
+      <p class="subtle">
+        Choisissez la portée autorisée pour cette session. Les rôles et permissions sont décidés
+        par le service, jamais par l’interface.
+      </p>
+    </div>
+    @if (activeScope(); as active) {
+      <p class="active">
+        Portée active : <strong>{{ active.tenantName }}</strong>
+        @if (active.companyName) {
+          <span> — {{ active.companyName }}</span>
+        }
+      </p>
+    }
+  </header>
+
+  @if (statusMessage()) {
+    <p class="status" role="status">{{ statusMessage() }}</p>
+  }
+  @if (failure(); as current) {
+    @if (current.traceId) {
+      <p class="trace">Référence : {{ current.traceId }}</p>
+    }
+  }
+
+  @if (profile(); as me) {
+    @if (me.memberships.length === 0) {
+      <div class="empty" role="status">
+        <h2>Aucune portée autorisée</h2>
+        <p>Ce compte n’a aucune appartenance active. Contactez votre administrateur.</p>
+      </div>
+    } @else {
+      <ul class="tenants">
+        @for (membership of me.memberships; track membership.tenantId) {
+          <li class="tenant">
+            <h2>{{ membership.tenantName }}</h2>
+            <p class="roles">
+              Rôles :
+              @for (role of membership.roles; track role) {
+                <span class="chip">{{ role }}</span>
+              } @empty {
+                <span class="chip muted">Aucun rôle</span>
+              }
+            </p>
+            <div class="choices">
+              <button type="button" class="secondary" (click)="choose(membership.tenantId)" [disabled]="busy()">
+                Portée tenant
+              </button>
+              @for (company of membership.companies; track company.companyId) {
+                <button
+                  type="button"
+                  class="secondary"
+                  (click)="choose(membership.tenantId, company.companyId)"
+                  [disabled]="busy()"
+                >
+                  {{ company.name }}
+                </button>
+              }
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  } @else {
+    <p class="status" role="status">Profil indisponible. Rechargez la page ou reconnectez-vous.</p>
+  }
+</section>

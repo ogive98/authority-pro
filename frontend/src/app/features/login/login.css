@@ -1,0 +1,133 @@
+.login {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.card {
+  width: min(100%, 420px);
+  padding: 32px;
+  background: var(--surface-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+}
+
+.wordmark {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  color: var(--text-tertiary);
+}
+
+h1 {
+  margin: 0 0 20px;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.notice {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border-left: 2px solid var(--status-warning);
+  background: var(--surface-panel-raised);
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.field {
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+input {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--surface-app);
+  border: 1px solid var(--border-control);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font: inherit;
+}
+
+input[aria-invalid='true'] {
+  border-color: var(--status-error);
+}
+
+.password-row {
+  display: flex;
+  gap: 8px;
+}
+
+.password-row input {
+  flex: 1;
+}
+
+.ghost {
+  padding: 0 12px;
+  background: transparent;
+  border: 1px solid var(--border-control);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.primary {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px 16px;
+  background: var(--text-primary);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--surface-app);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.field-error {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--status-error);
+}
+
+.alert {
+  margin: 0 0 16px;
+  padding: 12px;
+  border: 1px solid var(--status-error);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--status-error) 12%, var(--surface-panel));
+}
+
+.alert p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.trace {
+  margin: 6px 0 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  word-break: break-all;
+}
+
+.hint {
+  margin: 20px 0 0;
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
