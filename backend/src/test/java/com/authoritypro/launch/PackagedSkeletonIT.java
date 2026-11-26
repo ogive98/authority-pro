@@ -175,25 +175,44 @@ class PackagedSkeletonIT {
             var ready = get(client, "/actuator/health/readiness");
             assertThat(ready.statusCode()).isEqualTo(503);
             assertThat(ready.body()).isEqualTo("{\"status\":\"OUT_OF_SERVICE\"}");
+            assertThat(ready.headers().firstValue("X-Correlation-Id").orElse(""))
+                    .matches("[0-9a-f]{32}");
+            String inherited = "0123456789abcdef0123456789abcdef";
+            var correlated = get(client, "/", "X-Correlation-Id", "0123456789ABCDEF0123456789ABCDEF");
+            assertThat(correlated.statusCode()).isEqualTo(403);
+            assertThat(correlated.headers().firstValue("X-Correlation-Id")).hasValue(inherited);
+            var replaced = get(client, "/", "X-Correlation-Id", "not-a-correlation");
+            String generated = replaced.headers().firstValue("X-Correlation-Id").orElseThrow();
+            assertThat(generated).matches("[0-9a-f]{32}").isNotEqualTo("not-a-correlation");
+            var queried = get(client, "/?token=query-secret-marker");
+            assertThat(queried.statusCode()).isEqualTo(403);
             for (String path : List.of("/", "/actuator", "/actuator/health", "/actuator/env", "/v3/api-docs",
                     "/swagger-ui/index.html", "/api/v1/auth/me", "/api/v1/auth/bootstrap")) {
                 var denied = get(client, path);
                 assertThat(denied.statusCode()).as(path).isEqualTo(403);
                 assertThat(denied.headers().firstValue("content-type").orElse("")).contains("application/problem+json");
+                assertThat(denied.headers().firstValue("X-Correlation-Id").orElse("")).matches("[0-9a-f]{32}");
                 assertThat(denied.headers().allValues("set-cookie")).isEmpty();
                 assertThat(denied.headers().allValues("www-authenticate")).isEmpty();
                 assertThat(denied.body()).contains("\"status\":403", "\"traceId\"").doesNotContain("private-input");
             }
-            assertThat(Files.readString(run.log())).doesNotContain("Using generated security password");
+            assertThat(Files.readString(run.log())).doesNotContain("Using generated security password")
+                    .doesNotContain("query-secret-marker", "not-a-correlation")
+                    .contains("\"correlationId\":\"" + inherited + "\"", "\"message\":\"request\"");
         } finally {
             stop(run.process());
         }
         assertThat(run.process().isAlive()).as("The packaged test process must be stopped").isFalse();
     }
 
-    private static HttpResponse<String> get(HttpClient client, String path) throws IOException, InterruptedException {
-        return client.send(HttpRequest.newBuilder(URI.create("http://127.0.0.1:8080" + path))
-                .timeout(Duration.ofSeconds(3)).GET().build(), HttpResponse.BodyHandlers.ofString());
+    private static HttpResponse<String> get(HttpClient client, String path, String... headers)
+            throws IOException, InterruptedException {
+        HttpRequest.Builder request = HttpRequest.newBuilder(URI.create("http://127.0.0.1:8080" + path))
+                .timeout(Duration.ofSeconds(3)).GET();
+        for (int index = 0; index < headers.length; index += 2) {
+            request.header(headers[index], headers[index + 1]);
+        }
+        return client.send(request.build(), HttpResponse.BodyHandlers.ofString());
     }
 
     private static ServerSocket reservePort() throws IOException {
