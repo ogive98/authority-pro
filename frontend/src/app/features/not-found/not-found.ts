@@ -42,6 +42,9 @@ import { TranslatePipe } from '@ngx-translate/core';
     }
 
     a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
       color: var(--text-primary);
       font-size: 14px;
     }

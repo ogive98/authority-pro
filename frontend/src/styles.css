@@ -8,6 +8,7 @@
   --primitive-ink-750: #151a21;
   --primitive-line-700: #1f252d;
   --primitive-line-600: #2c343f;
+  --primitive-line-500: #606c7d;
   --primitive-text-100: #eaedf2;
   --primitive-text-300: #a6afbc;
   --primitive-text-500: #7d8795;
@@ -22,7 +23,7 @@
   --surface-panel: var(--primitive-ink-800);
   --surface-panel-raised: var(--primitive-ink-750);
   --border-subtle: var(--primitive-line-700);
-  --border-control: var(--primitive-line-600);
+  --border-control: var(--primitive-line-500);
   --text-primary: var(--primitive-text-100);
   --text-secondary: var(--primitive-text-300);
   --text-tertiary: var(--primitive-text-500);
