@@ -96,4 +96,70 @@ describe('Shell', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('Tenant A — Société A1');
   });
+
+  function mount(options: { language?: 'fr' | 'en' | 'ar'; logout?: () => Promise<void> } = {}) {
+    const session = {
+      state: signal('authenticated'),
+      profile: signal({ userId: 'u', displayName: 'Opérateur', login: 'operator', memberships: [] }),
+      login: vi.fn(),
+      logout: vi.fn(options.logout ?? (async () => undefined)),
+      restore: vi.fn(),
+    };
+    TestBed.configureTestingModule({
+      imports: [Shell],
+      providers: [
+        provideRouter([]),
+        ...provideI18nTesting(),
+        { provide: SessionService, useValue: session },
+        {
+          provide: ScopeService,
+          useValue: {
+            scope: signal(null).asReadonly(),
+            status: signal('idle').asReadonly(),
+            failure: signal(null).asReadonly(),
+            select: vi.fn(),
+            clear: vi.fn(),
+          },
+        },
+      ],
+    });
+    vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
+    initI18nTesting(options.language ?? 'fr');
+    const fixture = TestBed.createComponent(Shell);
+    fixture.detectChanges();
+    return { fixture, element: fixture.nativeElement as HTMLElement, session };
+  }
+
+  it('offers a skip link into a focusable main landmark', () => {
+    const { element } = mount();
+    const skip = element.querySelector('a.skip') as HTMLAnchorElement;
+    expect(skip.getAttribute('href')).toBe('#main');
+    const main = element.querySelector('main#main') as HTMLElement;
+    expect(main).not.toBeNull();
+    expect(main.getAttribute('tabindex')).toBe('-1');
+  });
+
+  it('labels the navigation and the live scope region from the active language', () => {
+    const { element } = mount({ language: 'en' });
+    const nav = element.querySelector('nav') as HTMLElement;
+    expect(nav.getAttribute('aria-label')).toBe('Main navigation');
+    expect(nav.textContent).toContain('Overview');
+    expect(nav.textContent).toContain('Inventory');
+    expect(nav.textContent).toContain('Audit');
+    expect(element.textContent).toContain('No active scope');
+    const scope = element.querySelector('.scope') as HTMLElement;
+    expect(scope.getAttribute('aria-live')).toBe('polite');
+  });
+
+  it('keeps the logout button disabled and single-shot while signing out', async () => {
+    const { element, fixture, session } = mount({ logout: () => new Promise(() => undefined) });
+    const button = element.querySelector('header button') as HTMLButtonElement;
+    button.click();
+    fixture.detectChanges();
+    expect(session.logout).toHaveBeenCalledTimes(1);
+    expect(button.disabled).toBe(true);
+    expect(button.textContent).toContain('Déconnexion…');
+    button.click();
+    expect(session.logout).toHaveBeenCalledTimes(1);
+  });
 });
