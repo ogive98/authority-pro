@@ -1,0 +1,229 @@
+<section class="page" aria-labelledby="inventory-title">
+  <div class="head">
+    <div>
+      <h1 id="inventory-title">Inventaire</h1>
+      <p class="lead">
+        Modules réellement compilés pour la portée active. Aucun chiffre n’est affiché sans
+        inventaire chargé.
+      </p>
+    </div>
+    @if (canRead()) {
+      <button type="button" class="ghost" (click)="refresh()" [disabled]="status() === 'loading'">
+        Rafraîchir
+      </button>
+    }
+  </div>
+
+  @if (!canRead()) {
+    <p class="state" role="status">
+      Inventaire non autorisé : la permission <code>{{ permission }}</code> n’est pas accordée à
+      cette portée.
+    </p>
+  } @else {
+    @switch (status()) {
+      @case ('idle') {
+        <p class="state" role="status">Chargement de l’inventaire…</p>
+      }
+      @case ('loading') {
+        <p class="state" role="status">Chargement de l’inventaire…</p>
+      }
+      @case ('denied') {
+        <p class="state error" role="alert">
+          Le service a refusé l’inventaire pour cette portée. Aucune donnée n’est affichée.
+        </p>
+      }
+      @case ('unavailable') {
+        <p class="state" role="status">Inventaire indisponible. Réessayez dès son rétablissement.</p>
+        <button type="button" class="ghost" (click)="refresh()">Réessayer</button>
+      }
+      @case ('authentication') {
+        <p class="state error" role="alert">
+          Session expirée. <a routerLink="/login">Se reconnecter</a>.
+        </p>
+      }
+      @case ('error') {
+        <p class="state error" role="alert">
+          L’inventaire n’a pas pu être chargé.
+          @if (failure()?.traceId; as trace) {
+            <span class="trace">Référence : {{ trace }}</span>
+          }
+        </p>
+        <button type="button" class="ghost" (click)="refresh()">Réessayer</button>
+      }
+      @case ('ready') {
+        <p class="build">Révision de build <code>{{ inventory()?.buildRevision }}</code></p>
+
+        @if (modules().length === 0) {
+          <p class="state" role="status">Aucun module compilé pour cette portée.</p>
+        } @else {
+          <div class="toolbar">
+            <div class="field">
+              <label for="inventory-filter">Filtrer</label>
+              <input
+                id="inventory-filter"
+                type="search"
+                autocomplete="off"
+                placeholder="Identifiant, version, cycle de vie…"
+                [value]="filter()"
+                (input)="setFilter($event)"
+              />
+            </div>
+            <div class="field">
+              <label for="inventory-lifecycle">Cycle de vie</label>
+              <select id="inventory-lifecycle" [value]="lifecycle()" (change)="setLifecycle($event)">
+                <option value="all">Tous</option>
+                @for (item of lifecycles(); track item) {
+                  <option [value]="item">{{ item }}</option>
+                }
+              </select>
+            </div>
+            <p class="summary" aria-live="polite">{{ summary() }}</p>
+          </div>
+
+          @if (filtered().length === 0) {
+            <p class="state" role="status">
+              Aucun module ne correspond au filtre.
+              <button type="button" class="ghost small" (click)="resetFilters()">Réinitialiser</button>
+            </p>
+          } @else {
+            <div
+              class="table-scroll"
+              role="region"
+              aria-label="Modules compilés"
+              tabindex="0"
+              (keydown.escape)="closeDetail()"
+            >
+              <table>
+                <caption>
+                  Modules compilés, triés par
+                  {{ sortKey() === 'id' ? 'identifiant' : sortKey() === 'version' ? 'version' : 'cycle de vie' }}.
+                  Échap ferme le détail.
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col" [attr.aria-sort]="ariaSort('id')">
+                      <button type="button" (click)="sortBy('id')">Module</button>
+                    </th>
+                    <th scope="col" [attr.aria-sort]="ariaSort('version')">
+                      <button type="button" (click)="sortBy('version')">Version</button>
+                    </th>
+                    <th scope="col" [attr.aria-sort]="ariaSort('lifecycle')">
+                      <button type="button" (click)="sortBy('lifecycle')">Cycle de vie</button>
+                    </th>
+                    <th scope="col">Dépendances</th>
+                    <th scope="col">Permissions</th>
+                    <th scope="col">Ressources</th>
+                    <th scope="col"><span class="sr-only">Actions</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (module of visible(); track module.id) {
+                    <tr>
+                      <th scope="row"><span class="id">{{ module.id }}</span></th>
+                      <td>{{ module.version }}</td>
+                      <td>{{ module.lifecycle }}</td>
+                      <td>{{ module.dependencies.length }}</td>
+                      <td>{{ module.permissions.length }}</td>
+                      <td>{{ module.dataOwnership.length }}</td>
+                      <td class="actions">
+                        <button
+                          type="button"
+                          class="ghost small"
+                          [attr.aria-expanded]="expandedId() === module.id"
+                          [attr.aria-controls]="'module-detail-' + module.id"
+                          (click)="toggle(module)"
+                        >
+                          {{ expandedId() === module.id ? 'Fermer' : 'Détail' }}
+                        </button>
+                      </td>
+                    </tr>
+                    @if (expandedId() === module.id) {
+                      <tr class="detail-row">
+                        <td colspan="7">
+                          <div class="detail" [id]="'module-detail-' + module.id">
+                            <dl class="detail-grid">
+                              <dt>Digest</dt>
+                              <dd>
+                                <code>{{ module.digest }}</code>
+                                <button type="button" class="ghost small" (click)="copyDigest(module)">
+                                  Copier le digest
+                                </button>
+                              </dd>
+                              <dt>Disponibilité</dt>
+                              <dd>{{ module.availabilityReason }}</dd>
+                              <dt>Dépendances</dt>
+                              <dd>
+                                @for (dependency of module.dependencies; track dependency.id) {
+                                  <span class="chip">{{ dependency.id }} {{ dependency.version }}</span>
+                                } @empty {
+                                  <span class="muted">Aucune</span>
+                                }
+                              </dd>
+                              <dt>Capacités</dt>
+                              <dd>
+                                {{ module.capabilities.provides.length }} fournies,
+                                {{ module.capabilities.requires.length }} requises
+                              </dd>
+                              <dt>Permissions</dt>
+                              <dd>
+                                @for (item of module.permissions; track item.id) {
+                                  <span class="chip">{{ item.id }} · {{ item.scope }}</span>
+                                } @empty {
+                                  <span class="muted">Aucune</span>
+                                }
+                              </dd>
+                              <dt>Ressources détenues</dt>
+                              <dd>
+                                @for (resource of module.dataOwnership; track resource.name) {
+                                  <span class="chip">{{ resource.name }} · {{ resource.scope }}</span>
+                                } @empty {
+                                  <span class="muted">Aucune</span>
+                                }
+                              </dd>
+                            </dl>
+                            <p class="copy-status" role="status">
+                              @switch (copyState()) {
+                                @case ('copied') {
+                                  Digest copié.
+                                }
+                                @case ('failed') {
+                                  Copie impossible : sélectionnez le digest manuellement.
+                                }
+                              }
+                            </p>
+                          </div>
+                        </td>
+                      </tr>
+                    }
+                  }
+                </tbody>
+              </table>
+            </div>
+
+            @if (pageCount() > 1) {
+              <div class="pager">
+                <button
+                  type="button"
+                  class="ghost small"
+                  (click)="previousPage()"
+                  [disabled]="currentPage() === 0"
+                >
+                  Précédent
+                </button>
+                <span aria-live="polite">Page {{ currentPage() + 1 }} sur {{ pageCount() }}</span>
+                <button
+                  type="button"
+                  class="ghost small"
+                  (click)="nextPage()"
+                  [disabled]="currentPage() >= pageCount() - 1"
+                >
+                  Suivant
+                </button>
+              </div>
+            }
+          }
+        }
+      }
+    }
+  }
+</section>

@@ -25,6 +25,12 @@ export const routes: Routes = [
         title: 'Vue d’ensemble — AUTHORITY',
         loadComponent: () => import('./features/overview/overview').then((module) => module.OverviewPage),
       },
+      {
+        path: 'inventory',
+        canActivate: [scopeGuard],
+        title: 'Inventaire — AUTHORITY',
+        loadComponent: () => import('./features/inventory/inventory').then((module) => module.InventoryPage),
+      },
     ],
   },
   { path: '', pathMatch: 'full', redirectTo: 'app' },
