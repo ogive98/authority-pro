@@ -1,0 +1,71 @@
+<section class="page" aria-labelledby="preferences-title">
+  <h1 id="preferences-title">Préférences</h1>
+  <p class="lead">
+    Réglages d’affichage conservés sur cet appareil. Ils ne modifient aucune permission et ne
+    confèrent aucun droit.
+  </p>
+
+  <div class="grid">
+    <fieldset class="card">
+      <legend>Thème</legend>
+      <label class="option">
+        <input
+          type="radio"
+          name="theme"
+          value="dark"
+          [checked]="theme() === 'dark'"
+          (change)="setTheme('dark')"
+        />
+        <span>
+          <strong>Sombre</strong>
+          <small>Fond sombre, texte clair.</small>
+        </span>
+      </label>
+      <label class="option">
+        <input
+          type="radio"
+          name="theme"
+          value="light"
+          [checked]="theme() === 'light'"
+          (change)="setTheme('light')"
+        />
+        <span>
+          <strong>Clair</strong>
+          <small>Fond clair, texte sombre.</small>
+        </span>
+      </label>
+    </fieldset>
+
+    <fieldset class="card">
+      <legend>Densité</legend>
+      <label class="option">
+        <input
+          type="radio"
+          name="density"
+          value="comfortable"
+          [checked]="density() === 'comfortable'"
+          (change)="setDensity('comfortable')"
+        />
+        <span>
+          <strong>Confortable</strong>
+          <small>Lignes de tableau plus aérées.</small>
+        </span>
+      </label>
+      <label class="option">
+        <input
+          type="radio"
+          name="density"
+          value="compact"
+          [checked]="density() === 'compact'"
+          (change)="setDensity('compact')"
+        />
+        <span>
+          <strong>Compacte</strong>
+          <small>Plus de lignes visibles dans le même panneau.</small>
+        </span>
+      </label>
+    </fieldset>
+  </div>
+
+  <p class="state" role="status">{{ summary() }}</p>
+</section>

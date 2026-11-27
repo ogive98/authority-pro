@@ -32,6 +32,35 @@
   --status-info: var(--primitive-teal-400);
   --status-error: var(--primitive-red-400);
   --status-warning: var(--primitive-amber-400);
+
+  --table-row-block: 10px;
+  --table-row-inline: 14px;
+}
+
+:root[data-density='compact'] {
+  --table-row-block: 6px;
+  --table-row-inline: 10px;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --surface-app: #f6f7f9;
+  --surface-canvas: #f6f7f9;
+  --surface-navigation: #ffffff;
+  --surface-panel: #ffffff;
+  --surface-panel-raised: #eef1f6;
+  --border-subtle: #d8dee8;
+  --border-control: #7d8b9e;
+  --text-primary: #191e26;
+  --text-secondary: #384252;
+  --text-tertiary: #5a6678;
+  --action-focus: #1d4ed8;
+  --state-active: #4f7a00;
+  --data-primary: #4f7a00;
+  --status-info: #0f6e5c;
+  --status-error: #b42318;
+  --status-warning: #8a5a00;
 }
 
 *,

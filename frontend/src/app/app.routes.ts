@@ -37,6 +37,12 @@ export const routes: Routes = [
         title: 'Audit — AUTHORITY',
         loadComponent: () => import('./features/audit/audit').then((module) => module.AuditPage),
       },
+      {
+        path: 'preferences',
+        title: 'Préférences — AUTHORITY',
+        loadComponent: () =>
+          import('./features/preferences/preferences').then((module) => module.PreferencesPage),
+      },
     ],
   },
   { path: '', pathMatch: 'full', redirectTo: 'app' },

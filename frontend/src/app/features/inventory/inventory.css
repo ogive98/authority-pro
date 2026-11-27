@@ -173,7 +173,7 @@ th[aria-sort='descending'] button {
 
 tbody th,
 tbody td {
-  padding: 9px 12px;
+  padding: var(--table-row-block) var(--table-row-inline);
   border-bottom: 1px solid var(--border-subtle);
   text-align: left;
   font-weight: 400;
