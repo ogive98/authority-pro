@@ -31,6 +31,12 @@ export const routes: Routes = [
         title: 'Inventaire — AUTHORITY',
         loadComponent: () => import('./features/inventory/inventory').then((module) => module.InventoryPage),
       },
+      {
+        path: 'audit',
+        canActivate: [scopeGuard],
+        title: 'Audit — AUTHORITY',
+        loadComponent: () => import('./features/audit/audit').then((module) => module.AuditPage),
+      },
     ],
   },
   { path: '', pathMatch: 'full', redirectTo: 'app' },

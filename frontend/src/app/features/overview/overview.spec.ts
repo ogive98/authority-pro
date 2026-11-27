@@ -159,9 +159,13 @@ describe('OverviewPage', () => {
     expect(text).toContain('trace-42');
   });
 
-  it('keeps the audit note deferred to P5', () => {
+  it('links to the audit screen from the overview', () => {
     const { fixture } = render(access, { status: 'denied' });
-    expect(fixture.nativeElement.textContent).toContain('L’audit sera branché au lot P5');
+    expect(fixture.nativeElement.textContent).toContain('Journal d’audit');
+    const link = Array.from(fixture.nativeElement.querySelectorAll('a')).find(
+      (candidate) => (candidate as HTMLElement).textContent?.includes('consulter les enregistrements'),
+    ) as HTMLAnchorElement | undefined;
+    expect(link?.getAttribute('href')).toBe('/app/audit');
   });
 
   it('offers a safe path when no scope is active', () => {

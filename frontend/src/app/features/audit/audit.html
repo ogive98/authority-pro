@@ -1,0 +1,159 @@
+<section class="page" aria-labelledby="audit-title">
+  <div class="head">
+    <div>
+      <h1 id="audit-title">Audit</h1>
+      <p class="lead">
+        Journal de la portée active, du plus récent au plus ancien. Aucun enregistrement n’est
+        affiché sans lecture autorisée.
+      </p>
+    </div>
+    @if (canRead()) {
+      <button type="button" class="ghost" (click)="refresh()" [disabled]="status() === 'loading'">
+        Rafraîchir
+      </button>
+    }
+  </div>
+
+  @if (!canRead()) {
+    <p class="state" role="status">
+      Audit non autorisé : la permission <code>{{ permission }}</code> n’est pas accordée à cette
+      portée. Aucune requête n’est émise.
+    </p>
+  } @else {
+    @switch (status()) {
+      @case ('idle') {
+        <p class="state" role="status">Chargement du journal…</p>
+      }
+      @case ('loading') {
+        <p class="state" role="status">Chargement du journal…</p>
+      }
+      @case ('denied') {
+        <p class="state error" role="alert">
+          Le service a refusé la lecture d’audit pour cette portée. Aucun enregistrement n’est
+          affiché.
+        </p>
+      }
+      @case ('invalid') {
+        <p class="state error" role="alert">La requête d’audit a été refusée comme invalide.</p>
+      }
+      @case ('unavailable') {
+        <p class="state" role="status">
+          Journal d’audit indisponible. Réessayez dès son rétablissement.
+        </p>
+        <button type="button" class="ghost" (click)="refresh()">Réessayer</button>
+      }
+      @case ('authentication') {
+        <p class="state error" role="alert">
+          Session expirée. <a routerLink="/login">Se reconnecter</a>.
+        </p>
+      }
+      @case ('error') {
+        <p class="state error" role="alert">
+          Le journal n’a pas pu être chargé.
+          @if (failure()?.traceId; as trace) {
+            <span class="trace">Référence : {{ trace }}</span>
+          }
+        </p>
+        <button type="button" class="ghost" (click)="refresh()">Réessayer</button>
+      }
+      @case ('ready') {
+        @if (records().length === 0) {
+          <p class="state" role="status">Aucun enregistrement d’audit pour cette portée.</p>
+        } @else {
+          <div class="toolbar">
+            <div class="field">
+              <label for="audit-family">Famille (page chargée)</label>
+              <select id="audit-family" [value]="family()" (change)="setFamily($event)">
+                <option value="all">Toutes</option>
+                @for (item of families(); track item) {
+                  <option [value]="item">{{ item }}</option>
+                }
+              </select>
+            </div>
+            <p class="summary" aria-live="polite">{{ summary() }}</p>
+          </div>
+
+          @if (filtered().length === 0) {
+            <p class="state" role="status">
+              Aucun enregistrement de cette famille sur la page chargée.
+            </p>
+          } @else {
+            <div
+              class="table-scroll"
+              role="region"
+              aria-label="Enregistrements d’audit"
+              tabindex="0"
+              [attr.aria-busy]="loadingMore()"
+            >
+              <table>
+                <caption>
+                  Enregistrements d’audit de la portée active, du plus récent au plus ancien.
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Horodatage</th>
+                    <th scope="col">Famille</th>
+                    <th scope="col">Action</th>
+                    <th scope="col">Acteur</th>
+                    <th scope="col">Cible</th>
+                    <th scope="col">Résultat</th>
+                    <th scope="col">Corrélation</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (record of filtered(); track record.recordId) {
+                    <tr>
+                      <td class="nowrap">{{ formatDate(record.occurredAt) }}</td>
+                      <td>{{ record.actionCode.split('.')[0] }}</td>
+                      <td><code>{{ record.actionCode }}</code></td>
+                      <td>
+                        <span class="kind">{{ record.actorKind }}</span>
+                        <span class="mono" [title]="record.actorId">{{ shortId(record.actorId) }}</span>
+                      </td>
+                      <td>
+                        @if (record.targetType) {
+                          <span class="kind">{{ record.targetType }}</span>
+                          <span class="mono" [title]="record.targetId ?? ''">{{ shortId(record.targetId) }}</span>
+                        } @else {
+                          <span class="muted">—</span>
+                        }
+                      </td>
+                      <td>{{ record.outcome }}</td>
+                      <td class="mono" [title]="record.correlationId">
+                        {{ shortId(record.correlationId) }}
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+
+          @if (moreFailure(); as problem) {
+            <p class="state error" role="alert">
+              Le chargement suivant a échoué.
+              @if (problem.traceId; as trace) {
+                <span class="trace">Référence : {{ trace }}</span>
+              }
+            </p>
+          }
+
+          @if (next()) {
+            <div class="pager">
+              <button
+                type="button"
+                class="ghost"
+                (click)="loadMore()"
+                [disabled]="loadingMore()"
+              >
+                {{ loadingMore() ? 'Chargement…' : 'Charger plus' }}
+              </button>
+            </div>
+          } @else {
+            <p class="end" role="status">Fin des enregistrements disponibles.</p>
+          }
+        }
+      }
+    }
+  }
+</section>

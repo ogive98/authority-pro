@@ -70,6 +70,31 @@ export interface InventoryView {
   modules: ModuleView[];
 }
 
+export interface AuditRecord {
+  recordId: string;
+  occurredAt: string;
+  actionCode: string;
+  actionVersion: number;
+  actorId: string;
+  actorKind: string;
+  targetType: string | null;
+  targetId: string | null;
+  operationId: string;
+  correlationId: string;
+  schemaVersion: number;
+  metadata: Record<string, unknown>;
+  outcome: string;
+  tenantId: string;
+  companyId: string | null;
+  siteId: string | null;
+}
+
+export interface AuditPage {
+  items: AuditRecord[];
+  nextOccurredAt: string | null;
+  nextRecordId: string | null;
+}
+
 export interface ProblemDetail {
   type?: string;
   title?: string;
