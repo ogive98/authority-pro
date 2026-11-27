@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SessionService } from '../../core/auth/session.service';
+import { initI18nTesting, provideI18nTesting } from '../../core/i18n/i18n.testing';
 import { ScopeService } from '../../core/scope/scope.service';
 import { Shell } from './shell';
 
@@ -27,6 +28,7 @@ describe('Shell', () => {
       imports: [Shell],
       providers: [
         provideRouter([]),
+        ...provideI18nTesting(),
         { provide: SessionService, useValue: session },
         {
           provide: ScopeService,
@@ -42,6 +44,7 @@ describe('Shell', () => {
     });
     const router = TestBed.inject(Router);
     vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+    initI18nTesting();
     const fixture = TestBed.createComponent(Shell);
     fixture.detectChanges();
 
@@ -66,6 +69,7 @@ describe('Shell', () => {
       imports: [Shell],
       providers: [
         provideRouter([]),
+        ...provideI18nTesting(),
         { provide: SessionService, useValue: session },
         {
           provide: ScopeService,
@@ -87,6 +91,7 @@ describe('Shell', () => {
         },
       ],
     });
+    initI18nTesting();
     const fixture = TestBed.createComponent(Shell);
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('Tenant A — Société A1');

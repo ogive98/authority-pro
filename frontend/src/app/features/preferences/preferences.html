@@ -1,13 +1,10 @@
 <section class="page" aria-labelledby="preferences-title">
-  <h1 id="preferences-title">Préférences</h1>
-  <p class="lead">
-    Réglages d’affichage conservés sur cet appareil. Ils ne modifient aucune permission et ne
-    confèrent aucun droit.
-  </p>
+  <h1 id="preferences-title">{{ 'preferences.title' | translate }}</h1>
+  <p class="lead">{{ 'preferences.lead' | translate }}</p>
 
   <div class="grid">
     <fieldset class="card">
-      <legend>Thème</legend>
+      <legend>{{ 'preferences.theme' | translate }}</legend>
       <label class="option">
         <input
           type="radio"
@@ -17,8 +14,8 @@
           (change)="setTheme('dark')"
         />
         <span>
-          <strong>Sombre</strong>
-          <small>Fond sombre, texte clair.</small>
+          <strong>{{ 'preferences.themeDark' | translate }}</strong>
+          <small>{{ 'preferences.themeDarkHint' | translate }}</small>
         </span>
       </label>
       <label class="option">
@@ -30,14 +27,14 @@
           (change)="setTheme('light')"
         />
         <span>
-          <strong>Clair</strong>
-          <small>Fond clair, texte sombre.</small>
+          <strong>{{ 'preferences.themeLight' | translate }}</strong>
+          <small>{{ 'preferences.themeLightHint' | translate }}</small>
         </span>
       </label>
     </fieldset>
 
     <fieldset class="card">
-      <legend>Densité</legend>
+      <legend>{{ 'preferences.density' | translate }}</legend>
       <label class="option">
         <input
           type="radio"
@@ -47,8 +44,8 @@
           (change)="setDensity('comfortable')"
         />
         <span>
-          <strong>Confortable</strong>
-          <small>Lignes de tableau plus aérées.</small>
+          <strong>{{ 'preferences.densityComfortable' | translate }}</strong>
+          <small>{{ 'preferences.densityComfortableHint' | translate }}</small>
         </span>
       </label>
       <label class="option">
@@ -60,10 +57,29 @@
           (change)="setDensity('compact')"
         />
         <span>
-          <strong>Compacte</strong>
-          <small>Plus de lignes visibles dans le même panneau.</small>
+          <strong>{{ 'preferences.densityCompact' | translate }}</strong>
+          <small>{{ 'preferences.densityCompactHint' | translate }}</small>
         </span>
       </label>
+    </fieldset>
+
+    <fieldset class="card">
+      <legend>{{ 'preferences.language' | translate }}</legend>
+      @for (option of languages; track option.code) {
+        <label class="option">
+          <input
+            type="radio"
+            name="language"
+            [value]="option.code"
+            [checked]="language() === option.code"
+            (change)="setLanguage(option.code)"
+          />
+          <span>
+            <strong [attr.lang]="option.code" [attr.dir]="option.dir">{{ option.label }}</strong>
+          </span>
+        </label>
+      }
+      <p class="hint">{{ 'preferences.languageHint' | translate }}</p>
     </fieldset>
   </div>
 

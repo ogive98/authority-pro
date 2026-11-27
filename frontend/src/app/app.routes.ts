@@ -5,7 +5,7 @@ import { scopeGuard } from './core/scope/scope.guard';
 export const routes: Routes = [
   {
     path: 'login',
-    title: 'Connexion — AUTHORITY',
+    data: { titleKey: 'titles.login' },
     loadComponent: () => import('./features/login/login').then((module) => module.LoginPage),
   },
   {
@@ -16,30 +16,30 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'tenants' },
       {
         path: 'tenants',
-        title: 'Portée — AUTHORITY',
+        data: { titleKey: 'titles.tenants' },
         loadComponent: () => import('./features/tenants/tenants').then((module) => module.TenantsPage),
       },
       {
         path: 'overview',
         canActivate: [scopeGuard],
-        title: 'Vue d’ensemble — AUTHORITY',
+        data: { titleKey: 'titles.overview' },
         loadComponent: () => import('./features/overview/overview').then((module) => module.OverviewPage),
       },
       {
         path: 'inventory',
         canActivate: [scopeGuard],
-        title: 'Inventaire — AUTHORITY',
+        data: { titleKey: 'titles.inventory' },
         loadComponent: () => import('./features/inventory/inventory').then((module) => module.InventoryPage),
       },
       {
         path: 'audit',
         canActivate: [scopeGuard],
-        title: 'Audit — AUTHORITY',
+        data: { titleKey: 'titles.audit' },
         loadComponent: () => import('./features/audit/audit').then((module) => module.AuditPage),
       },
       {
         path: 'preferences',
-        title: 'Préférences — AUTHORITY',
+        data: { titleKey: 'titles.preferences' },
         loadComponent: () =>
           import('./features/preferences/preferences').then((module) => module.PreferencesPage),
       },
@@ -48,7 +48,7 @@ export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'app' },
   {
     path: '**',
-    title: 'Page introuvable — AUTHORITY',
+    data: { titleKey: 'titles.notFound' },
     loadComponent: () => import('./features/not-found/not-found').then((module) => module.NotFoundPage),
   },
 ];

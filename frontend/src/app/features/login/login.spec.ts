@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { LoginResult, SessionService } from '../../core/auth/session.service';
+import { initI18nTesting, provideI18nTesting } from '../../core/i18n/i18n.testing';
 import { LoginPage } from './login';
 
 function sessionStub(login: (login: string, password: string) => Promise<LoginResult>) {
@@ -19,8 +20,9 @@ async function render(login: (login: string, password: string) => Promise<LoginR
   const session = sessionStub(login);
   await TestBed.configureTestingModule({
     imports: [LoginPage],
-    providers: [provideRouter([]), { provide: SessionService, useValue: session }],
+    providers: [provideRouter([]), ...provideI18nTesting(), { provide: SessionService, useValue: session }],
   }).compileComponents();
+  initI18nTesting();
   const fixture = TestBed.createComponent(LoginPage);
   fixture.detectChanges();
   return { fixture, session, component: fixture.componentInstance };

@@ -1,39 +1,39 @@
 <section class="page" aria-labelledby="overview-title">
-  <h1 id="overview-title">Vue d’ensemble</h1>
+  <h1 id="overview-title">{{ 'overview.title' | translate }}</h1>
 
   @if (access(); as scope) {
     <div class="grid">
       <article class="card">
-        <h2>Portée active</h2>
+        <h2>{{ 'overview.scope' | translate }}</h2>
         <dl>
-          <dt>Tenant</dt>
+          <dt>{{ 'overview.tenant' | translate }}</dt>
           <dd>{{ scope.tenantName }}</dd>
-          <dt>Société</dt>
-          <dd>{{ scope.companyName ?? 'Toute l’entreprise' }}</dd>
-          <dt>Révision</dt>
+          <dt>{{ 'overview.company' | translate }}</dt>
+          <dd>{{ scope.companyName ?? ('overview.allCompany' | translate) }}</dd>
+          <dt>{{ 'overview.revision' | translate }}</dt>
           <dd>{{ scope.authorizationRevision }}</dd>
         </dl>
-        <a routerLink="/app/tenants">Changer de portée</a>
+        <a routerLink="/app/tenants">{{ 'overview.changeScope' | translate }}</a>
       </article>
 
       <article class="card">
-        <h2>Rôles</h2>
+        <h2>{{ 'overview.roles' | translate }}</h2>
         <ul class="chips">
           @for (role of scope.roles; track role) {
             <li class="chip">{{ role }}</li>
           } @empty {
-            <li class="chip muted">Aucun rôle</li>
+            <li class="chip muted">{{ 'overview.noRole' | translate }}</li>
           }
         </ul>
       </article>
 
       <article class="card wide">
-        <h2>Permissions effectives</h2>
+        <h2>{{ 'overview.permissions' | translate }}</h2>
         <ul class="chips">
           @for (permission of scope.permissions; track permission) {
-            <li class="chip">{{ permission }}</li>
+            <li class="chip" dir="ltr">{{ permission }}</li>
           } @empty {
-            <li class="chip muted">Aucune permission à cette portée</li>
+            <li class="chip muted">{{ 'overview.noPermission' | translate }}</li>
           }
         </ul>
       </article>
@@ -41,77 +41,84 @@
 
     <section class="inventory" aria-labelledby="inventory-title">
       <div class="inventory-head">
-        <h2 id="inventory-title">Inventaire de la plateforme</h2>
+        <h2 id="inventory-title">{{ 'overview.inventoryTitle' | translate }}</h2>
         @if (canReadInventory()) {
           <button type="button" class="ghost" (click)="refreshInventory()" [disabled]="inventoryStatus() === 'loading'">
-            Rafraîchir
+            {{ 'common.refresh' | translate }}
           </button>
         }
       </div>
 
       @if (!canReadInventory()) {
         <p class="state" role="status">
-          Inventaire non autorisé : la permission <code>{{ inventoryPermission }}</code> n’est pas
-          accordée à cette portée.
+          {{ 'overview.inventoryDeniedBefore' | translate }} <code dir="ltr">{{ inventoryPermission }}</code>
+          {{ 'overview.inventoryDeniedAfter' | translate }}
         </p>
       } @else {
         @switch (inventoryStatus()) {
           @case ('loading') {
-            <p class="state" role="status">Chargement de l’inventaire…</p>
+            <p class="state" role="status">{{ 'overview.inventoryLoading' | translate }}</p>
           }
           @case ('denied') {
             <p class="state error" role="alert">
-              Le service a refusé l’inventaire pour cette portée.
+              {{ 'overview.inventoryRefused' | translate }}
             </p>
           }
           @case ('unavailable') {
             <p class="state" role="status">
-              Inventaire indisponible. Réessayez dès son rétablissement.
+              {{ 'overview.inventoryUnavailable' | translate }}
             </p>
-            <button type="button" class="ghost" (click)="refreshInventory()">Réessayer</button>
+            <button type="button" class="ghost" (click)="refreshInventory()">
+              {{ 'common.retry' | translate }}
+            </button>
           }
           @case ('authentication') {
             <p class="state error" role="alert">
-              Session expirée. <a routerLink="/login">Se reconnecter</a>.
+              {{ 'common.sessionExpired' | translate }}
+              <a routerLink="/login">{{ 'common.reconnect' | translate }}</a>.
             </p>
           }
           @case ('error') {
             <p class="state error" role="alert">
-              L’inventaire n’a pas pu être chargé.
+              {{ 'overview.inventoryError' | translate }}
               @if (inventoryFailure()?.traceId; as trace) {
-                <span class="trace">Référence : {{ trace }}</span>
+                <span class="trace">{{ 'common.reference' | translate: { trace } }}</span>
               }
             </p>
-            <button type="button" class="ghost" (click)="refreshInventory()">Réessayer</button>
+            <button type="button" class="ghost" (click)="refreshInventory()">
+              {{ 'common.retry' | translate }}
+            </button>
           }
           @case ('ready') {
             @if (totals(); as totals) {
-              <p class="build">Révision de build <code>{{ inventory()?.buildRevision }}</code></p>
+              <p class="build">
+                {{ 'overview.buildRevision' | translate }} <code dir="ltr">{{ inventory()?.buildRevision }}</code>
+              </p>
               <div class="metrics">
                 <article class="metric">
-                  <h3>Modules</h3>
+                  <h3>{{ 'overview.modules' | translate }}</h3>
                   <p class="value">{{ totals.modules }}</p>
                 </article>
                 <article class="metric">
-                  <h3>Permissions</h3>
+                  <h3>{{ 'overview.permissionCount' | translate }}</h3>
                   <p class="value">{{ totals.permissions }}</p>
                 </article>
                 <article class="metric">
-                  <h3>Ressources déclarées</h3>
+                  <h3>{{ 'overview.resources' | translate }}</h3>
                   <p class="value">{{ totals.resources }}</p>
                 </article>
               </div>
 
-              <h3 class="list-title">Modules compilés</h3>
+              <h3 class="list-title">{{ 'overview.compiledModules' | translate }}</h3>
               <ul class="modules">
                 @for (module of inventory()?.modules ?? []; track module.id) {
                   <li>
-                    <span class="id">{{ module.id }}</span>
-                    <span class="version">{{ module.version }}</span>
+                    <span class="id" dir="ltr">{{ module.id }}</span>
+                    <span class="version" dir="ltr">{{ module.version }}</span>
                     <span class="life">{{ module.lifecycle }}</span>
                   </li>
                 } @empty {
-                  <li class="muted">Aucun module compilé.</li>
+                  <li class="muted">{{ 'overview.noCompiled' | translate }}</li>
                 }
               </ul>
             }
@@ -121,11 +128,13 @@
     </section>
 
     <p class="note">
-      Journal d’audit : <a routerLink="/app/audit">consulter les enregistrements de la portée</a>.
+      {{ 'overview.auditNoteBefore' | translate }}
+      <a routerLink="/app/audit">{{ 'overview.auditLink' | translate }}</a>.
     </p>
   } @else {
     <p class="note">
-      Aucune portée active. <a routerLink="/app/tenants">Choisir une portée</a>.
+      {{ 'overview.noScope' | translate }}
+      <a routerLink="/app/tenants">{{ 'overview.chooseScope' | translate }}</a>.
     </p>
   }
 </section>

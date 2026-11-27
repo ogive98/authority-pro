@@ -4,6 +4,7 @@ import { provideRouter } from '@angular/router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { INVENTORY_PERMISSION, InventoryService, InventoryStatus } from '../../core/inventory/inventory.service';
 import { ApiFailure } from '../../core/api/problem';
+import { initI18nTesting, provideI18nTesting } from '../../core/i18n/i18n.testing';
 import { InventoryView, ScopedAccess } from '../../core/models';
 import { ScopeService } from '../../core/scope/scope.service';
 import { OverviewPage } from './overview';
@@ -61,6 +62,7 @@ function render(scope: ScopedAccess | null, state: State = {}) {
     imports: [OverviewPage],
     providers: [
       provideRouter([]),
+      ...provideI18nTesting(),
       {
         provide: ScopeService,
         useValue: {
@@ -82,6 +84,7 @@ function render(scope: ScopedAccess | null, state: State = {}) {
       },
     ],
   });
+  initI18nTesting();
   const fixture = TestBed.createComponent(OverviewPage);
   fixture.detectChanges();
   return { fixture, load };

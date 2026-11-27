@@ -1,18 +1,21 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { AUDIT_PERMISSION, AuditService } from '../../core/audit/audit.service';
+import { I18nService } from '../../core/i18n/i18n.service';
 import { AuditRecord } from '../../core/models';
 import { ScopeService } from '../../core/scope/scope.service';
 
 @Component({
   selector: 'app-audit-page',
-  imports: [RouterLink],
+  imports: [RouterLink, TranslatePipe],
   templateUrl: './audit.html',
   styleUrl: './audit.css',
 })
 export class AuditPage {
   private readonly scope = inject(ScopeService);
   private readonly auditStore = inject(AuditService);
+  private readonly i18n = inject(I18nService);
 
   readonly access = this.scope.scope;
   readonly records = this.auditStore.records;
@@ -27,27 +30,26 @@ export class AuditPage {
   readonly canRead = computed(
     () => this.access()?.permissions.includes(AUDIT_PERMISSION) ?? false,
   );
-  readonly families = computed(() =>
-    [...new Set(this.records().map((record) => record.actionCode.split('.')[0]))].sort((left, right) =>
-      left.localeCompare(right, 'fr', { sensitivity: 'base' }),
-    ),
-  );
+  readonly families = computed(() => {
+    const locale = this.i18n.locale();
+    return [...new Set(this.records().map((record) => record.actionCode.split('.')[0]))].sort(
+      (left, right) => left.localeCompare(right, locale, { sensitivity: 'base' }),
+    );
+  });
   readonly filtered = computed<AuditRecord[]>(() => {
     const family = this.family();
     if (family === 'all') return this.records();
     return this.records().filter((record) => record.actionCode.startsWith(`${family}.`));
   });
   readonly summary = computed(() => {
-    const loaded = this.records().length;
-    const visible = this.filtered().length;
-    const label = loaded === 1 ? '1 enregistrement chargé' : `${loaded} enregistrements chargés`;
-    return visible === loaded ? label : `${visible} sur ${label}`;
+    this.i18n.language();
+    return this.i18n.instant('audit.summary', {
+      loaded: this.records().length,
+      visible: this.filtered().length,
+    });
   });
 
-  private readonly dateFormat = new Intl.DateTimeFormat('fr-FR', {
-    dateStyle: 'short',
-    timeStyle: 'medium',
-  });
+  private readonly dateFormats = new Map<string, Intl.DateTimeFormat>();
 
   constructor() {
     this.auditStore.load();
@@ -58,7 +60,13 @@ export class AuditPage {
   }
 
   formatDate(value: string): string {
-    return this.dateFormat.format(new Date(value));
+    const locale = this.i18n.locale();
+    let format = this.dateFormats.get(locale);
+    if (!format) {
+      format = new Intl.DateTimeFormat(locale, { dateStyle: 'short', timeStyle: 'medium' });
+      this.dateFormats.set(locale, format);
+    }
+    return format.format(new Date(value));
   }
 
   shortId(value: string | null): string {

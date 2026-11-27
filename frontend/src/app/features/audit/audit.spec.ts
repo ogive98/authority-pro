@@ -7,6 +7,7 @@ import { ApiFailure } from '../../core/api/problem';
 import { AuditRecord, ScopedAccess } from '../../core/models';
 import { ScopeService } from '../../core/scope/scope.service';
 import { AuditService } from '../../core/audit/audit.service';
+import { initI18nTesting, provideI18nTesting } from '../../core/i18n/i18n.testing';
 import { AuditPage } from './audit';
 
 const access: ScopedAccess = {
@@ -56,6 +57,7 @@ function render(state: State = {}, scope: ScopedAccess | null = access) {
     imports: [AuditPage],
     providers: [
       provideRouter([]),
+      ...provideI18nTesting(),
       {
         provide: ScopeService,
         useValue: {
@@ -81,6 +83,7 @@ function render(state: State = {}, scope: ScopedAccess | null = access) {
       },
     ],
   });
+  initI18nTesting();
   const fixture = TestBed.createComponent(AuditPage);
   fixture.detectChanges();
   return { fixture, load, loadMore, element: fixture.nativeElement as HTMLElement };
@@ -124,7 +127,7 @@ describe('AuditPage', () => {
     expect(text).toContain('identity.session.revoked');
     expect(text).toContain('FAILURE');
     expect(text).toContain('bbbbbbbb…');
-    expect(text).toContain('2 enregistrements chargés');
+    expect(text).toContain('Enregistrements chargés : 2 — visibles : 2');
   });
 
   it('filters the loaded page by family', () => {
@@ -142,7 +145,7 @@ describe('AuditPage', () => {
     select.dispatchEvent(new Event('change'));
     fixture.detectChanges();
     expect(element.querySelectorAll('tbody tr')).toHaveLength(1);
-    expect(element.textContent).toContain('1 sur 3 enregistrements chargés');
+    expect(element.textContent).toContain('Enregistrements chargés : 3 — visibles : 1');
   });
 
   it('shows an honest empty state', () => {

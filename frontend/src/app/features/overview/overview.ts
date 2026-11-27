@@ -1,11 +1,12 @@
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { INVENTORY_PERMISSION, InventoryService } from '../../core/inventory/inventory.service';
 import { ScopeService } from '../../core/scope/scope.service';
 
 @Component({
   selector: 'app-overview-page',
-  imports: [RouterLink],
+  imports: [RouterLink, TranslatePipe],
   templateUrl: './overview.html',
   styleUrl: './overview.css',
 })

@@ -1,10 +1,12 @@
 import { Component, computed, effect, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { SessionService } from '../../core/auth/session.service';
 import { ScopeService } from '../../core/scope/scope.service';
 
 @Component({
   selector: 'app-tenants-page',
+  imports: [TranslatePipe],
   templateUrl: './tenants.html',
   styleUrl: './tenants.css',
 })
@@ -20,15 +22,15 @@ export class TenantsPage {
   readonly statusMessage = computed(() => {
     switch (this.scope.status()) {
       case 'loading':
-        return 'Validation de la portée…';
+        return 'tenants.status.loading';
       case 'denied':
-        return 'Cette portée est refusée. La session reste active.';
+        return 'tenants.status.denied';
       case 'invalid':
-        return 'La portée demandée est invalide.';
+        return 'tenants.status.invalid';
       case 'unavailable':
-        return 'Le service d’autorisation est indisponible.';
+        return 'tenants.status.unavailable';
       case 'network':
-        return 'Le service est injoignable.';
+        return 'tenants.status.network';
       default:
         return '';
     }

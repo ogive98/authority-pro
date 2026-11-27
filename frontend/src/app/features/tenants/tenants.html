@@ -1,15 +1,12 @@
 <section class="page" aria-labelledby="scope-title">
   <header class="page-head">
     <div>
-      <h1 id="scope-title">Sélection de portée</h1>
-      <p class="subtle">
-        Choisissez la portée autorisée pour cette session. Les rôles et permissions sont décidés
-        par le service, jamais par l’interface.
-      </p>
+      <h1 id="scope-title">{{ 'tenants.title' | translate }}</h1>
+      <p class="subtle">{{ 'tenants.subtitle' | translate }}</p>
     </div>
     @if (activeScope(); as active) {
       <p class="active">
-        Portée active : <strong>{{ active.tenantName }}</strong>
+        {{ 'tenants.active' | translate }} : <strong>{{ active.tenantName }}</strong>
         @if (active.companyName) {
           <span> — {{ active.companyName }}</span>
         }
@@ -18,19 +15,19 @@
   </header>
 
   @if (statusMessage()) {
-    <p class="status" role="status">{{ statusMessage() }}</p>
+    <p class="status" role="status">{{ statusMessage() | translate }}</p>
   }
   @if (failure(); as current) {
     @if (current.traceId) {
-      <p class="trace">Référence : {{ current.traceId }}</p>
+      <p class="trace">{{ 'common.reference' | translate: { trace: current.traceId } }}</p>
     }
   }
 
   @if (profile(); as me) {
     @if (me.memberships.length === 0) {
       <div class="empty" role="status">
-        <h2>Aucune portée autorisée</h2>
-        <p>Ce compte n’a aucune appartenance active. Contactez votre administrateur.</p>
+        <h2>{{ 'tenants.emptyTitle' | translate }}</h2>
+        <p>{{ 'tenants.emptyBody' | translate }}</p>
       </div>
     } @else {
       <ul class="tenants">
@@ -38,16 +35,16 @@
           <li class="tenant">
             <h2>{{ membership.tenantName }}</h2>
             <p class="roles">
-              Rôles :
+              {{ 'tenants.roles' | translate }} :
               @for (role of membership.roles; track role) {
                 <span class="chip">{{ role }}</span>
               } @empty {
-                <span class="chip muted">Aucun rôle</span>
+                <span class="chip muted">{{ 'tenants.noRole' | translate }}</span>
               }
             </p>
             <div class="choices">
               <button type="button" class="secondary" (click)="choose(membership.tenantId)" [disabled]="busy()">
-                Portée tenant
+                {{ 'tenants.tenantScope' | translate }}
               </button>
               @for (company of membership.companies; track company.companyId) {
                 <button
@@ -65,6 +62,6 @@
       </ul>
     }
   } @else {
-    <p class="status" role="status">Profil indisponible. Rechargez la page ou reconnectez-vous.</p>
+    <p class="status" role="status">{{ 'tenants.profileUnavailable' | translate }}</p>
   }
 </section>

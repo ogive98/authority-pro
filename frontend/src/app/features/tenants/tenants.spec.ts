@@ -4,6 +4,7 @@ import { provideRouter, Router } from '@angular/router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { OwnProfile, ScopedAccess } from '../../core/models';
 import { SessionService } from '../../core/auth/session.service';
+import { initI18nTesting, provideI18nTesting } from '../../core/i18n/i18n.testing';
 import { ScopeService, ScopeStatus } from '../../core/scope/scope.service';
 import { TenantsPage } from './tenants';
 
@@ -38,6 +39,7 @@ function setup(profileValue: OwnProfile | null = profile, status: ScopeStatus = 
     imports: [TenantsPage],
     providers: [
       provideRouter([]),
+      ...provideI18nTesting(),
       { provide: SessionService, useValue: session },
       {
         provide: ScopeService,
@@ -51,6 +53,7 @@ function setup(profileValue: OwnProfile | null = profile, status: ScopeStatus = 
       },
     ],
   });
+  initI18nTesting();
   const router = TestBed.inject(Router);
   vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
   const fixture = TestBed.createComponent(TenantsPage);

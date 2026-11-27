@@ -1,12 +1,13 @@
 import { Component, ElementRef, effect, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { ApiFailure } from '../../core/api/problem';
 import { SessionService } from '../../core/auth/session.service';
 
 @Component({
   selector: 'app-login-page',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, TranslatePipe],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -53,6 +54,12 @@ export class LoginPage {
 
   togglePassword(): void {
     this.showPassword.update((visible) => !visible);
+  }
+
+  failureKey(failure: ApiFailure): string {
+    return failure.kind === 'denied' && failure.code === 'CSRF_REJECTED'
+      ? 'errors.csrf'
+      : `errors.${failure.kind}`;
   }
 
   private returnUrl(): string {

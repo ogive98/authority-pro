@@ -1,6 +1,6 @@
 .skip {
   position: absolute;
-  left: 12px;
+  inset-inline-start: 12px;
   top: -48px;
   z-index: 10;
   padding: 8px 12px;
@@ -82,12 +82,12 @@
   gap: 4px;
   padding: 16px 12px;
   background: var(--surface-navigation);
-  border-right: 1px solid var(--border-subtle);
+  border-inline-end: 1px solid var(--border-subtle);
 }
 
 .nav a {
   padding: 10px 12px;
-  border-left: 2px solid transparent;
+  border-inline-start: 2px solid transparent;
   border-radius: 6px;
   color: var(--text-secondary);
   text-decoration: none;
@@ -100,7 +100,7 @@
 }
 
 .nav a.active {
-  border-left-color: var(--state-active);
+  border-inline-start-color: var(--state-active);
   background: var(--surface-panel);
   color: var(--text-primary);
 }
@@ -132,18 +132,18 @@
 
   .nav {
     flex-direction: row;
-    border-right: none;
+    border-inline-end: none;
     border-bottom: 1px solid var(--border-subtle);
     padding: 8px 12px;
   }
 
   .nav a {
-    border-left: none;
+    border-inline-start: none;
     border-bottom: 2px solid transparent;
   }
 
   .nav a.active {
-    border-left-color: transparent;
+    border-inline-start-color: transparent;
     border-bottom-color: var(--state-active);
   }
 

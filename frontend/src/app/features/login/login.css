@@ -30,7 +30,7 @@ h1 {
 .notice {
   margin: 0 0 16px;
   padding: 10px 12px;
-  border-left: 2px solid var(--status-warning);
+  border-inline-start: 2px solid var(--status-warning);
   background: var(--surface-panel-raised);
   color: var(--text-secondary);
   font-size: 14px;

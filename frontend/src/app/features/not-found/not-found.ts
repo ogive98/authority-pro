@@ -1,15 +1,16 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-not-found-page',
-  imports: [RouterLink],
+  imports: [RouterLink, TranslatePipe],
   template: `
     <main class="missing">
       <p class="wordmark">AUTHORITY</p>
-      <h1>Page introuvable</h1>
-      <p>L’adresse demandée n’existe pas ou n’est plus accessible.</p>
-      <a routerLink="/">Revenir à l’accueil</a>
+      <h1>{{ 'notFound.title' | translate }}</h1>
+      <p>{{ 'notFound.body' | translate }}</p>
+      <a routerLink="/">{{ 'notFound.back' | translate }}</a>
     </main>
   `,
   styles: `

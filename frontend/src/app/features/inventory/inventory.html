@@ -1,77 +1,77 @@
 <section class="page" aria-labelledby="inventory-title">
   <div class="head">
     <div>
-      <h1 id="inventory-title">Inventaire</h1>
-      <p class="lead">
-        Modules réellement compilés pour la portée active. Aucun chiffre n’est affiché sans
-        inventaire chargé.
-      </p>
+      <h1 id="inventory-title">{{ 'inventory.title' | translate }}</h1>
+      <p class="lead">{{ 'inventory.lead' | translate }}</p>
     </div>
     @if (canRead()) {
       <button type="button" class="ghost" (click)="refresh()" [disabled]="status() === 'loading'">
-        Rafraîchir
+        {{ 'common.refresh' | translate }}
       </button>
     }
   </div>
 
   @if (!canRead()) {
     <p class="state" role="status">
-      Inventaire non autorisé : la permission <code>{{ permission }}</code> n’est pas accordée à
-      cette portée.
+      {{ 'inventory.permissionDeniedBefore' | translate }} <code dir="ltr">{{ permission }}</code>
+      {{ 'inventory.permissionDeniedAfter' | translate }}
     </p>
   } @else {
     @switch (status()) {
       @case ('idle') {
-        <p class="state" role="status">Chargement de l’inventaire…</p>
+        <p class="state" role="status">{{ 'inventory.loading' | translate }}</p>
       }
       @case ('loading') {
-        <p class="state" role="status">Chargement de l’inventaire…</p>
+        <p class="state" role="status">{{ 'inventory.loading' | translate }}</p>
       }
       @case ('denied') {
         <p class="state error" role="alert">
-          Le service a refusé l’inventaire pour cette portée. Aucune donnée n’est affichée.
+          {{ 'inventory.denied' | translate }}
         </p>
       }
       @case ('unavailable') {
-        <p class="state" role="status">Inventaire indisponible. Réessayez dès son rétablissement.</p>
-        <button type="button" class="ghost" (click)="refresh()">Réessayer</button>
+        <p class="state" role="status">{{ 'inventory.unavailable' | translate }}</p>
+        <button type="button" class="ghost" (click)="refresh()">{{ 'common.retry' | translate }}</button>
       }
       @case ('authentication') {
         <p class="state error" role="alert">
-          Session expirée. <a routerLink="/login">Se reconnecter</a>.
+          {{ 'common.sessionExpired' | translate }}
+          <a routerLink="/login">{{ 'common.reconnect' | translate }}</a>.
         </p>
       }
       @case ('error') {
         <p class="state error" role="alert">
-          L’inventaire n’a pas pu être chargé.
+          {{ 'inventory.loadError' | translate }}
           @if (failure()?.traceId; as trace) {
-            <span class="trace">Référence : {{ trace }}</span>
+            <span class="trace">{{ 'common.reference' | translate: { trace } }}</span>
           }
         </p>
-        <button type="button" class="ghost" (click)="refresh()">Réessayer</button>
+        <button type="button" class="ghost" (click)="refresh()">{{ 'common.retry' | translate }}</button>
       }
       @case ('ready') {
-        <p class="build">Révision de build <code>{{ inventory()?.buildRevision }}</code></p>
+        <p class="build">
+          {{ 'inventory.buildRevision' | translate }} <code dir="ltr">{{ inventory()?.buildRevision }}</code>
+        </p>
 
         @if (modules().length === 0) {
-          <p class="state" role="status">Aucun module compilé pour cette portée.</p>
+          <p class="state" role="status">{{ 'inventory.empty' | translate }}</p>
         } @else {
           <div class="toolbar">
             <div class="field">
-              <label for="inventory-filter">Filtrer</label>
+              <label for="inventory-filter">{{ 'inventory.filterLabel' | translate }}</label>
               <input
                 id="inventory-filter"
                 type="search"
                 autocomplete="off"
-                placeholder="Identifiant, version, cycle de vie…"
+                [placeholder]="'inventory.filterPlaceholder' | translate"
                 [value]="filter()"
                 (input)="setFilter($event)"
               />
             </div>
             <div class="field">
-              <label for="inventory-lifecycle">Cycle de vie</label>
+              <label for="inventory-lifecycle">{{ 'inventory.lifecycleLabel' | translate }}</label>
               <select id="inventory-lifecycle" [value]="lifecycle()" (change)="setLifecycle($event)">
-                <option value="all">Tous</option>
+                <option value="all">{{ 'inventory.all' | translate }}</option>
                 @for (item of lifecycles(); track item) {
                   <option [value]="item">{{ item }}</option>
                 }
@@ -82,45 +82,43 @@
 
           @if (filtered().length === 0) {
             <p class="state" role="status">
-              Aucun module ne correspond au filtre.
-              <button type="button" class="ghost small" (click)="resetFilters()">Réinitialiser</button>
+              {{ 'inventory.noMatch' | translate }}
+              <button type="button" class="ghost small" (click)="resetFilters()">
+                {{ 'inventory.reset' | translate }}
+              </button>
             </p>
           } @else {
             <div
               class="table-scroll"
               role="region"
-              aria-label="Modules compilés"
+              [attr.aria-label]="'inventory.region' | translate"
               tabindex="0"
               (keydown.escape)="closeDetail()"
             >
               <table>
-                <caption>
-                  Modules compilés, triés par
-                  {{ sortKey() === 'id' ? 'identifiant' : sortKey() === 'version' ? 'version' : 'cycle de vie' }}.
-                  Échap ferme le détail.
-                </caption>
+                <caption>{{ caption() }}</caption>
                 <thead>
                   <tr>
                     <th scope="col" [attr.aria-sort]="ariaSort('id')">
-                      <button type="button" (click)="sortBy('id')">Module</button>
+                      <button type="button" (click)="sortBy('id')">{{ 'inventory.columns.module' | translate }}</button>
                     </th>
                     <th scope="col" [attr.aria-sort]="ariaSort('version')">
-                      <button type="button" (click)="sortBy('version')">Version</button>
+                      <button type="button" (click)="sortBy('version')">{{ 'inventory.columns.version' | translate }}</button>
                     </th>
                     <th scope="col" [attr.aria-sort]="ariaSort('lifecycle')">
-                      <button type="button" (click)="sortBy('lifecycle')">Cycle de vie</button>
+                      <button type="button" (click)="sortBy('lifecycle')">{{ 'inventory.columns.lifecycle' | translate }}</button>
                     </th>
-                    <th scope="col">Dépendances</th>
-                    <th scope="col">Permissions</th>
-                    <th scope="col">Ressources</th>
-                    <th scope="col"><span class="sr-only">Actions</span></th>
+                    <th scope="col">{{ 'inventory.columns.dependencies' | translate }}</th>
+                    <th scope="col">{{ 'inventory.columns.permissions' | translate }}</th>
+                    <th scope="col">{{ 'inventory.columns.resources' | translate }}</th>
+                    <th scope="col"><span class="sr-only">{{ 'inventory.columns.actions' | translate }}</span></th>
                   </tr>
                 </thead>
                 <tbody>
                   @for (module of visible(); track module.id) {
                     <tr>
-                      <th scope="row"><span class="id">{{ module.id }}</span></th>
-                      <td>{{ module.version }}</td>
+                      <th scope="row"><span class="id" dir="ltr">{{ module.id }}</span></th>
+                      <td dir="ltr">{{ module.version }}</td>
                       <td>{{ module.lifecycle }}</td>
                       <td>{{ module.dependencies.length }}</td>
                       <td>{{ module.permissions.length }}</td>
@@ -133,7 +131,7 @@
                           [attr.aria-controls]="'module-detail-' + module.id"
                           (click)="toggle(module)"
                         >
-                          {{ expandedId() === module.id ? 'Fermer' : 'Détail' }}
+                          {{ (expandedId() === module.id ? 'inventory.close' : 'inventory.detail') | translate }}
                         </button>
                       </td>
                     </tr>
@@ -142,52 +140,58 @@
                         <td colspan="7">
                           <div class="detail" [id]="'module-detail-' + module.id">
                             <dl class="detail-grid">
-                              <dt>Digest</dt>
+                              <dt>{{ 'inventory.digest' | translate }}</dt>
                               <dd>
-                                <code>{{ module.digest }}</code>
+                                <code dir="ltr">{{ module.digest }}</code>
                                 <button type="button" class="ghost small" (click)="copyDigest(module)">
-                                  Copier le digest
+                                  {{ 'inventory.copyDigest' | translate }}
                                 </button>
                               </dd>
-                              <dt>Disponibilité</dt>
+                              <dt>{{ 'inventory.availability' | translate }}</dt>
                               <dd>{{ module.availabilityReason }}</dd>
-                              <dt>Dépendances</dt>
+                              <dt>{{ 'inventory.columns.dependencies' | translate }}</dt>
                               <dd>
                                 @for (dependency of module.dependencies; track dependency.id) {
-                                  <span class="chip">{{ dependency.id }} {{ dependency.version }}</span>
+                                  <span class="chip" dir="ltr">{{ dependency.id }} {{ dependency.version }}</span>
                                 } @empty {
-                                  <span class="muted">Aucune</span>
+                                  <span class="muted">{{ 'inventory.none' | translate }}</span>
                                 }
                               </dd>
-                              <dt>Capacités</dt>
+                              <dt>{{ 'inventory.capabilities' | translate }}</dt>
                               <dd>
-                                {{ module.capabilities.provides.length }} fournies,
-                                {{ module.capabilities.requires.length }} requises
+                                {{
+                                  'inventory.capabilityCount'
+                                    | translate
+                                      : {
+                                          provided: module.capabilities.provides.length,
+                                          required: module.capabilities.requires.length,
+                                        }
+                                }}
                               </dd>
-                              <dt>Permissions</dt>
+                              <dt>{{ 'inventory.columns.permissions' | translate }}</dt>
                               <dd>
                                 @for (item of module.permissions; track item.id) {
-                                  <span class="chip">{{ item.id }} · {{ item.scope }}</span>
+                                  <span class="chip" dir="ltr">{{ item.id }} · {{ item.scope }}</span>
                                 } @empty {
-                                  <span class="muted">Aucune</span>
+                                  <span class="muted">{{ 'inventory.none' | translate }}</span>
                                 }
                               </dd>
-                              <dt>Ressources détenues</dt>
+                              <dt>{{ 'inventory.ownedResources' | translate }}</dt>
                               <dd>
                                 @for (resource of module.dataOwnership; track resource.name) {
-                                  <span class="chip">{{ resource.name }} · {{ resource.scope }}</span>
+                                  <span class="chip" dir="ltr">{{ resource.name }} · {{ resource.scope }}</span>
                                 } @empty {
-                                  <span class="muted">Aucune</span>
+                                  <span class="muted">{{ 'inventory.none' | translate }}</span>
                                 }
                               </dd>
                             </dl>
                             <p class="copy-status" role="status">
                               @switch (copyState()) {
                                 @case ('copied') {
-                                  Digest copié.
+                                  {{ 'inventory.copied' | translate }}
                                 }
                                 @case ('failed') {
-                                  Copie impossible : sélectionnez le digest manuellement.
+                                  {{ 'inventory.copyFailed' | translate }}
                                 }
                               }
                             </p>
@@ -208,16 +212,16 @@
                   (click)="previousPage()"
                   [disabled]="currentPage() === 0"
                 >
-                  Précédent
+                  {{ 'inventory.previous' | translate }}
                 </button>
-                <span aria-live="polite">Page {{ currentPage() + 1 }} sur {{ pageCount() }}</span>
+                <span aria-live="polite">{{ 'inventory.page' | translate: { page: currentPage() + 1, pages: pageCount() } }}</span>
                 <button
                   type="button"
                   class="ghost small"
                   (click)="nextPage()"
                   [disabled]="currentPage() >= pageCount() - 1"
                 >
-                  Suivant
+                  {{ 'inventory.next' | translate }}
                 </button>
               </div>
             }

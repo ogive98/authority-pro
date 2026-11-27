@@ -1,5 +1,8 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
+import { TranslationKey } from '../../core/i18n/catalog';
+import { I18nService } from '../../core/i18n/i18n.service';
 import { INVENTORY_PERMISSION, InventoryService } from '../../core/inventory/inventory.service';
 import { ModuleView } from '../../core/models';
 import { ScopeService } from '../../core/scope/scope.service';
@@ -11,13 +14,14 @@ const PAGE_SIZE = 10;
 
 @Component({
   selector: 'app-inventory-page',
-  imports: [RouterLink],
+  imports: [RouterLink, TranslatePipe],
   templateUrl: './inventory.html',
   styleUrl: './inventory.css',
 })
 export class InventoryPage {
   private readonly scope = inject(ScopeService);
   private readonly inventoryStore = inject(InventoryService);
+  private readonly i18n = inject(I18nService);
 
   readonly access = this.scope.scope;
   readonly inventory = this.inventoryStore.inventory;
@@ -38,13 +42,15 @@ export class InventoryPage {
     () => this.access()?.permissions.includes(INVENTORY_PERMISSION) ?? false,
   );
   readonly modules = computed<ModuleView[]>(() => this.inventory()?.modules ?? []);
-  readonly lifecycles = computed(() =>
-    [...new Set(this.modules().map((module) => module.lifecycle))].sort((left, right) =>
-      left.localeCompare(right, 'fr', { numeric: true, sensitivity: 'base' }),
-    ),
-  );
+  readonly lifecycles = computed(() => {
+    const locale = this.i18n.locale();
+    return [...new Set(this.modules().map((module) => module.lifecycle))].sort((left, right) =>
+      left.localeCompare(right, locale, { numeric: true, sensitivity: 'base' }),
+    );
+  });
   readonly filtered = computed<ModuleView[]>(() => {
-    const query = this.filter().trim().toLocaleLowerCase('fr');
+    const locale = this.i18n.locale();
+    const query = this.filter().trim().toLocaleLowerCase(locale);
     const lifecycle = this.lifecycle();
     const key = this.sortKey();
     const direction = this.ascending() ? 1 : -1;
@@ -54,11 +60,11 @@ export class InventoryPage {
         if (lifecycle !== 'all' && module.lifecycle !== lifecycle) return false;
         if (!query) return true;
         return [module.id, module.version, module.lifecycle].some((value) =>
-          value.toLocaleLowerCase('fr').includes(query),
+          value.toLocaleLowerCase(locale).includes(query),
         );
       })
       .sort((left, right) => {
-        const compared = left.module[key].localeCompare(right.module[key], 'fr', {
+        const compared = left.module[key].localeCompare(right.module[key], locale, {
           numeric: true,
           sensitivity: 'base',
         });
@@ -73,9 +79,19 @@ export class InventoryPage {
     return this.filtered().slice(start, start + PAGE_SIZE);
   });
   readonly summary = computed(() => {
-    const total = this.filtered().length;
-    const label = total === 1 ? '1 module' : `${total} modules`;
-    return `${label} — page ${this.currentPage() + 1} sur ${this.pageCount()}`;
+    this.i18n.language();
+    return this.i18n.instant('inventory.summary', {
+      total: this.filtered().length,
+      page: this.currentPage() + 1,
+      pages: this.pageCount(),
+    });
+  });
+  readonly caption = computed(() => {
+    this.i18n.language();
+    const criterion = `inventory.sort.${this.sortKey()}` as TranslationKey;
+    return this.i18n.instant('inventory.caption', {
+      criterion: this.i18n.instant(criterion),
+    });
   });
 
   constructor() {

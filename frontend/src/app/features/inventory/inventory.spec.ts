@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ApiFailure } from '../../core/api/problem';
+import { initI18nTesting, provideI18nTesting } from '../../core/i18n/i18n.testing';
 import { INVENTORY_PERMISSION, InventoryService, InventoryStatus } from '../../core/inventory/inventory.service';
 import { InventoryView, ModuleView, ScopedAccess } from '../../core/models';
 import { ScopeService } from '../../core/scope/scope.service';
@@ -49,6 +50,7 @@ function render(state: State = {}, scope: ScopedAccess | null = access) {
     imports: [InventoryPage],
     providers: [
       provideRouter([]),
+      ...provideI18nTesting(),
       {
         provide: ScopeService,
         useValue: {
@@ -70,6 +72,7 @@ function render(state: State = {}, scope: ScopedAccess | null = access) {
       },
     ],
   });
+  initI18nTesting();
   const fixture = TestBed.createComponent(InventoryPage);
   fixture.detectChanges();
   return { fixture, load, element: fixture.nativeElement as HTMLElement };
@@ -151,7 +154,7 @@ describe('InventoryPage', () => {
     filter.dispatchEvent(new Event('input'));
     fixture.detectChanges();
     expect(rowIds(element)).toEqual(['identity']);
-    expect(element.textContent).toContain('1 module');
+    expect(element.textContent).toContain('Modules affichés : 1');
 
     filter.value = '';
     filter.dispatchEvent(new Event('input'));
