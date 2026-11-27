@@ -22,6 +22,6 @@ public final class LocalDatabaseBootstrap implements DatabaseBootstrap {
 
     @Override
     public HikariDataSource provisioner(String password) {
-        return LocalDatabase.provisionerDataSource("authority_pro", password);
+        return LocalDatabase.provisionerDataSource(LocalDatabase.selectedDatabase(), password);
     }
 }

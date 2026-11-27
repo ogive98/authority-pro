@@ -1,6 +1,7 @@
 package com.authoritypro.launch;
 
 import com.authoritypro.platform.AuthorityProApplication.SkeletonSettings;
+import com.authoritypro.platform.runtime.infrastructure.persistence.LocalDatabase;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -34,7 +35,7 @@ class SkeletonSettingsTest {
         for (String key : new String[]{"AUTHORITY_PRO_UNKNOWN", "SERVER_ADDRESS", "MANAGEMENT_SERVER_PORT",
                 "SPRING_APPLICATION_JSON", "SPRING_CONFIG_LOCATION", "SPRING_PROFILES_ACTIVE",
                 "PGHOST", "PGPORT", "PGDATABASE", "PGUSER", "PGPASSWORD", "PGSERVICE", "PGOPTIONS",
-                "AUTHORITY_PRO_PASSWORD", "AUTHORITY_PRO_DATABASE", "DATABASE_URL", "DB_PASSWORD",
+                "AUTHORITY_PRO_PASSWORD", "DATABASE_URL", "DB_PASSWORD",
                 "JDBC_URL", "FLYWAY_URL", "HIKARI_PASSWORD"}) {
             var environment = new HashMap<>(Map.of("AUTHORITY_PRO_MODE", "skeleton-local"));
             environment.put(key, "private-input");
@@ -55,5 +56,25 @@ class SkeletonSettingsTest {
         }
         assertThatThrownBy(() -> SkeletonSettings.from(Map.of("AUTHORITY_PRO_MODE", "skeleton-local"),
                 new Properties(), new String[]{"--server.address=0.0.0.0"})).hasMessage("COMMAND_LINE_DISABLED");
+    }
+
+    @Test
+    void allowsOnlyTheDisposableEvidenceDatabaseSelection() {
+        for (var entry : Map.of("skeleton-local", SkeletonSettings.Mode.SKELETON_LOCAL,
+                "data-local", SkeletonSettings.Mode.DATA_LOCAL,
+                "migrate-local", SkeletonSettings.Mode.MIGRATE_LOCAL,
+                "provision-local", SkeletonSettings.Mode.PROVISION_LOCAL).entrySet()) {
+            var environment = new HashMap<>(Map.of("AUTHORITY_PRO_MODE", entry.getKey(),
+                    "AUTHORITY_PRO_DATABASE", LocalDatabase.DISPOSABLE_TEST_DATABASE));
+            assertThat(SkeletonSettings.from(environment, new Properties(), new String[0]).mode())
+                    .isEqualTo(entry.getValue());
+        }
+        for (String selection : new String[]{"authority_pro", "postgres", "", "private-input",
+                "authority_pro_l07_ui_test2", "Authority_pro_l07_ui_test", "authority_pro_l07_ui_test "}) {
+            var environment = new HashMap<>(Map.of("AUTHORITY_PRO_MODE", "data-local",
+                    "AUTHORITY_PRO_DATABASE", selection));
+            assertThatThrownBy(() -> SkeletonSettings.from(environment, new Properties(), new String[0]))
+                    .hasMessage("DATABASE_SELECTION_INVALID");
+        }
     }
 }

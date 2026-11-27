@@ -26,8 +26,11 @@ public final class LocalDatabase {
     private static final String AUDIT_TEST_DATABASE = "authority_pro_l04_audit_test";
     private static final String IDENTITY_TEST_DATABASE = "authority_pro_l05_identity_test";
     private static final String INVENTORY_TEST_DATABASE = "authority_pro_l06_inventory_test";
+    /** Disposable database for authenticated browser evidence; selected only through AUTHORITY_PRO_DATABASE. */
+    public static final String DISPOSABLE_TEST_DATABASE = "authority_pro_l07_ui_test";
     private static final Set<String> DATABASES = Set.of(DATABASE, "authority_pro_l03_app_test",
-            "authority_pro_l03_app_restore", AUDIT_TEST_DATABASE, IDENTITY_TEST_DATABASE, INVENTORY_TEST_DATABASE);
+            "authority_pro_l03_app_restore", AUDIT_TEST_DATABASE, IDENTITY_TEST_DATABASE, INVENTORY_TEST_DATABASE,
+            DISPOSABLE_TEST_DATABASE);
 
     private enum Profile { MAIN, AUDIT, IDENTITY }
 
@@ -77,7 +80,15 @@ public final class LocalDatabase {
     }
 
     public static HikariDataSource createRuntime(String password) {
-        return runtimeDataSource(DATABASE, password);
+        return runtimeDataSource(selectedDatabase(), password);
+    }
+
+    /** Only the disposable evidence database may be selected; the main database stays implicit. */
+    public static String selectedDatabase() {
+        String selection = System.getenv("AUTHORITY_PRO_DATABASE");
+        if (selection == null) return DATABASE;
+        if (!DISPOSABLE_TEST_DATABASE.equals(selection)) throw refused();
+        return selection;
     }
 
     public static HikariDataSource runtimeDataSource(String database, String password) {
@@ -114,7 +125,7 @@ public final class LocalDatabase {
     }
 
     public static int migrate(String password) {
-        return migrate(DATABASE, password);
+        return migrate(selectedDatabase(), password);
     }
 
     public static int migrateAuditTest(String password) {
@@ -132,7 +143,7 @@ public final class LocalDatabase {
     private static int migrate(String database, String password) {
         // The main database stays at V1 until a separate main-migration authorization.
         if (!AUDIT_TEST_DATABASE.equals(database) && !IDENTITY_TEST_DATABASE.equals(database)
-                && !INVENTORY_TEST_DATABASE.equals(database)) {
+                && !INVENTORY_TEST_DATABASE.equals(database) && !DISPOSABLE_TEST_DATABASE.equals(database)) {
             throw refused();
         }
         try (HikariDataSource source = migrationDataSource(database, password)) {
@@ -352,7 +363,8 @@ public final class LocalDatabase {
 
     private static Profile profile(Connection connection) throws SQLException {
         String database = textValue(connection, "SELECT current_database()");
-        if (IDENTITY_TEST_DATABASE.equals(database) || INVENTORY_TEST_DATABASE.equals(database)) {
+        if (IDENTITY_TEST_DATABASE.equals(database) || INVENTORY_TEST_DATABASE.equals(database)
+                || DISPOSABLE_TEST_DATABASE.equals(database)) {
             return Profile.IDENTITY;
         }
         if (AUDIT_TEST_DATABASE.equals(database)) return Profile.AUDIT;

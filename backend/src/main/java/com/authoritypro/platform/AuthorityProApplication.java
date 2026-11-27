@@ -1,5 +1,6 @@
 package com.authoritypro.platform;
 
+import com.authoritypro.platform.runtime.infrastructure.persistence.LocalDatabase;
 import com.zaxxer.hikari.HikariDataSource;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -65,6 +66,7 @@ public class AuthorityProApplication {
                 throw new IllegalArgumentException("COMMAND_LINE_DISABLED");
             }
             for (String key : environment.keySet()) {
+                if (key.equals("AUTHORITY_PRO_DATABASE")) continue;
                 if (key.startsWith("SPRING_") || key.startsWith("SERVER_") || key.startsWith("MANAGEMENT_")
                         || key.startsWith("PG") || key.startsWith("FLYWAY_") || key.startsWith("JDBC_")
                         || key.startsWith("HIKARI_") || key.startsWith("DATABASE_") || key.startsWith("DB_")
@@ -79,6 +81,10 @@ public class AuthorityProApplication {
                         || key.startsWith("org.postgresql.") || key.startsWith("database.") || key.startsWith("db.")) {
                     throw new IllegalArgumentException("SYSTEM_OVERRIDE_FORBIDDEN");
                 }
+            }
+            String selection = environment.get("AUTHORITY_PRO_DATABASE");
+            if (selection != null && !LocalDatabase.DISPOSABLE_TEST_DATABASE.equals(selection)) {
+                throw new IllegalArgumentException("DATABASE_SELECTION_INVALID");
             }
             String mode = environment.get("AUTHORITY_PRO_MODE");
             if (mode == null) {

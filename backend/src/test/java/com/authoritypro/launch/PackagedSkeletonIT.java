@@ -97,11 +97,13 @@ class PackagedSkeletonIT {
     @Order(3)
     void databaseModesRefuseTargetAndPasswordOverridesWithoutEchoingValues() throws Exception {
         for (String mode : List.of("data-local", "migrate-local")) {
-            for (String key : List.of("AUTHORITY_PRO_DATABASE", "AUTHORITY_PRO_PASSWORD", "PGPASSWORD",
+            for (String key : List.of("AUTHORITY_PRO_PASSWORD", "PGPASSWORD",
                     "PGHOST", "DATABASE_URL", "SPRING_DATASOURCE_URL", "FLYWAY_URL")) {
                 assertRefused(Map.of("AUTHORITY_PRO_MODE", mode, key, "private-input"),
                         List.of(), List.of(), "ENVIRONMENT_OVERRIDE_FORBIDDEN");
             }
+            assertRefused(Map.of("AUTHORITY_PRO_MODE", mode, "AUTHORITY_PRO_DATABASE", "private-input"),
+                    List.of(), List.of(), "DATABASE_SELECTION_INVALID");
             assertRefused(Map.of("AUTHORITY_PRO_MODE", mode), List.of("-Djdbc.url=private-input"),
                     List.of(), "SYSTEM_OVERRIDE_FORBIDDEN");
             assertRefused(Map.of("AUTHORITY_PRO_MODE", mode), List.of(),
