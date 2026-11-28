@@ -46,7 +46,7 @@ exception, not as header coverage.
 | Check | Command | Result |
 |---|---|---|
 | HTTP boundary slice | `mvnw -Dtest=HttpBoundaryTest test` | 49 tests, 0 failures |
-| Full backend unit suite | `mvnw test` | 181 tests, 0 failures |
+| Full backend unit suite | `mvnw test` | 182 tests, 0 failures (`55ba979`) |
 
 Executed with the portable Temurin 21.0.13+9 JDK, Maven offline, no
 `AUTHORITY_PRO_DATABASE` environment, no container started or restarted. The packaged
@@ -57,9 +57,9 @@ integration suite (7 tests) was not rerun in this increment.
 - HSTS emission under TLS and trusted proxy headers (ADR-0013).
 - A CSP for the Angular document served by the frontend host; the API policy above does not protect it.
 - `Secure` session/CSRF cookies in a production profile.
-- Runtime scenarios requiring PostgreSQL: revocation timing and distributed throttling.
-  RLS under pooling and the atomic session cap are proven on a disposable database
-  (L05 `checks=44`, `9def7f2`).
+- Runtime scenarios requiring PostgreSQL: distributed throttling. Revocation, RLS under
+  pooling and the atomic session cap are proven on a disposable database
+  (L05 `checks=46`, `55ba979`).
 - Header behavior through the frontend dev proxy or a real reverse proxy.
 
 ## 7. Next qualification increments

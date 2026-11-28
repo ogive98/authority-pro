@@ -18,7 +18,7 @@ the same package, with its evidence link and date.
 | L02 backend skeleton | APPROVED (bounded) | IMPLEMENTED | TESTED locally (E4) | Pack Inventory L02 section |
 | L03 dedicated PostgreSQL and data model | APPROVED (bounded) | IMPLEMENTED | TESTED locally; main database at V1 only | Pack Inventory L03 sections |
 | L04 audit | APPROVED (contract D1–D6) | IMPLEMENTED | TESTED in isolation (E5 isolated, 36 checks, rerun 2026-11-28) | Audit Engine §9.11 |
-| L05 identity and access | APPROVED (contract) | IMPLEMENTED | TESTED in isolation (E5 isolated, 44 checks, `9def7f2`, 2026-11-28) | Identity and Access §10.13 |
+| L05 identity and access | APPROVED (contract) | IMPLEMENTED | TESTED in isolation (E5 isolated, 46 checks, `55ba979`, 2026-11-28) | Identity and Access §10.13 |
 | L06 protected inventory | APPROVED (three owner decisions) | IMPLEMENTED | TESTED in isolation (E5 isolated, 19 checks, rerun 2026-11-28) | Pack Inventory L06 section |
 | L07 Angular application | Per-slice approvals | IMPLEMENTED | 100 unit tests (E3); public screens checked in a browser (E4 local); authenticated journeys NOT VERIFIED | Frontend tree, this revision |
 | L08 integrated qualification | NOT APPROVED | NOT IMPLEMENTED | NOT VERIFIED | Implementation phases |
@@ -29,8 +29,8 @@ the same package, with its evidence link and date.
 
 ## 3. What is true at this revision
 
-- The backend builds and passes 181 unit/architecture/contract tests plus 7 packaged
-  integration tests (clean verify at `9e19a2b`, 2026-11-28), with five closed Modulith
+- The backend builds and passes 182 unit/architecture/contract tests plus 7 packaged
+  integration tests (verify at `55ba979`, 2026-11-28), with five closed Modulith
   roots and zero inter-module edges.
 - The frontend builds and passes 100 unit tests across 16 files, with FR/EN/IT/AR and
   RTL support.
@@ -45,13 +45,16 @@ the same package, with its evidence link and date.
   ([headers gate](phase-3/00-SECURITY-HEADERS-GATE.md)).
 - The isolated qualifications were rerun on 2026-11-28 against disposable databases:
   L04 audit 36 checks, L06 inventory 19 checks at `606104f`; L05 identity/sessions
-  44 checks at `9def7f2`, including pool-reuse context clearing, rollback clearing,
+  46 checks at `55ba979`, including pool-reuse context clearing, rollback clearing,
   cross-tenant write denial, RLS isolation under four simultaneous tenant-scoped
-  transactions and an atomic session cap: four parallel fresh sessions leave exactly
+  transactions, an atomic session cap: four parallel fresh sessions leave exactly
   the three newest, a lock timeout fails closed without inserting and rotation keeps
-  the three newest. `environment:verify` confirms the main database, the public
-  catalogue and the protected containers of other projects were unchanged. These runs
-  do not cover throttling across instances or revocation-to-session behaviour.
+  the three newest, and revocation: a disabled account loses its profile, selected
+  scope and audit grant, a disabled membership loses its scope, and `/auth/me` ends
+  the session when the profile is empty (unit test). `environment:verify` confirms
+  the main database, the public catalogue and the protected containers of other
+  projects were unchanged. These runs do not cover throttling across instances, and
+  revoked sessions are only ended at the next profile read, not purged from the store.
 - The main database remains at V1; V2–V5 exist only as migrations and in isolated
   qualification databases.
 - No production profile, TLS termination, backup drill, performance measurement or
