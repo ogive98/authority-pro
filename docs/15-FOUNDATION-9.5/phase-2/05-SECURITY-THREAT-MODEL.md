@@ -25,7 +25,7 @@ untrusted; the database is trusted only through the restricted runtime role.
 |---|---|---|---|---|
 | Identity | Spoofing: credential stuffing | bcrypt verification, per-source throttle (5/15 min) | in-memory, per instance, resets on restart | Multi-instance and restart behavior test (X-08) |
 | Identity | Session hijacking | HttpOnly, SameSite Lax, 30 min idle, 8 h absolute, id rotation at login | `Secure=false`; no TLS profile | Cookie/tag assertions under production profile (R-007) |
-| Identity | Concurrent session abuse | Cap of three, oldest evicted | advisory-lock cap proven 2026-11-28 (L05 `checks=40`); lock-timeout and rotation paths untested | Lock-timeout and rotation tests (R-005, ADR-0012) |
+| Identity | Concurrent session abuse | Cap of three, oldest evicted | advisory-lock cap, lock-timeout fail-closed and rotation proven 2026-11-28 (L05 `checks=42`) | No cap test outstanding; distributed throttle remains (X-08) |
 | Identity | CSRF | CSRF cookie + header on unsafe methods | none observed | Negative CSRF tests per unsafe route |
 | Tenancy | Cross-tenant read/write | RLS FORCE, transaction-local context, own-membership policies | pool reuse, rollback and cross-tenant write denial proven 2026-11-28 (L05 `checks=39`); parallel concurrency open | Restricted-role concurrency suite (R-004) |
 | Access | Privilege escalation | Deny-by-default, DB-resolved permissions, scope validated per request | scope-invalid status inconsistency (400 vs 403) | Contract test for every route |

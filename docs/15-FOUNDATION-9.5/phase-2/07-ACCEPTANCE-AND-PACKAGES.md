@@ -1,7 +1,8 @@
 # Phase 2 — Acceptance Criteria and Package Sequencing
 
 **Decision status:** PROPOSED.
-**Delivery status:** DESIGN ONLY; no package below is started.
+**Delivery status:** DESIGN ONLY; only S-03 is delivered (2026-11-28, `dfaf1f8`,
+L05 `checks=42`); every other package below is not started.
 **Document validation status:** DRAFT.
 
 ## 1. Package model
@@ -15,7 +16,7 @@ on document checks only.
 |---|---|---|---|
 | S-01 | Security qualification harness (Phase 3) | G2 approved | executed scenarios from the threat model with recorded results |
 | S-02 | Production HTTP profile (ADR-0013) | S-01 designed | Secure cookie, proxy trust and headers proven in a non-production profile |
-| S-03 | Atomic session cap (ADR-0012) | S-01 designed | concurrent-eviction test proving the cap under load |
+| S-03 | Atomic session cap (ADR-0012) | S-01 designed | DELIVERED 2026-11-28 at `dfaf1f8`: four parallel logins, lock timeout and rotation proven by L05 `checks=42` |
 | S-04 | Distributed login throttle decision | S-01 designed | accepted risk or implemented shared limiter |
 | C-01 | Contract validation in CI | G2 approved | OpenAPI parsed, fixtures validated, drift fails the build |
 | C-02 | CI hardening (DEC-007) | C-01 | backend + frontend jobs green on a clean checkout |

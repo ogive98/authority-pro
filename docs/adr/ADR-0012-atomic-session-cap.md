@@ -8,9 +8,10 @@
   2-second wait, evicts deterministically (last access, then creation, then identifier)
   so the newest three survive, and inserts the row inside the same transaction.
   `JdbcSessionLimiter` remains only as a best-effort pre-eviction before
-  authentication. No schema change. Proof: L05 isolated qualification `checks=40`,
-  four parallel fresh sessions leave exactly the three newest, reproduced on three
-  consecutive runs. Lock-timeout and rotation-specific paths remain untested.
+  authentication. No schema change. Proof: L05 isolated qualification `checks=42` at
+  `dfaf1f8`, three consecutive runs — four parallel fresh sessions leave exactly the
+  three newest, the lock-timeout path fails closed with `STORE_UNAVAILABLE` and no
+  inserted row, and rotation keeps the three newest.
   The original PROPOSED text below is preserved as the decision record.
 - **Scope:** Browser session creation for a single principal. Distributed throttling
   of failed logins is a separate decision.

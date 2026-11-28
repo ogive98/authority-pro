@@ -126,7 +126,7 @@ marketplace installer. JSON validity does not establish trust or grant permissio
 - [0009 — Proposed scripting boundary](adr/ADR-0009-script-engine.md)
 - [0010 — Candidate versions and bounded compatibility evidence](adr/ADR-0010-java-spring-versions.md)
 - [0011 — Approved API orientations; detailed contracts proposed](adr/ADR-0011-api-versioning.md)
-- [0012 — Proposed atomic session cap](adr/ADR-0012-atomic-session-cap.md)
+- [0012 — Approved atomic session cap](adr/ADR-0012-atomic-session-cap.md)
 - [0013 — Proposed production HTTP profile](adr/ADR-0013-production-http-profile.md)
 - [0014 — Proposed named exports and module edges](adr/ADR-0014-named-module-exports.md)
 
