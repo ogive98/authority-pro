@@ -127,6 +127,7 @@ public final class IdentityQualification {
                 repositoryChecks(runtime, migrator);
                 sessionChecks(runtime);
                 labelChecks(runtime, migrator);
+                isolationChecks(runtime);
                 provisioningChecks(runtime, migrator, provisionerPassword);
                 denialChecks(runtime);
                 check("final_runtime_validation", () -> LocalDatabase.verifyRuntime(runtime));
@@ -527,6 +528,52 @@ public final class IdentityQualification {
                     "SELECT role_code FROM access.membership_roles WHERE user_id = ?", USER_A)));
             return null;
         }));
+    }
+
+    private static void isolationChecks(HikariDataSource runtime) throws Exception {
+        check("pool_reuse_has_no_tenant_context", () -> {
+            raw(runtime, false, false, c -> {
+                context(c, USER_A, null);
+                eq(1, number(c, "SELECT count(*) FROM tenancy.tenants"));
+                return null;
+            });
+            raw(runtime, true, false, c -> {
+                blank(c);
+                eq(0, number(c, "SELECT count(*) FROM tenancy.tenants"));
+                eq(0, number(c, "SELECT count(*) FROM tenancy.companies"));
+                return null;
+            });
+        });
+        check("rollback_clears_tenant_context", () -> {
+            try {
+                raw(runtime, false, false, c -> {
+                    context(c, USER_B, null);
+                    eq(1, number(c, "SELECT count(*) FROM tenancy.tenants"));
+                    throw new IllegalStateException("qualification rollback");
+                });
+                require(false);
+            } catch (IllegalStateException expected) {
+                require("qualification rollback".equals(expected.getMessage()));
+            }
+            raw(runtime, true, false, c -> {
+                blank(c);
+                eq(0, number(c, "SELECT count(*) FROM tenancy.tenants"));
+                return null;
+            });
+        });
+        check("cross_tenant_write_denied", () -> {
+            raw(runtime, false, false, c -> {
+                context(c, USER_A, null);
+                eq(0, update(c, "UPDATE tenancy.tenants SET name = name WHERE tenant_id = ?", TENANT_B));
+                eq(0, update(c, "UPDATE tenancy.companies SET name = name WHERE tenant_id = ?", TENANT_B));
+                return null;
+            });
+            expectSql("42501", () -> raw(runtime, false, true, c -> {
+                context(c, USER_A, null);
+                return update(c, "INSERT INTO tenancy.companies (tenant_id, company_id, name) "
+                        + "VALUES (?, ?, 'cross-tenant')", TENANT_B, UUID.randomUUID());
+            }));
+        });
     }
 
     private static void denialChecks(HikariDataSource runtime) throws Exception {
