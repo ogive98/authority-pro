@@ -9,8 +9,8 @@ application are locally implemented and tested.** Main V1 has four empty technic
 tables; L04–L06 run only against their isolated test databases (V1→V5 for L06).
 The backend verifies 182 unit/architecture/contract tests and 7 packaged
 integration tests locally and in the GitHub Foundation checks (2026-11-28 at
-`c8400cb`); the Angular application passes 100 unit tests. Authenticated browser
-journeys remain unverified.
+`841914b`); the Angular application passes 100 unit tests, also run in those checks.
+Authenticated browser journeys remain unverified.
 See the [recovery evidence and retained failure](docs/PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20),
 the [L05 implementation evidence](docs/04-PLATFORM-ENGINES/IDENTITY-AND-ACCESS.md#1013-isolated-implementation-evidence--2026-11-23),
 the [L06 evidence](docs/PACK-INVENTORY.md#l06-protected-inventory-evidence--2026-11-24),
@@ -74,7 +74,7 @@ earlier Angular 21 fallback remains the historical L01 finding.
 all passing both a clean build and an offline clean repeat with the same JAR hash.
 These are the historical L02 counts; the current backend verifies 182 unit tests and
 7 packaged integration tests in the same clean verify, both locally and in the
-Foundation checks run of 2026-11-28 at `c8400cb`. This is a closed technical
+Foundation checks run of 2026-11-28 at `841914b`. This is a closed technical
 skeleton, not a usable tenant application.
 
 Requirements: Node.js 24 and publisher-verified **Temurin 21.0.13+9** (release 21).
@@ -166,7 +166,7 @@ context, RLS and recovery qualification are the next separately scoped L03 work.
 - [Foundation boundaries](docs/13-IMPLEMENTATION/MVP-BOUNDARIES.md)
 - [Validation gates](docs/13-IMPLEMENTATION/VALIDATION-GATES.md)
 - [Local validator](tools/validate-docs.mjs) and [tests](tools/validate-docs.test.mjs)
-- [CI definition](.github/workflows/foundation.yml); remote results require separate verification
+- [CI definition](.github/workflows/foundation.yml) and [Dependabot updates](.github/dependabot.yml); remote results require separate verification
 - [Dedicated Compose environment](compose.yaml), guarded by [local preparation](tools/local-environment.mjs)
 - [Local bootstrap SQL](tools/local-postgres-init.sql) and [environment guard tests](tools/local-environment.test.mjs)
 

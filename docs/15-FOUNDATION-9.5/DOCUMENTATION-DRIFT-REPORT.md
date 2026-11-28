@@ -62,7 +62,7 @@ superseded claims instead of deleting them.
 | D-08 | L07 evidence section added to the Pack Inventory |
 | D-09 | Validation-gates runtime status extended with L04–L07 |
 | D-11 | Implementation delta section added to the risk register |
-| D-10 | Deferred to the separately authorized CI package (DEC-007); no workflow edit was made |
+| D-10 | Resolved 2026-11-28 at `841914b`: frontend job added (100 tests and build green remotely), `checkout`/`setup-node` pinned to commit SHAs, weekly Dependabot configured. Security scans, SBOM and migration qualification remain pending under DEC-007 |
 | D-12 | Baseline delta recorded in the baseline inventory |
 
 `npm run check:docs` reports 0 errors and `npm test` 67/67 after the corrections.

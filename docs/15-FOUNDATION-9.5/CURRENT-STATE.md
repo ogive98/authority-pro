@@ -1,7 +1,7 @@
 # Authority Pro — Current State
 
 **Decision status:** Status snapshot; no new decision is taken here.
-**Delivery status:** Authoritative status summary. The Phase 0 baseline is revision `27e9b14`; the latest isolated qualification is `131eb81` (L05, 2026-11-28) and the latest green CI run is `c8400cb`. Revision numbers elsewhere in this package are evidence anchors, not the current HEAD.
+**Delivery status:** Authoritative status summary. The Phase 0 baseline is revision `27e9b14`; the latest isolated qualification is `131eb81` (L05, 2026-11-28) and the latest green CI run is `841914b` (documentation, frontend and backend jobs). Revision numbers elsewhere in this package are evidence anchors, not the current HEAD.
 **Document validation status:** DRAFT — awaiting Gate G0 owner approval. Until approved, the Pack Inventory remains the historical evidence record and this document is a proposed single source of truth.
 
 ## 1. Purpose
@@ -22,7 +22,7 @@ the same package, with its evidence link and date.
 | L06 protected inventory | APPROVED (three owner decisions) | IMPLEMENTED | TESTED in isolation (E5 isolated, 19 checks, rerun 2026-11-28) | Pack Inventory L06 section |
 | L07 Angular application | Per-slice approvals | IMPLEMENTED | 100 unit tests (E3); public screens checked in a browser (E4 local); authenticated journeys NOT VERIFIED | Frontend tree, this revision |
 | L08 integrated qualification | NOT APPROVED | NOT IMPLEMENTED | NOT VERIFIED | Implementation phases |
-| CI frontend/security/migrations | NOT APPROVED (DEC-007) | NOT IMPLEMENTED | NOT VERIFIED | `foundation.yml` |
+| CI hardening | PARTIAL under DEC-007: frontend job, pinned actions and Dependabot delivered (`841914b`); security scans, SBOM and migration qualification pending | PARTIAL | Frontend 100 tests and build green remotely; no scans | `foundation.yml`, `dependabot.yml` |
 | Production deployment | NOT APPROVED | NOT IMPLEMENTED | NOT VERIFIED | Skeleton properties |
 | Backup / restore | Required by programme | NOT IMPLEMENTED | NOT VERIFIED | No drill evidence |
 | Performance baseline | Not set | NOT IMPLEMENTED | NOT VERIFIED | Bundle budgets only |
@@ -30,16 +30,17 @@ the same package, with its evidence link and date.
 ## 3. What is true at this revision
 
 - The backend builds and passes 182 unit/architecture/contract tests plus 7 packaged
-  integration tests (local verify at `131eb81`, CI at `c8400cb`, 2026-11-28), with five
+  integration tests (local verify at `131eb81`, CI at `841914b`, 2026-11-28), with five
   closed Modulith roots and zero inter-module edges.
-- Both Foundation checks jobs are green in GitHub Actions at `c8400cb` (2026-11-28):
-  documentation and backend, including the 7 packaged tests. Every earlier run in the
-  programme failed before the backend step on an unavailable Java version string
+- All three Foundation checks jobs are green in GitHub Actions at `841914b`
+  (2026-11-28): documentation, frontend (100 Vitest tests and the production build)
+  and backend, including the 7 packaged tests. Every earlier run in the programme
+  failed before the backend step on an unavailable Java version string
   (`21.0.13+9` instead of the published `21.0.13+9.0.LTS`).
 - The frontend builds and passes 100 unit tests across 16 files, with FR/EN/IT/AR and
   RTL support.
-- Documentation checks pass with 0 errors: 73 documents, 903 links, 12 diagrams, plus
-  70 tool tests.
+- Documentation checks pass with 0 errors: 73 documents, 904 links, 12 diagrams, plus
+  74 tool tests.
 - The Phase 2 blueprint exists as DESIGN ONLY in
   [phase-2](phase-2/00-TARGET-BLUEPRINT.md); nothing in it is approved, and Gate G2
   remains pending.

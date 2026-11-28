@@ -22,10 +22,10 @@ DOCUMENTED CLAIM ONLY, INFERRED — VERIFY, UNKNOWN, NOT VERIFIED.
 | R-007 | Production cookie profile incomplete | Critical | `Secure=false`, SameSite Lax, loopback HTTP only | CONFIRMED FROM SOURCE | TLS profile, secure cookie, browser test |
 | R-008 | Audit retention, redaction and integrity unproven | High | Atomicity tested in isolation only | DOCUMENTED CLAIM ONLY | Retention policy, redaction tests, tamper evidence |
 | R-009 | Runtime described beyond implementation | High | Outbox ADR is PROPOSED; no worker code | CONFIRMED FROM SOURCE | Code-to-contract status map; defer implementation |
-| R-010 | No frontend CI job | High | `foundation.yml` has two jobs only | CONFIRMED FROM SOURCE | CI package under DEC-007 |
+| R-010 | No frontend CI job | High | CLOSED 2026-11-28: frontend job added (`841914b`); 100 Vitest tests and the production build are green remotely | CONFIRMED BY TEST EVIDENCE (closed) | No E2E or authenticated browser job |
 | R-011 | Backup and restore never proven | Critical | No drill evidence | UNKNOWN | Disposable restore drill with RPO/RTO |
 | R-012 | No performance evidence | High | Only bundle budgets configured | CONFIRMED FROM SOURCE | Workload model and measured baseline |
-| R-013 | Supply-chain policy incomplete | High | Unpinned actions; no SBOM, vulnerability, secret or license scanning | CONFIRMED FROM SOURCE | CI security package |
+| R-013 | Supply-chain policy incomplete | High | Actions pinned and weekly Dependabot updates configured at `841914b`; no SBOM, vulnerability, secret or license scanning | PARTIALLY CLOSED | Vulnerability and secret scans, SBOM, license policy |
 | R-014 | Scope could over-engineer the foundation | High | Eleven-phase programme against a small dedicated instance | INFERRED — VERIFY | Phase gates and deferral policy |
 | R-015 | Tooling could overwrite uncommitted work | Critical | Clean tree, zero untracked files at baseline | CONFIRMED BY TEST EVIDENCE | Keep file allowlists and Git-state checks |
 | R-016 | Revoked account or membership kept its authorization | Critical | Found and fixed 2026-11-28 (`55ba979`): authorization reads ignored `identity.users.status`, so a disabled account kept scoped grants. L05 `checks=46` (`55ba979`, rerun at `checks=47` `131eb81`) proves a disabled account loses profile, scope and audit grant, a disabled membership loses scope, and `/auth/me` ends the session on an empty profile | CONFIRMED BY TEST EVIDENCE (closed) | Session-store purge after revocation and multi-instance caches remain outside scope |
@@ -36,7 +36,7 @@ DOCUMENTED CLAIM ONLY, INFERRED — VERIFY, UNKNOWN, NOT VERIFIED.
 |---|---|---:|---|---|---|
 | X-01 | Main database is at V1 while code expects V2–V5 | Critical | Migrations V1–V5 exist; documentation records main at V1 | CONFIRMED FROM SOURCE | Owner decision: migration window or strict disposable-database mode |
 | X-02 | No production profile exists | Critical | Loopback address, fixed port, non-secure cookie, no TLS assumptions | CONFIRMED FROM SOURCE | Phase 2 design and Phase 3 tests |
-| X-03 | CI actions not pinned to immutable SHAs | High | `checkout@v4`, `setup-node@v4` | CONFIRMED FROM SOURCE | CI package with verified SHAs |
+| X-03 | CI actions not pinned to immutable SHAs | High | CLOSED 2026-11-28: `checkout` and `setup-node` pinned to their v4.4.0 commit SHAs; `setup-java` was already pinned (`841914b`) | CONFIRMED FROM SOURCE (closed) | None observed |
 | X-04 | Authenticated browser journeys never observed | High | No test account, no session evidence | CONFIRMED FROM SOURCE | Separate authorized disposable environment |
 | X-05 | Validator cannot detect stale status claims | Medium | `validate-docs.mjs` checks links, index, Mermaid, fixtures only | CONFIRMED FROM SOURCE | Phase 1 validator extension |
 | X-06 | No lint, formatting or coverage gate in either application | Medium | No ESLint, Checkstyle/Spotless or JaCoCo/Vitest coverage thresholds configured | CONFIRMED FROM SOURCE | Quality package |
@@ -52,7 +52,7 @@ DOCUMENTED CLAIM ONLY, INFERRED — VERIFY, UNKNOWN, NOT VERIFIED.
 | U-03 | Restore duration and integrity for the real data volume | UNKNOWN | Isolated restore drill |
 | U-04 | Audit retention needs and legal constraints | UNKNOWN | Owner decision, then policy |
 | U-05 | Production topology and RPO/RTO | UNKNOWN | Owner decision (DEC-006) |
-| U-06 | Remote CI results at HEAD | RESOLVED (2026-11-28, `c8400cb`): both Foundation checks jobs green, backend clean verify included; earlier runs failed before the backend step on an unavailable Java version string | Closed |
+| U-06 | Remote CI results at HEAD | RESOLVED (2026-11-28, `841914b`): documentation, frontend and backend jobs green, backend clean verify included; earlier runs failed before the backend step on an unavailable Java version string | Closed |
 | U-07 | Angular advisory status at the pinned versions | NOT VERIFIED | Dependency scan in the CI security package |
 | U-08 | API latency, throughput and memory under representative load | UNKNOWN | Phase 10 baseline |
 | U-09 | Whether the disposable `authority_pro_l07_ui_test` database exists | NOT VERIFIED | Checked only inside an authorized L07 package |
