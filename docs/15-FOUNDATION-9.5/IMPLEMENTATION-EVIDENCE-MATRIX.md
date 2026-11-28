@@ -4,8 +4,8 @@
 **Delivery status:** PHASE 0 OUTPUT. Evidence is dated and tied to revision `27e9b14`;
 the Phase 3 increments are tied to `606104f`, the L05 isolation checks to `9e19a2b`,
 the atomic session cap to `56e5662`, its lock-timeout and rotation checks to
-`dfaf1f8`, the parallel RLS concurrency checks to `9def7f2`, and the revocation
-checks to `55ba979`.
+`dfaf1f8`, the parallel RLS concurrency checks to `9def7f2`, the revocation
+checks to `55ba979`, and the nested transaction checks to `131eb81`.
 **Document validation status:** DRAFT — awaiting Gate G0 owner approval.
 
 ## 1. Evidence hierarchy used by the Foundation 9.5 programme
@@ -33,7 +33,7 @@ highest level actually observed on 2026-11-28.
 | Database environment | Dedicated PostgreSQL 16.15 container, distinct roles and DPAPI secret | `tools/local-environment.mjs`, README evidence sections | E4 local | Restore drill not run |
 | Data model | V1–V5 migrations, RLS FORCE, tenant context checks | Isolated qualification scripts L03–L06 | E4/E5 isolated | Main database at V1 only |
 | Audit engine | Atomic audit with protected state, attempt stream | L04 isolated qualification, 36 checks, rerun 2026-11-28 at `606104f` | E5 isolated | Retention, integrity and redaction not proven |
-| Identity and access | JDBC sessions, CSRF, operator-only provisioning, scoped grants, atomic session cap, parallel RLS isolation, revocation cuts authorization and ends the session at the profile read | L05 isolated qualification, `checks=46`, rerun 2026-11-28 at `55ba979` | E5 isolated | Throttle distribution, cookie profile untested; no session-store purge on revocation |
+| Identity and access | JDBC sessions, CSRF, operator-only provisioning, scoped grants, atomic session cap, parallel RLS isolation, nested transaction isolation, revocation cuts authorization and ends the session at the profile read | L05 isolated qualification, `checks=47`, rerun 2026-11-28 at `131eb81` | E5 isolated | Throttle distribution, cookie profile untested; no session-store purge on revocation |
 | Protected inventory | Compiled descriptors, permissioned read | L06 isolated qualification, 19 checks, rerun 2026-11-28 at `606104f` | E5 isolated | Dynamic lifecycle deferred |
 | Frontend shell | Login, scope selection, overview, inventory, audit, preferences, i18n, RTL | 100 unit tests at this revision | E3 | Authenticated journeys never observed in a real browser (E0) |
 | Public screens | Login, not-found, responsive and accessibility checks | Earlier browser qualification, commit `4573701` | E4 local | Not reproducible in CI |
@@ -56,7 +56,7 @@ highest level actually observed on 2026-11-28.
 | Frontend unit | 100 passing across 16 files | `frontend: npm test` |
 | Documentation tooling | 70 passing | `npm test` |
 | Documentation validation | 0 errors, 73 documents, 903 links, 12 diagrams | `npm run check:docs` |
-| Isolated qualifications | L04 36 checks, L05 46 checks, L06 19 checks; main database and protected containers unchanged | `npm run audit:l04`, `identity:l05`, `inventory:l06`, `environment:verify` |
+| Isolated qualifications | L04 36 checks, L05 47 checks, L06 19 checks; main database and protected containers unchanged | `npm run audit:l04`, `identity:l05`, `inventory:l06`, `environment:verify` |
 
 The backend numbers replace earlier counts of 65/4 (L02) and 151/7 (L06) still present
 in some documents; the drift is recorded in the

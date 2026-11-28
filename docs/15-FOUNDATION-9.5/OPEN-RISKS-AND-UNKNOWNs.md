@@ -28,7 +28,7 @@ DOCUMENTED CLAIM ONLY, INFERRED — VERIFY, UNKNOWN, NOT VERIFIED.
 | R-013 | Supply-chain policy incomplete | High | Unpinned actions; no SBOM, vulnerability, secret or license scanning | CONFIRMED FROM SOURCE | CI security package |
 | R-014 | Scope could over-engineer the foundation | High | Eleven-phase programme against a small dedicated instance | INFERRED — VERIFY | Phase gates and deferral policy |
 | R-015 | Tooling could overwrite uncommitted work | Critical | Clean tree, zero untracked files at baseline | CONFIRMED BY TEST EVIDENCE | Keep file allowlists and Git-state checks |
-| R-016 | Revoked account or membership kept its authorization | Critical | Found and fixed 2026-11-28 (`55ba979`): authorization reads ignored `identity.users.status`, so a disabled account kept scoped grants. L05 `checks=46` proves a disabled account loses profile, scope and audit grant, a disabled membership loses scope, and `/auth/me` ends the session on an empty profile | CONFIRMED BY TEST EVIDENCE (closed) | Session-store purge after revocation and multi-instance caches remain outside scope |
+| R-016 | Revoked account or membership kept its authorization | Critical | Found and fixed 2026-11-28 (`55ba979`): authorization reads ignored `identity.users.status`, so a disabled account kept scoped grants. L05 `checks=46` (`55ba979`, rerun at `checks=47` `131eb81`) proves a disabled account loses profile, scope and audit grant, a disabled membership loses scope, and `/auth/me` ends the session on an empty profile | CONFIRMED BY TEST EVIDENCE (closed) | Session-store purge after revocation and multi-instance caches remain outside scope |
 
 ## 3. Additional risks found during Phase 0
 

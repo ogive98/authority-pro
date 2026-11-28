@@ -57,9 +57,9 @@ integration suite (7 tests) was not rerun in this increment.
 - HSTS emission under TLS and trusted proxy headers (ADR-0013).
 - A CSP for the Angular document served by the frontend host; the API policy above does not protect it.
 - `Secure` session/CSRF cookies in a production profile.
-- Runtime scenarios requiring PostgreSQL: distributed throttling. Revocation, RLS under
-  pooling and the atomic session cap are proven on a disposable database
-  (L05 `checks=46`, `55ba979`).
+- Runtime scenarios requiring PostgreSQL: distributed throttling. Revocation, nested
+  transactions, RLS under pooling and the atomic session cap are proven on a disposable
+  database (L05 `checks=47`, `131eb81`).
 - Header behavior through the frontend dev proxy or a real reverse proxy.
 
 ## 7. Next qualification increments
