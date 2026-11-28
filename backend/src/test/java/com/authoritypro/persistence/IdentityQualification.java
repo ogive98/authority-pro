@@ -141,6 +141,7 @@ public final class IdentityQualification {
                 capCheck(runtime);
                 labelChecks(runtime, migrator);
                 isolationChecks(runtime);
+                rlsConcurrencyChecks(runtime, migrator);
                 provisioningChecks(runtime, migrator, provisionerPassword);
                 denialChecks(runtime);
                 check("final_runtime_validation", () -> LocalDatabase.verifyRuntime(runtime));
@@ -729,6 +730,107 @@ public final class IdentityQualification {
                 return update(c, "INSERT INTO tenancy.companies (tenant_id, company_id, name) "
                         + "VALUES (?, ?, 'cross-tenant')", TENANT_B, UUID.randomUUID());
             }));
+        });
+    }
+
+    private static void rlsConcurrencyChecks(HikariDataSource runtime, HikariDataSource migrator) throws Exception {
+        check("rls_parallel_read_isolation", () -> {
+            runtime.setMaximumPoolSize(4);
+            try {
+                UUID[] users = {USER_A, USER_B, USER_A, USER_B};
+                UUID[] tenants = {TENANT_A, TENANT_B, TENANT_A, TENANT_B};
+                UUID[] companies = {COMPANY_A, COMPANY_B, COMPANY_A, COMPANY_B};
+                String[] names = {"l05-company-a", "l05-company-b", "l05-company-a", "l05-company-b"};
+                var failures = new ConcurrentLinkedQueue<Throwable>();
+                var ready = new CyclicBarrier(users.length);
+                var interleave = new CyclicBarrier(users.length);
+                var executor = Executors.newFixedThreadPool(users.length);
+                try {
+                    for (int worker = 0; worker < users.length; worker++) {
+                        int index = worker;
+                        executor.execute(() -> {
+                            try (Connection c = runtime.getConnection()) {
+                                c.setAutoCommit(false);
+                                try {
+                                    context(c, users[index], null);
+                                    ready.await(10, TimeUnit.SECONDS);
+                                    for (int round = 0; round < 25; round++) {
+                                        interleave.await(10, TimeUnit.SECONDS);
+                                        eq(1, number(c, "SELECT count(*) FROM tenancy.tenants"));
+                                        eq(1, number(c, "SELECT count(*) FROM tenancy.companies"));
+                                        require(names[index].equals(text(c, "SELECT name FROM tenancy.companies")));
+                                        eq(0, number(c, "SELECT count(*) FROM tenancy.companies WHERE tenant_id = ?",
+                                                tenants[1 - index % 2]));
+                                        eq(1, number(c, "SELECT count(*) FROM tenancy.companies "
+                                                + "WHERE company_id = ?", companies[index]));
+                                        eq(0, number(c, "SELECT count(*) FROM tenancy.companies "
+                                                + "WHERE company_id = ?", companies[1 - index % 2]));
+                                    }
+                                } finally {
+                                    c.rollback();
+                                }
+                            } catch (Throwable failure) {
+                                failures.add(failure);
+                            }
+                        });
+                    }
+                } finally {
+                    executor.shutdown();
+                    require(executor.awaitTermination(30, TimeUnit.SECONDS));
+                }
+                require(failures.isEmpty());
+            } finally {
+                runtime.setMaximumPoolSize(1);
+            }
+        });
+        check("rls_parallel_write_isolation", () -> {
+            runtime.setMaximumPoolSize(2);
+            try {
+                UUID[] users = {USER_A, USER_B};
+                UUID[] foreignTenants = {TENANT_B, TENANT_A};
+                var failures = new ConcurrentLinkedQueue<Throwable>();
+                var ready = new CyclicBarrier(users.length);
+                var executor = Executors.newFixedThreadPool(users.length);
+                try {
+                    for (int worker = 0; worker < users.length; worker++) {
+                        int index = worker;
+                        executor.execute(() -> {
+                            try (Connection c = runtime.getConnection()) {
+                                c.setAutoCommit(false);
+                                try {
+                                    context(c, users[index], null);
+                                    ready.await(10, TimeUnit.SECONDS);
+                                    eq(0, update(c, "UPDATE tenancy.companies SET name = name "
+                                            + "WHERE tenant_id = ?", foreignTenants[index]));
+                                    try {
+                                        update(c, "INSERT INTO tenancy.companies (tenant_id, company_id, name) "
+                                                + "VALUES (?, ?, 'parallel-cross-tenant')",
+                                                foreignTenants[index], UUID.randomUUID());
+                                        throw new AssertionError("PARALLEL_CROSS_TENANT_INSERT_NOT_DENIED");
+                                    } catch (SQLException denied) {
+                                        require("42501".equals(denied.getSQLState()));
+                                    }
+                                } finally {
+                                    c.rollback();
+                                }
+                            } catch (Throwable failure) {
+                                failures.add(failure);
+                            }
+                        });
+                    }
+                } finally {
+                    executor.shutdown();
+                    require(executor.awaitTermination(30, TimeUnit.SECONDS));
+                }
+                require(failures.isEmpty());
+                raw(migrator, true, true, c -> {
+                    eq(0, number(c, "SELECT count(*) FROM tenancy.companies "
+                            + "WHERE name = 'parallel-cross-tenant'"));
+                    return null;
+                });
+            } finally {
+                runtime.setMaximumPoolSize(1);
+            }
         });
     }
 
