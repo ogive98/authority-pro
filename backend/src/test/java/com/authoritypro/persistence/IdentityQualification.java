@@ -22,6 +22,7 @@ import com.authoritypro.platform.identity.infrastructure.security.SpringPassword
 import com.authoritypro.platform.identity.infrastructure.security.SpringPasswordVerifier;
 import com.authoritypro.platform.identity.infrastructure.session.CappedSessionRepository;
 import com.authoritypro.platform.runtime.infrastructure.persistence.LocalDatabase;
+import com.authoritypro.platform.tenancy.infrastructure.persistence.TenantTransactions;
 import com.zaxxer.hikari.HikariDataSource;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -145,6 +146,7 @@ public final class IdentityQualification {
                 capCheck(runtime);
                 labelChecks(runtime, migrator);
                 isolationChecks(runtime);
+                transactionChecks(runtime);
                 rlsConcurrencyChecks(runtime, migrator);
                 revocationChecks(runtime, migrator);
                 provisioningChecks(runtime, migrator, provisionerPassword);
@@ -735,6 +737,56 @@ public final class IdentityQualification {
                 return update(c, "INSERT INTO tenancy.companies (tenant_id, company_id, name) "
                         + "VALUES (?, ?, 'cross-tenant')", TENANT_B, UUID.randomUUID());
             }));
+        });
+    }
+
+    private static void transactionChecks(HikariDataSource runtime) throws Exception {
+        check("nested_transaction_scope_confined", () -> {
+            runtime.setMaximumPoolSize(2);
+            try {
+                var transactions = new TenantTransactions(runtime);
+                String outcome = transactions.scoped(USER_A, TENANT_A, false, outer -> {
+                    eq(1, number(outer, "SELECT count(*) FROM tenancy.tenants"));
+                    require("l05-tenant-a".equals(text(outer, "SELECT name FROM tenancy.tenants")));
+                    try {
+                        transactions.requiresNew(USER_B, TENANT_B, false, inner -> {
+                            eq(1, number(inner, "SELECT count(*) FROM tenancy.tenants"));
+                            require("l05-tenant-b".equals(text(inner, "SELECT name FROM tenancy.tenants")));
+                            require("l05-company-b".equals(text(inner, "SELECT name FROM tenancy.companies")));
+                            require(TENANT_B.toString().equals(
+                                    text(inner, "SELECT current_setting('app.tenant_id', true)")));
+                            return null;
+                        });
+                    } catch (RuntimeException failure) {
+                        throw new AssertionError("NESTED_SCOPE_FAILED", failure);
+                    }
+                    eq(1, number(outer, "SELECT count(*) FROM tenancy.tenants"));
+                    require("l05-tenant-a".equals(text(outer, "SELECT name FROM tenancy.tenants")));
+                    require(TENANT_A.toString().equals(
+                            text(outer, "SELECT current_setting('app.tenant_id', true)")));
+                    try {
+                        transactions.scoped(USER_B, TENANT_B, false, joined -> {
+                            throw new AssertionError("SCOPE_SWITCH_ACCEPTED");
+                        });
+                        throw new AssertionError("SCOPE_SWITCH_ACCEPTED");
+                    } catch (IllegalArgumentException expected) {
+                        // A joined template must refuse a different scope before the parent is affected.
+                    }
+                    try {
+                        transactions.requiresNew(USER_B, TENANT_B, false, inner -> {
+                            throw new IllegalStateException("inner rollback");
+                        });
+                        throw new AssertionError("INNER_FAILURE_SWALLOWED");
+                    } catch (IllegalStateException expected) {
+                        require("inner rollback".equals(expected.getMessage()));
+                    }
+                    eq(1, number(outer, "SELECT count(*) FROM tenancy.tenants"));
+                    return "committed";
+                });
+                require("committed".equals(outcome));
+            } finally {
+                runtime.setMaximumPoolSize(1);
+            }
         });
     }
 
