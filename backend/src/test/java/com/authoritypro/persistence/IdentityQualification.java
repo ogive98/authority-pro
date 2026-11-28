@@ -6,6 +6,7 @@ import com.authoritypro.platform.access.domain.Permission;
 import com.authoritypro.platform.access.domain.PermissionEvaluator;
 import com.authoritypro.platform.access.domain.RoleCode;
 import com.authoritypro.platform.access.infrastructure.persistence.JdbcAuthorizationCatalog;
+import com.authoritypro.platform.identity.application.IdentityAccessException;
 import com.authoritypro.platform.identity.application.OperatorProvisioning;
 import com.authoritypro.platform.identity.domain.CredentialAuthenticator;
 import com.authoritypro.platform.identity.domain.LoginName;
@@ -430,6 +431,90 @@ public final class IdentityQualification {
                         .limit(CappedSessionRepository.MAX_CONCURRENT)
                         .map(Session::getId).collect(Collectors.toSet());
                 require(newest.equals(live.keySet()));
+                for (String id : new ArrayList<>(live.keySet())) capped.deleteById(id);
+                eq(0, capped.findByPrincipalName(principal).size());
+            } finally {
+                repository.destroy();
+                runtime.setMaximumPoolSize(1);
+            }
+        });
+        check("session_cap_lock_timeout", () -> {
+            var repository = new JdbcIndexedSessionRepository(new JdbcTemplate(runtime),
+                    new TransactionTemplate(new DataSourceTransactionManager(runtime)));
+            repository.setTableName("identity.spring_session");
+            repository.setDefaultMaxInactiveInterval(java.time.Duration.ofMinutes(30));
+            repository.afterPropertiesSet();
+            runtime.setMaximumPoolSize(4);
+            try {
+                var capped = new CappedSessionRepository(runtime, repository,
+                        new TransactionTemplate(new DataSourceTransactionManager(runtime)));
+                String principal = "cap-timeout-" + UUID.randomUUID();
+                try (Connection holder = runtime.getConnection()) {
+                    holder.setAutoCommit(false);
+                    try (PreparedStatement lock = holder.prepareStatement(
+                            "SELECT pg_advisory_xact_lock(hashtextextended(?, 0))")) {
+                        lock.setString(1, principal);
+                        lock.execute();
+                    }
+                    Session blocked = capped.createSession();
+                    blocked.setAttribute(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, principal);
+                    blocked.setAttribute("authority.userId", USER_A.toString());
+                    long started = System.nanoTime();
+                    try {
+                        capped.save(blocked);
+                        throw new AssertionError("SESSION_CAP_LOCK_NOT_ENFORCED");
+                    } catch (IdentityAccessException refusal) {
+                        require(refusal.kind() == IdentityAccessException.Kind.STORE_UNAVAILABLE);
+                    }
+                    long elapsed = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - started);
+                    require(elapsed >= 1_500 && elapsed < 20_000);
+                    eq(0, capped.findByPrincipalName(principal).size());
+                    holder.rollback();
+                }
+                Session recovered = capped.createSession();
+                recovered.setAttribute(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, principal);
+                recovered.setAttribute("authority.userId", USER_A.toString());
+                capped.save(recovered);
+                Map<String, Session> live = capped.findByPrincipalName(principal);
+                eq(1, live.size());
+                require(live.containsKey(recovered.getId()));
+                for (String id : new ArrayList<>(live.keySet())) capped.deleteById(id);
+            } finally {
+                repository.destroy();
+                runtime.setMaximumPoolSize(1);
+            }
+        });
+        check("session_cap_rotation", () -> {
+            var repository = new JdbcIndexedSessionRepository(new JdbcTemplate(runtime),
+                    new TransactionTemplate(new DataSourceTransactionManager(runtime)));
+            repository.setTableName("identity.spring_session");
+            repository.setDefaultMaxInactiveInterval(java.time.Duration.ofMinutes(30));
+            repository.afterPropertiesSet();
+            runtime.setMaximumPoolSize(4);
+            try {
+                var capped = new CappedSessionRepository(runtime, repository,
+                        new TransactionTemplate(new DataSourceTransactionManager(runtime)));
+                String principal = "cap-rotation-" + UUID.randomUUID();
+                List<Session> initial = new ArrayList<>();
+                for (int index = 0; index < CappedSessionRepository.MAX_CONCURRENT; index++) {
+                    Session session = capped.createSession();
+                    session.setAttribute(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, principal);
+                    session.setAttribute("authority.userId", USER_A.toString());
+                    capped.save(session);
+                    initial.add(session);
+                    Thread.sleep(20);
+                }
+                // Rotation saves a new identifier while the previous row still exists.
+                Session rotated = capped.createSession();
+                rotated.setAttribute(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, principal);
+                rotated.setAttribute("authority.userId", USER_A.toString());
+                capped.save(rotated);
+                Map<String, Session> live = capped.findByPrincipalName(principal);
+                eq(CappedSessionRepository.MAX_CONCURRENT, live.size());
+                require(live.containsKey(rotated.getId()));
+                require(!live.containsKey(initial.get(0).getId()));
+                require(live.containsKey(initial.get(1).getId()));
+                require(live.containsKey(initial.get(2).getId()));
                 for (String id : new ArrayList<>(live.keySet())) capped.deleteById(id);
                 eq(0, capped.findByPrincipalName(principal).size());
             } finally {
