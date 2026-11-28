@@ -1,6 +1,7 @@
 # ADR-0010 — Candidate versions and compatibility evidence
 
 - **Status:** APPROVED bounded L02 backend/tooling subset on 2026-11-18, implemented and locally qualified. Database, frontend and other candidate selections remain PROPOSED; see [L02 execution evidence](../PACK-INVENTORY.md#l02-execution-evidence--2026-11-18).
+- **Frontend note (2026-11-28):** the earlier Angular 21 fallback and the rejected Angular 22 probe below remain historical findings. The later L07 implementation pins Angular 22.3.0, TypeScript ~6.0.2, RxJS 7.8.2 and Node 24; the production build and 100 unit tests pass. See [L07 evidence](../PACK-INVENTORY.md#l07-angular-application-evidence--2026-11-28).
 - **Evidence state:** Local tools and authoritative compatibility sources checked; disposable probe results are distinguished below from unexecuted application/database tests.
 
 - **Record reviewed:** 2026-11-17; this is not an approval date.

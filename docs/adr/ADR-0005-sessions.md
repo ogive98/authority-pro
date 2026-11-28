@@ -1,6 +1,7 @@
 # ADR-0005 — Browser authentication, sessions and initial provisioning
 
 - **Status:** APPROVED — Spring Security/JDBC browser cookie sessions with CSRF and local operator CLI initial provisioning, never a public setup page. Exact policies, guards, grants and framework integration remain PROPOSED; no implementation exists.
+- **Implementation note (2026-11-28):** the bounded L05 contract is now IMPLEMENTED and qualified against an isolated database (V1→V4, `checks=36`); see [Identity and Access §10.13](../04-PLATFORM-ENGINES/IDENTITY-AND-ACCESS.md#1013-isolated-implementation-evidence--2026-11-23). Production cookie security, distributed throttling and the main-database migration remain open. The original status sentence above is preserved as the decision record.
 - **Approval basis:** [Bounded owner confirmation](../00-GOVERNANCE/DECISION-MANAGEMENT.md#owner-confirmation-of-foundation-orientations), not blanket approval of every recommendation below.
 - **Scope:** Browser access to the technical foundation. Machine-to-machine authentication is separately deferred.
 

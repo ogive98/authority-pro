@@ -1,16 +1,18 @@
 # Authority Pro — Documentation
 
 English documentation; French conversation. This foundation design pack accompanies
-the delivered and tested L02 no-database backend skeleton, not a complete platform.
+the delivered and tested L02–L07 slices, not a complete platform.
 
 Decision approval and delivery status are separate. Only explicitly bounded owner
 choices are approved; other technical recommendations remain PROPOSED. See the
+[current state](15-FOUNDATION-9.5/CURRENT-STATE.md) and the
 [L02 execution evidence](PACK-INVENTORY.md#l02-execution-evidence--2026-11-18)
-for the clean verification of 65 unit tests and 4 packaged integration tests,
-with no failures or skips. The offline clean repeat also passed.
-No PostgreSQL was touched; no frontend, identity, audit, protected inventory or
-business feature is implemented. Local document checks are not runtime tests;
-L02 does not close the integrated foundation or deployment gates.
+for the historical clean verification of 65 unit tests and 4 packaged integration
+tests. The current revision verifies 180 backend tests and seven packaged integration
+tests, plus 100 Angular unit tests. No PostgreSQL was touched by those test runs; no
+business feature is implemented. The main database remains at V1, while identity,
+audit and protected inventory run against isolated databases. Local document checks
+are not runtime tests; the integrated foundation and deployment gates remain open.
 
 ## Start here
 

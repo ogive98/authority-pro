@@ -1,3 +1,9 @@
+> **Identity correction (2026-11-28, Foundation 9.5 Phase 1):** the project was renamed
+> **Authority Pro** by the owner on 2026-11-17. This document is retained unchanged as
+> the immutable founding blueprint; every occurrence of "AUTHORITY ONLINE" below is
+> historical provenance, not the current project identity. Current status lives in
+> [CURRENT-STATE](15-FOUNDATION-9.5/CURRENT-STATE.md).
+
 # AUTHORITY ONLINE — OFFICIAL MASTER BLUEPRINT
 ## Complete Platform Constitution, Product Requirements, Architecture and Extensibility Specification
 

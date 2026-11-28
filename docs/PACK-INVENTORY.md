@@ -1,7 +1,7 @@
 # Foundation Pack Inventory
 
 **Status:** Current-pack coverage inventory plus required product-target catalogue, not full-platform completion.
-**Application status:** L02 and bounded closed L03 integration locally IMPLEMENTED / TESTED. Main V1 is applied with four empty technical tables; the [authorized recovery passed](#l03-main-recovery-evidence--2026-11-20) without rewriting the earlier failure. L04 audit and L05 identity/access additionally have isolated test-database implementations verified on 2026-11-21 and 2026-11-23 (identity: V1→V4 sessions and provisioning, `checks=36`, see [Identity and Access §10.13](04-PLATFORM-ENGINES/IDENTITY-AND-ACCESS.md#1013-isolated-implementation-evidence--2026-11-23)). This is local technical acceptance, not full G2–G5 or production readiness; the main-database migration, future L05 identity/access consumers, protected inventory and frontend remain open.
+**Application status:** L02 and bounded closed L03 integration locally IMPLEMENTED / TESTED. Main V1 is applied with four empty technical tables; the [authorized recovery passed](#l03-main-recovery-evidence--2026-11-20) without rewriting the earlier failure. L04 audit, L05 identity/access and L06 protected inventory additionally have isolated test-database implementations verified on 2026-11-21, 2026-11-23 and 2026-11-24 (identity: V1→V4 sessions and provisioning, `checks=36`, see [Identity and Access §10.13](04-PLATFORM-ENGINES/IDENTITY-AND-ACCESS.md#1013-isolated-implementation-evidence--2026-11-23); inventory: V1→V5, `checks=12`). The L07 Angular application is implemented and unit-tested. This is local technical acceptance, not full G2–G5 or production readiness; the main-database migration, authenticated browser acceptance, integrated qualification, restore, performance and production deployment remain open. The authoritative status summary is [CURRENT-STATE](15-FOUNDATION-9.5/CURRENT-STATE.md).
 
 ## Source and scope
 
@@ -31,7 +31,7 @@ checks index coverage.
 | 08 Platform products | Boundaries and deferral recorded | Studio, X, marketplace, licensing, owner/partner portals and AI products |
 | 09 Operations | Failure/recovery constraints and gates | Full backup/PITR, SHIELD/GHOST/FOX/PATCH procedures and operational dashboards |
 | 10 Security/data | Security governance, RLS, sessions, audit constraints and risks | Complete threat model, privacy/retention/legal policy and incident runbooks before production |
-| 11 Quality | Documentation validator, 69 passing L02 tests, runtime/browser/recovery gates | Database/identity/audit/browser/recovery tests and measured performance evidence |
+| 11 Quality | Documentation validator, 180 backend tests verified on 2026-11-28, runtime/browser/recovery gates | Full CI security/product scans, authenticated browser journeys and measured performance evidence |
 | 12 Developer platform | Monorepo, local docs/backend tooling and CI definition | SDK/CLI, generators, contribution/release automation |
 | 13 Implementation | Boundaries, phases, gates, L02 execution evidence and risk register | Later-lot implementation evidence |
 | 14 Templates | ADR template and foundation manifest schema with valid/invalid fixtures | Full event/API/automation/script/migration template catalogue |
@@ -529,6 +529,17 @@ Documentation-only step; no file, code, service, database, container or browser 
 - `npm test` passed 67 pure tests and `npm run check:docs` reported zero errors over 53 documents, 50 Markdown files, 798 local links and nine diagrams.
 
 **Remaining scope:** lifecycle transitions, enablement, extension/version compatibility, Angular consumption, real-browser acceptance and production migration remain separately gated. The inventory view is read-only and exposes no tenant data.
+
+## L07 Angular application evidence — 2026-11-28
+
+**Status:** the Angular application is IMPLEMENTED / TESTED at the unit level against the existing L05/L06 HTTP contracts. Public screens were checked in a local browser; authenticated browser journeys remain NOT VERIFIED because no authorized test account and database package has been executed. No business feature, main-database migration or deployment is added.
+
+- Commits `04f0269` to `131823a` deliver the authenticated shell, login, scope selection, overview, inventory, audit read, preferences, FR/EN/IT/AR catalogues with RTL and the public-screen accessibility correction.
+- `frontend: npm test` passed **100 tests across 16 files** at revision `27e9b14` on 2026-11-28; the production build enforces initial-bundle budgets of 500 kB warning and 1 MB error.
+- Backend evidence at the same revision: clean verify with **180 unit/architecture/contract tests and seven packaged integration tests**, zero failures.
+- Earlier local browser checks covered the public login and not-found screens: responsive widths, keyboard focus, contrast, RTL and error states. They did not authenticate and cannot prove scoped data isolation in the UI.
+- The latest backend change (`27e9b14`) only adds the gated `AUTHORITY_PRO_DATABASE` selection restricted to the disposable `authority_pro_l07_ui_test` database; the database itself was not created.
+- Remaining scope: authenticated real-browser acceptance, late-response tenant switching against a live server, frontend CI job, E2E suite and any main-database dependency.
 
 ## Verification boundaries
 

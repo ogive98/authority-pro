@@ -40,7 +40,7 @@ superseded claims instead of deleting them.
 4. **Approval text is frozen but implementation moved.** ADR status lines record the
    moment of decision, not later delivery.
 
-## 4. Phase 1 scope proposal (not executed)
+## 4. Phase 1 scope (executed 2026-11-28, except CI)
 
 - Correct D-01 to D-09 and D-11 in the listed files, preserving historical statements
   with dated supersession notes.
@@ -49,6 +49,25 @@ superseded claims instead of deleting them.
 - Extend `tools/validate-docs.mjs` with status-metadata and count-consistency checks.
 - Re-run `npm run check:docs` and `npm test`; zero errors required before Gate G1.
 - Do not modify application code, tests, migrations, manifests, lockfiles or CI.
+
+## 5. Resolution status — 2026-11-28
+
+| ID | Resolution |
+|---|---|
+| D-01 | Identity correction banner added to the blueprint; original title preserved |
+| D-02, D-03, D-07 | README current-state paragraph and L02 historical counts corrected; V2–V5 stated |
+| D-04 | Frontend state separated from unimplemented business modules in the phases document |
+| D-05 | Implementation note added to ADR-0005 without rewriting the approval record |
+| D-06 | Frontend note added to ADR-0010 and the README L01 section |
+| D-08 | L07 evidence section added to the Pack Inventory |
+| D-09 | Validation-gates runtime status extended with L04–L07 |
+| D-11 | Implementation delta section added to the risk register |
+| D-10 | Deferred to the separately authorized CI package (DEC-007); no workflow edit was made |
+| D-12 | Baseline delta recorded in the baseline inventory |
+
+`npm run check:docs` reports 0 errors and `npm test` 67/67 after the corrections.
+Historical counts and approval texts remain in place with dated notes; nothing was
+deleted.
 
 ## Related documents
 

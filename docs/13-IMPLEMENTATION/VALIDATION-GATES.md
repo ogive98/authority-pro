@@ -1,7 +1,7 @@
 # Validation Gates
 
 **Decision status:** PROPOSED gate criteria.
-**Runtime status:** L02 and bounded closed L03 integration passed locally; see [main recovery evidence](../PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20). Full G2 fresh-clone/clean-machine provisioning, G3–G5 authenticated isolation, audit, browser and production acceptance remain open.
+**Runtime status:** L02 and bounded closed L03 integration passed locally; see [main recovery evidence](../PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20). L04, L05 and L06 passed isolated qualification (E5 isolated); L07 is unit-tested (E3) with public-screen browser checks only. Full G2 fresh-clone/clean-machine provisioning, authenticated G3–G5 acceptance, restore, CI hardening and production acceptance remain open. The authoritative summary is [CURRENT-STATE](../15-FOUNDATION-9.5/CURRENT-STATE.md).
 
 ## G0 — Documentation and contracts
 

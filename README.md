@@ -3,14 +3,20 @@
 Independent Angular + Spring Boot platform foundation. Business-neutral Thunder Core,
 modular monolith, DDD, hexagonal architecture and Plugin-Based Components.
 
-**Current state: L02, bounded closed L03, the L04 audit engine and the L05
-identity/access surface are locally implemented and tested.** Main V1 has four empty
-technical tables; L04 and L05 run only against their isolated test databases (V1→V4
-for L05, `checks=36`) and the closed data-local HTTP launch passed.
-See the [recovery evidence and retained failure](docs/PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20)
-and [L05 implementation evidence](docs/04-PLATFORM-ENGINES/IDENTITY-AND-ACCESS.md#1013-isolated-implementation-evidence--2026-11-23).
-No frontend, business module, main-database V2–V4 migration, release or hosted
-deployment exists.
+**Current state: L02, bounded closed L03, the L04 audit engine, the L05
+identity/access surface, the L06 protected inventory and the L07 Angular
+application are locally implemented and tested.** Main V1 has four empty technical
+tables; L04–L06 run only against their isolated test databases (V1→V5 for L06).
+The backend verifies 180 unit/architecture/contract tests and seven packaged
+integration tests; the Angular application passes 100 unit tests. Authenticated
+browser journeys remain unverified.
+See the [recovery evidence and retained failure](docs/PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20),
+the [L05 implementation evidence](docs/04-PLATFORM-ENGINES/IDENTITY-AND-ACCESS.md#1013-isolated-implementation-evidence--2026-11-23),
+the [L06 evidence](docs/PACK-INVENTORY.md#l06-protected-inventory-evidence--2026-11-24),
+the [L07 evidence](docs/PACK-INVENTORY.md#l07-angular-application-evidence--2026-11-28)
+and the [current state](docs/15-FOUNDATION-9.5/CURRENT-STATE.md).
+No business module, main-database V2–V5 migration, release or hosted deployment
+exists.
 
 ## Decisions
 
@@ -56,14 +62,18 @@ probe passed but development-tool advisories remain open. These findings do not
 by themselves approve application pins or prove backend/database/browser acceptance.
 The subsequent L02 approval and implementation are recorded below; the remaining G1
 decisions stay open. PostgreSQL was untouched during L01/L02; the later environment
-preparation below is separate evidence. Frontend findings require review before L07.
+preparation below is separate evidence. The later L07 implementation resolved the
+frontend selection with Angular 22.3.0, which builds and passes 100 unit tests; the
+earlier Angular 21 fallback remains the historical L01 finding.
 
 ## L02 backend skeleton — 2026-11-18
 
 [Execution evidence](docs/PACK-INVENTORY.md#l02-execution-evidence--2026-11-18) records
 65 unit/HTTP/architecture/contract tests and four packaged-JAR integration tests,
 all passing both a clean build and an offline clean repeat with the same JAR hash.
-This is a closed technical skeleton, not a usable tenant application.
+These are the historical L02 counts; the current backend verifies 180 unit tests and
+seven packaged integration tests. This is a closed technical skeleton, not a usable
+tenant application.
 
 Requirements: Node.js 24 and publisher-verified **Temurin 21.0.13+9** (release 21).
 Use a portable JDK and a process-local `JAVA_HOME`, not a system-wide Java change.

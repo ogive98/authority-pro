@@ -65,6 +65,18 @@ clean-machine provisioning, production recovery or advanced-composition risks.
 
 Responsibility defaults to the project owner for approval and future platform/security maintainers for execution; no team assignment is invented. Close a risk only with evidence linked from a validation gate, or explicitly accept it with an owner decision and bounds.
 
+## Implementation delta — 2026-11-28
+
+The table above states required mitigations, not their current delivery state. At revision `27e9b14`:
+
+- R01, R02 and R05 have partial code and isolated tests (restricted non-owner runtime role, bounded own-membership lookup, same-connection tenant context). Pool-reuse, rollback and concurrency proof is missing.
+- R03 and R04 have operator-only provisioning and framework sessions implemented and isolated-tested.
+- R06 has atomic audit tested in isolation; retention, redaction and integrity remain open.
+- R10, R11 and R15 have no drill and no benchmark.
+- R13 is now supported by the single status source in [CURRENT-STATE](../15-FOUNDATION-9.5/CURRENT-STATE.md).
+
+No entry above is closed by this note. See the [open risks register](../15-FOUNDATION-9.5/OPEN-RISKS-AND-UNKNOWNs.md) for labels and unknowns.
+
 ## Related
 
 - [Validation gates](VALIDATION-GATES.md)
