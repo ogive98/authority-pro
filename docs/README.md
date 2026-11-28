@@ -66,6 +66,20 @@ L02 does not close the integrated foundation or deployment gates.
 - [Test strategy](11-QUALITY-AND-TESTING/TEST-STRATEGY.md)
 - [Implementation phases](13-IMPLEMENTATION/IMPLEMENTATION-PHASES.md)
 
+## Foundation 9.5 programme
+
+- [Current state — authoritative status](15-FOUNDATION-9.5/CURRENT-STATE.md)
+- [Baseline file inventory](15-FOUNDATION-9.5/BASELINE-FILE-INVENTORY.md)
+- [Implementation evidence matrix](15-FOUNDATION-9.5/IMPLEMENTATION-EVIDENCE-MATRIX.md)
+- [Documentation drift report](15-FOUNDATION-9.5/DOCUMENTATION-DRIFT-REPORT.md)
+- [Dependency and boundary map](15-FOUNDATION-9.5/DEPENDENCY-AND-BOUNDARY-MAP.md)
+- [Open risks and unknowns](15-FOUNDATION-9.5/OPEN-RISKS-AND-UNKNOWNs.md)
+- [Adapted Foundation 9.5 plan](15-FOUNDATION-9.5/FOUNDATION-9.5-ADAPTED-PLAN.md)
+
+These documents record the read-only Phase 0 audit at revision `27e9b14`. Drift is
+recorded, not corrected; corrections and any code, migration or CI change require
+separate owner approval.
+
 ## Templates and fixtures
 
 - [ADR template](14-TEMPLATES/ADR-TEMPLATE.md)
