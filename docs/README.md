@@ -78,9 +78,25 @@ are not runtime tests; the integrated foundation and deployment gates remain ope
 - [Open risks and unknowns](15-FOUNDATION-9.5/OPEN-RISKS-AND-UNKNOWNs.md)
 - [Adapted Foundation 9.5 plan](15-FOUNDATION-9.5/FOUNDATION-9.5-ADAPTED-PLAN.md)
 
-These documents record the read-only Phase 0 audit at revision `27e9b14`. Drift is
-recorded, not corrected; corrections and any code, migration or CI change require
-separate owner approval.
+These documents record the read-only Phase 0 audit at revision `27e9b14`. The drift
+report is preserved as written; Phase 1 corrections were applied additively with
+dated notes, without rewriting history. Any code, migration, CI or runtime change
+still requires separate owner approval.
+
+### Phase 2 — blueprint and contracts (design only)
+
+- [Target blueprint](15-FOUNDATION-9.5/phase-2/00-TARGET-BLUEPRINT.md)
+- [Module ownership matrix](15-FOUNDATION-9.5/phase-2/01-MODULE-OWNERSHIP-MATRIX.md)
+- [Contract catalogue](15-FOUNDATION-9.5/phase-2/02-CONTRACT-CATALOGUE.md)
+- [Database ownership and migration map](15-FOUNDATION-9.5/phase-2/03-DB-OWNERSHIP-AND-MIGRATION-MAP.md)
+- [Event catalogue](15-FOUNDATION-9.5/phase-2/04-EVENT-CATALOGUE.md)
+- [Security threat model](15-FOUNDATION-9.5/phase-2/05-SECURITY-THREAT-MODEL.md)
+- [Frontend / API integration map](15-FOUNDATION-9.5/phase-2/06-FRONTEND-API-MAP.md)
+- [Acceptance criteria and packages](15-FOUNDATION-9.5/phase-2/07-ACCEPTANCE-AND-PACKAGES.md)
+- [Observed OpenAPI contract](15-FOUNDATION-9.5/phase-2/openapi/authority-pro-v1.yaml)
+
+Nothing in Phase 2 is implemented or approved: it describes the observed contract at
+`27e9b14`, proposed target rules and dated ADRs.
 
 ## Templates and fixtures
 
@@ -105,6 +121,9 @@ marketplace installer. JSON validity does not establish trust or grant permissio
 - [0009 — Proposed scripting boundary](adr/ADR-0009-script-engine.md)
 - [0010 — Candidate versions and bounded compatibility evidence](adr/ADR-0010-java-spring-versions.md)
 - [0011 — Approved API orientations; detailed contracts proposed](adr/ADR-0011-api-versioning.md)
+- [0012 — Proposed atomic session cap](adr/ADR-0012-atomic-session-cap.md)
+- [0013 — Proposed production HTTP profile](adr/ADR-0013-production-http-profile.md)
+- [0014 — Proposed named exports and module edges](adr/ADR-0014-named-module-exports.md)
 
 ## Reference
 

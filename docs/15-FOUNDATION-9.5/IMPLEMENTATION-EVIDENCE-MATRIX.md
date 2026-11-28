@@ -51,7 +51,7 @@ highest level actually observed on 2026-11-28.
 | Backend packaged integration | 7 passing | same verify, JDK 21.0.13+9 |
 | Frontend unit | 100 passing across 16 files | `frontend: npm test` |
 | Documentation tooling | 67 passing | `npm test` |
-| Documentation validation | 0 errors, 53 documents, 798 links, 9 diagrams | `npm run check:docs` |
+| Documentation validation | 0 errors, 72 documents, 896 links, 12 diagrams | `npm run check:docs` |
 
 The backend numbers replace earlier counts of 65/4 (L02) and 151/7 (L06) still present
 in some documents; the drift is recorded in the

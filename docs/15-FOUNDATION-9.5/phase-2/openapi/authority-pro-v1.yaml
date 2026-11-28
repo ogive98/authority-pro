@@ -1,0 +1,451 @@
+openapi: 3.1.0
+info:
+  title: Authority Pro Platform API
+  version: 0.1.0
+  description: >
+    Observed contract of the implemented /api/v1 surface at revision 27e9b14,
+    documented as a proposal for the Foundation 9.5 Phase 2 blueprint. This file
+    describes what the code does today, not a target for new capabilities.
+  license:
+    name: Proprietary
+servers:
+  - url: http://127.0.0.1:8080
+    description: Local loopback only; no hosted deployment exists
+tags:
+  - name: auth
+  - name: access
+  - name: inventory
+  - name: audit
+paths:
+  /api/v1/auth/csrf:
+    get:
+      tags: [auth]
+      summary: Issue or renew the CSRF cookie
+      operationId: issueCsrf
+      security: []
+      responses:
+        '204':
+          description: CSRF cookie written; response is non-cacheable
+  /api/v1/auth/login:
+    post:
+      tags: [auth]
+      summary: Authenticate with login and password
+      operationId: login
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/CsrfHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '204':
+          description: Authenticated session created (session id rotated)
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/CsrfRejected'
+        '429':
+          $ref: '#/components/responses/Throttled'
+        '503':
+          $ref: '#/components/responses/SessionStoreUnavailable'
+  /api/v1/auth/logout:
+    post:
+      tags: [auth]
+      summary: Invalidate the current session
+      operationId: logout
+      parameters:
+        - $ref: '#/components/parameters/CsrfHeader'
+      responses:
+        '204':
+          description: Session invalidated; repeated logout is not guaranteed to be 204 when unauthenticated
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/CsrfRejected'
+  /api/v1/auth/me:
+    get:
+      tags: [auth]
+      summary: Read the caller's own profile and memberships
+      operationId: ownProfile
+      responses:
+        '200':
+          description: Own control-plane profile
+          headers:
+            Cache-Control:
+              schema: { type: string, const: no-store }
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnProfile'
+        '401':
+          description: Not authenticated, session expired, or profile no longer exists
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '503':
+          $ref: '#/components/responses/SessionStoreUnavailable'
+  /api/v1/access/bootstrap:
+    get:
+      tags: [access]
+      summary: Post-authentication bootstrap for exactly one selected scope
+      operationId: scopedBootstrap
+      parameters:
+        - $ref: '#/components/parameters/TenantHeader'
+        - $ref: '#/components/parameters/CompanyHeader'
+        - $ref: '#/components/parameters/SiteHeader'
+      responses:
+        '200':
+          description: Effective roles and permissions for the validated selection
+          headers:
+            Cache-Control:
+              schema: { type: string, const: no-store }
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bootstrap'
+        '400':
+          description: Missing or malformed scope selector, or a site selector supplied for this slice
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '503':
+          $ref: '#/components/responses/AccessUnavailable'
+  /api/v1/platform/inventory:
+    get:
+      tags: [inventory]
+      summary: Read the protected compiled component inventory
+      operationId: readInventory
+      description: Requires the database-resolved platform.inventory.read permission; no tenant scope headers are used.
+      responses:
+        '200':
+          description: Build revision and compiled module descriptors
+          headers:
+            Cache-Control:
+              schema: { type: string, const: no-store }
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '503':
+          description: Catalogue or authorization store unavailable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+  /api/v1/audit/tenant-records:
+    get:
+      tags: [audit]
+      summary: Read tenant audit records with cursor paging
+      operationId: readTenantAudit
+      parameters:
+        - $ref: '#/components/parameters/TenantHeader'
+        - $ref: '#/components/parameters/CompanyHeader'
+        - $ref: '#/components/parameters/SiteHeader'
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+        - name: action
+          in: query
+          schema: { type: string }
+        - name: targetType
+          in: query
+          schema: { type: string }
+        - name: targetId
+          in: query
+          schema: { type: string }
+        - name: actorId
+          in: query
+          schema: { type: string, format: uuid }
+        - name: from
+          in: query
+          schema: { type: string, format: date-time }
+        - name: to
+          in: query
+          schema: { type: string, format: date-time }
+        - name: beforeOccurredAt
+          in: query
+          schema: { type: string, format: date-time }
+        - name: beforeRecordId
+          in: query
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: One page of tenant audit records
+          headers:
+            Cache-Control:
+              schema: { type: string, const: no-store }
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditPage'
+        '400':
+          description: Invalid query or scope selector
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          $ref: '#/components/responses/AuthenticationRequired'
+        '403':
+          $ref: '#/components/responses/AuthorizationDenied'
+        '503':
+          description: Audit store unavailable
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: AUTHORITY_PRO_SESSION
+  parameters:
+    CsrfHeader:
+      name: X-XSRF-TOKEN
+      in: header
+      required: true
+      description: Value of the XSRF-TOKEN cookie for unsafe methods
+      schema: { type: string }
+    TenantHeader:
+      name: X-Authority-Tenant
+      in: header
+      required: true
+      schema: { type: string, format: uuid }
+    CompanyHeader:
+      name: X-Authority-Company
+      in: header
+      required: false
+      schema: { type: string, format: uuid }
+    SiteHeader:
+      name: X-Authority-Site
+      in: header
+      required: false
+      description: Rejected with 400 in the current slice
+      schema: { type: string }
+  responses:
+    InvalidRequest:
+      description: Request body or parameter validation failed
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    AuthenticationRequired:
+      description: Authentication is required
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    AuthorizationDenied:
+      description: The request is not permitted
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    CsrfRejected:
+      description: CSRF verification failed
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Throttled:
+      description: Too many authentication attempts from this source
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    SessionStoreUnavailable:
+      description: Session service unavailable
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    AccessUnavailable:
+      description: Authorization service unavailable
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+  schemas:
+    Problem:
+      type: object
+      required: [type, title, status, detail, instance]
+      properties:
+        type: { type: string, examples: ['urn:authority-pro:problem:authentication-required'] }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        instance: { type: string, examples: ['urn:uuid:...'] }
+        code:
+          type: string
+          enum:
+            - AUTHENTICATION_REQUIRED
+            - SESSION_EXPIRED
+            - AUTHORIZATION_DENIED
+            - CSRF_REJECTED
+            - AUTHENTICATION_THROTTLED
+            - SCOPE_INVALID
+            - SESSION_STORE_UNAVAILABLE
+            - ACCESS_UNAVAILABLE
+            - INVENTORY_UNAVAILABLE
+            - AUDIT_QUERY_INVALID
+            - AUDIT_UNAVAILABLE
+        traceId: { type: string, pattern: '^[0-9a-f]{32}$' }
+    LoginRequest:
+      type: object
+      required: [login, password]
+      properties:
+        login: { type: string, minLength: 1, maxLength: 200 }
+        password: { type: string, minLength: 1, maxLength: 256 }
+    OwnProfile:
+      type: object
+      required: [userId, displayName, login, memberships]
+      properties:
+        userId: { type: string, format: uuid }
+        displayName: { type: string }
+        login: { type: string }
+        memberships:
+          type: array
+          items:
+            type: object
+            required: [tenantId, tenantName, roles, companies]
+            properties:
+              tenantId: { type: string, format: uuid }
+              tenantName: { type: string }
+              roles:
+                type: array
+                items: { type: string }
+              companies:
+                type: array
+                items:
+                  type: object
+                  required: [companyId, name]
+                  properties:
+                    companyId: { type: string, format: uuid }
+                    name: { type: string }
+    Bootstrap:
+      type: object
+      required: [tenantId, tenantName, authorizationRevision, roles, permissions]
+      properties:
+        tenantId: { type: string, format: uuid }
+        tenantName: { type: string }
+        companyId: { type: [string, 'null'], format: uuid }
+        companyName: { type: [string, 'null'] }
+        authorizationRevision: { type: integer }
+        roles:
+          type: array
+          items: { type: string }
+        permissions:
+          type: array
+          items: { type: string }
+    Inventory:
+      type: object
+      required: [buildRevision, modules]
+      properties:
+        buildRevision: { type: string }
+        modules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ModuleView'
+    ModuleView:
+      type: object
+      required: [id, version, digest, lifecycle, availabilityReason, dependencies, capabilities, permissions, dataOwnership]
+      properties:
+        id: { type: string }
+        version: { type: string }
+        digest: { type: string }
+        lifecycle: { type: string, const: REGISTERED }
+        availabilityReason: { type: string, const: COMPILED_FIRST_PARTY }
+        dependencies:
+          type: array
+          items:
+            type: object
+            required: [id, version]
+            properties:
+              id: { type: string }
+              version: { type: string }
+        capabilities:
+          type: object
+          required: [provides, requires]
+          properties:
+            provides:
+              type: array
+              items:
+                type: object
+                required: [id, version, contractType]
+                properties:
+                  id: { type: string }
+                  version: { type: string }
+                  contractType: { type: string }
+            requires:
+              type: array
+              items:
+                type: object
+                required: [id, version, contractType]
+                properties:
+                  id: { type: string }
+                  version: { type: string }
+                  contractType: { type: string }
+        permissions:
+          type: array
+          items:
+            type: object
+            required: [id, scope]
+            properties:
+              id: { type: string }
+              scope: { type: string }
+        dataOwnership:
+          type: array
+          items:
+            type: object
+            required: [name, scope]
+            properties:
+              name: { type: string }
+              scope: { type: string }
+    AuditPage:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditItem'
+        nextOccurredAt: { type: [string, 'null'], format: date-time }
+        nextRecordId: { type: [string, 'null'], format: uuid }
+    AuditItem:
+      type: object
+      required: [recordId, occurredAt, actionCode, actionVersion, actorKind, schemaVersion, metadata, outcome]
+      properties:
+        recordId: { type: string, format: uuid }
+        occurredAt: { type: string, format: date-time }
+        actionCode: { type: string }
+        actionVersion: { type: integer }
+        actorId: { type: [string, 'null'], format: uuid }
+        actorKind: { type: string }
+        targetType: { type: [string, 'null'] }
+        targetId: { type: [string, 'null'] }
+        operationId: { type: [string, 'null'], format: uuid }
+        correlationId: { type: [string, 'null'], format: uuid }
+        schemaVersion: { type: integer }
+        metadata: { type: object }
+        outcome: { type: string }
+        tenantId: { type: [string, 'null'], format: uuid }
+        companyId: { type: [string, 'null'], format: uuid }
+        siteId: { type: [string, 'null'], format: uuid }
+security:
+  - sessionCookie: []

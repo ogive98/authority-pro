@@ -1,0 +1,74 @@
+# Phase 2 — Security Threat Model
+
+**Decision status:** PROPOSED threat analysis; no risk is accepted or closed here.
+**Delivery status:** DESIGN AND PLANNING ONLY. Tests listed are not executed.
+**Document validation status:** DRAFT.
+
+## 1. Assets and trust boundaries
+
+| Asset | Sensitivity | Where it lives |
+|---|---|---|
+| Credentials and password hashes | Critical | `identity.password_credentials` |
+| Sessions | Critical | `identity.spring_session*`, browser cookie |
+| Tenant data and membership | Critical | `tenancy` schema |
+| Authorization catalogue | High | `access` schema |
+| Audit records | High | `audit` schema |
+| Configuration and secrets | Critical | process environment, DPAPI file, future vault |
+
+Boundaries: browser ↔ HTTP process; process ↔ database; operator ↔ provisioning CLI;
+future process ↔ external integrations. The browser and all request headers are
+untrusted; the database is trusted only through the restricted runtime role.
+
+## 2. STRIDE by context
+
+| Context | Threat | Existing control | Gap | Planned test |
+|---|---|---|---|---|
+| Identity | Spoofing: credential stuffing | bcrypt verification, per-source throttle (5/15 min) | in-memory, per instance, resets on restart | Multi-instance and restart behavior test (X-08) |
+| Identity | Session hijacking | HttpOnly, SameSite Lax, 30 min idle, 8 h absolute, id rotation at login | `Secure=false`; no TLS profile | Cookie/tag assertions under production profile (R-007) |
+| Identity | Concurrent session abuse | Cap of three, oldest evicted | find-then-delete is not atomic | Concurrent login test (R-005, ADR-0012) |
+| Identity | CSRF | CSRF cookie + header on unsafe methods | none observed | Negative CSRF tests per unsafe route |
+| Tenancy | Cross-tenant read/write | RLS FORCE, transaction-local context, own-membership policies | no pool-reuse/concurrency proof | Restricted-role suite (R-004) |
+| Access | Privilege escalation | Deny-by-default, DB-resolved permissions, scope validated per request | scope-invalid status inconsistency (400 vs 403) | Contract test for every route |
+| Access | Stale permission after revocation | revision returned in bootstrap | no revocation-to-session behavior defined | Revocation test (U-01 area) |
+| Audit | Tampering / deletion | runtime granted INSERT/SELECT only on audit tables | no tamper evidence; retention undecided | Privilege and integrity test (R-008) |
+| Audit | Sensitive metadata leak | bounded metadata, redaction expected | redaction not proven | Adversarial metadata test |
+| Inventory | Unauthorized catalogue read | `platform.inventory.read` resolved from DB | none observed | Filter bypass attempts |
+| Runtime | Configuration override | strict environment allowlist, fixed properties | production profile absent | Negative startup tests |
+
+## 3. HTTP hardening gaps
+
+| Control | Current | Target (PROPOSED) |
+|---|---|---|
+| Content-Security-Policy | absent | strict policy for the Angular build; no inline script |
+| Strict-Transport-Security | absent | only under TLS, with a reviewed max-age |
+| X-Frame-Options / frame-ancestors | absent | deny framing |
+| Referrer-Policy | absent | `no-referrer` |
+| Permissions-Policy | absent | deny unused features |
+| X-Content-Type-Options | present on problem responses | present on all responses |
+| Cache-Control | `no-store` on authenticated payloads | keep, test every route |
+
+## 4. Threat scenarios that must pass before any production claim
+
+1. Tenant A cannot read or write Tenant B data via API, restricted role or reused pool connection.
+2. Rollback, exception and nested-transaction paths clear tenant context.
+3. Four concurrent logins never leave more than three active sessions.
+4. CSRF is rejected without the header for login and logout.
+5. Production cookie flags are asserted (`Secure`, `HttpOnly`, `SameSite`).
+6. Revoked membership blocks subsequent bootstrap and audit calls deterministically.
+7. Ordinary runtime credentials cannot UPDATE or DELETE audit rows.
+8. Audit metadata is redacted and bounded; no secret appears in logs.
+9. Login throttling behavior is documented per instance and bounded in memory.
+10. Security headers are present on every response, including problems.
+
+## 5. Explicit non-goals
+
+No claim of protection against a database superuser or host administrator; RLS is not
+cryptography. No WAF, DDoS protection, MFA, SSO or external identity provider in this
+programme.
+
+## Related documents
+
+- [ADR-0012 atomic session cap](../../adr/ADR-0012-atomic-session-cap.md)
+- [ADR-0013 production HTTP profile](../../adr/ADR-0013-production-http-profile.md)
+- [Database ownership map](03-DB-OWNERSHIP-AND-MIGRATION-MAP.md)
+- [Open risks and unknowns](../OPEN-RISKS-AND-UNKNOWNs.md)

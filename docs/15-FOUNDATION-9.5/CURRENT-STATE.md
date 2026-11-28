@@ -33,8 +33,11 @@ the same package, with its evidence link and date.
   integration tests, with five closed Modulith roots and zero inter-module edges.
 - The frontend builds and passes 100 unit tests across 16 files, with FR/EN/IT/AR and
   RTL support.
-- Documentation checks pass with 0 errors: 53 documents, 798 links, 9 diagrams, plus 67
-  tool tests.
+- Documentation checks pass with 0 errors: 72 documents, 896 links, 12 diagrams, plus
+  67 tool tests.
+- The Phase 2 blueprint exists as DESIGN ONLY in
+  [phase-2](phase-2/00-TARGET-BLUEPRINT.md); nothing in it is implemented or approved,
+  and Gate G2 is pending.
 - The main database remains at V1; V2–V5 exist only as migrations and in isolated
   qualification databases.
 - No production profile, TLS termination, backup drill, performance measurement or
