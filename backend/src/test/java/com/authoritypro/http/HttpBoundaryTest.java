@@ -422,7 +422,7 @@ class HttpBoundaryTest {
         if (hardeningHeaders) {
             assertEquals("DENY", response.headers().firstValue("X-Frame-Options").orElse(""),
                     "X-Frame-Options");
-            assertEquals("frame-ancestors 'none'",
+            assertEquals("default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
                     response.headers().firstValue("Content-Security-Policy").orElse(""),
                     "Content-Security-Policy");
             assertEquals("no-referrer", response.headers().firstValue("Referrer-Policy").orElse(""),

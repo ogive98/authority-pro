@@ -14,7 +14,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 final class SecurityHeadersFilter extends OncePerRequestFilter {
 
-    static final String CONTENT_SECURITY_POLICY = "frame-ancestors 'none'";
+    static final String CONTENT_SECURITY_POLICY =
+            "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
     static final String PERMISSIONS_POLICY =
             "camera=(), geolocation=(), microphone=(), payment=(), usb=()";
 

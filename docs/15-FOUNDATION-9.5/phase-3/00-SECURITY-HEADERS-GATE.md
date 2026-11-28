@@ -18,14 +18,14 @@ does not claim HSTS or a script-restricting CSP.
 | Header | Value | Applies to |
 |---|---|---|
 | `X-Frame-Options` | `DENY` | all application responses |
-| `Content-Security-Policy` | `frame-ancestors 'none'` | all application responses |
+| `Content-Security-Policy` | `default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'` | all application responses (JSON/API only) |
 | `X-Content-Type-Options` | `nosniff` | all application responses |
 | `Referrer-Policy` | `no-referrer` | all application responses |
 | `Permissions-Policy` | `camera=(), geolocation=(), microphone=(), payment=(), usb=()` | all application responses |
 
 The filter is registered ahead of the session and problem filters and writes the
 headers before the chain runs, so rejected, unauthenticated and error responses carry
-them too. A full script/style CSP and HSTS remain in ADR-0013: HSTS requires a trusted
+them too. A CSP for the Angular document and HSTS remain in ADR-0013: HSTS requires a trusted
 HTTPS scheme, which only the production profile can establish.
 
 ## 3. Container-terminated TRACE
@@ -55,7 +55,7 @@ integration suite (7 tests) was not rerun in this increment.
 ## 6. Not proven
 
 - HSTS emission under TLS and trusted proxy headers (ADR-0013).
-- A CSP restricting scripts, styles, connections and fonts for the Angular build.
+- A CSP for the Angular document served by the frontend host; the API policy above does not protect it.
 - `Secure` session/CSRF cookies in a production profile.
 - Runtime scenarios requiring PostgreSQL: RLS under pooling, atomic session cap,
   revocation timing, distributed throttling.
