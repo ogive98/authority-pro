@@ -74,6 +74,7 @@ public final class JdbcScopedAccessReader implements ScopedAccessReader {
     private static String tenantName(Connection connection, UUID userId, UUID tenantId) throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(
                 "SELECT t.name FROM tenancy.memberships m "
+                        + "JOIN identity.users u ON u.user_id = m.user_id AND u.status = 'active' "
                         + "JOIN tenancy.tenants t ON t.tenant_id = m.tenant_id "
                         + "WHERE m.user_id = ? AND m.tenant_id = ? AND m.active AND m.disabled_at IS NULL")) {
             statement.setQueryTimeout(5);

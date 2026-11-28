@@ -69,13 +69,16 @@ class AuthControllerTest {
     }
 
     private MockMvc mvc() {
-        CredentialReader credentials = login -> "operator".equals(login)
-                ? Optional.of(new CredentialReader.Credential(USER, "Operator", true, "stored-hash", "bcrypt"))
-                : Optional.empty();
-        OwnProfileReader profiles = userId -> userId.equals(USER)
+        return mvc(userId -> userId.equals(USER)
                 ? Optional.of(new OwnProfile(USER, "Operator", "operator", List.of(
                     new OwnProfile.Membership(TENANT, "Tenant A", List.of("TENANT_OWNER"),
                         List.of(new OwnProfile.Company(COMPANY, "Company A"))))))
+                : Optional.empty());
+    }
+
+    private MockMvc mvc(OwnProfileReader profiles) {
+        CredentialReader credentials = login -> "operator".equals(login)
+                ? Optional.of(new CredentialReader.Credential(USER, "Operator", true, "stored-hash", "bcrypt"))
                 : Optional.empty();
         SessionLimiter sessions = userId -> { };
         AuthController controller = new AuthController(
@@ -154,6 +157,17 @@ class AuthControllerTest {
         assertTrue(json.contains("\"tenantName\":\"Tenant A\""), json);
         assertTrue(json.contains("\"roles\":[\"TENANT_OWNER\"]"), json);
         assertFalse(result.getResponse().getHeaders("Cache-Control").isEmpty());
+    }
+
+    @Test
+    void revokedAccountEndsTheSessionAtTheProfileBoundary() throws Exception {
+        authenticate();
+        MockHttpSession session = new MockHttpSession();
+        MvcResult result = mvc(userId -> Optional.empty())
+                .perform(get("/api/v1/auth/me").session(session))
+                .andExpect(status().isUnauthorized()).andReturn();
+        assertProblem(result, "SESSION_EXPIRED");
+        assertTrue(session.isInvalid());
     }
 
     @Test

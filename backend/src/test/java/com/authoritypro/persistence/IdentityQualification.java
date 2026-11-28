@@ -1,17 +1,21 @@
 package com.authoritypro.persistence;
 
+import com.authoritypro.platform.access.application.AuditAccessPolicy;
 import com.authoritypro.platform.access.domain.AccessDecision;
 import com.authoritypro.platform.access.domain.MembershipSelection;
 import com.authoritypro.platform.access.domain.Permission;
 import com.authoritypro.platform.access.domain.PermissionEvaluator;
 import com.authoritypro.platform.access.domain.RoleCode;
+import com.authoritypro.platform.access.infrastructure.persistence.JdbcAuditAccessPolicy;
 import com.authoritypro.platform.access.infrastructure.persistence.JdbcAuthorizationCatalog;
+import com.authoritypro.platform.access.infrastructure.persistence.JdbcScopedAccessReader;
 import com.authoritypro.platform.identity.application.IdentityAccessException;
 import com.authoritypro.platform.identity.application.OperatorProvisioning;
 import com.authoritypro.platform.identity.domain.CredentialAuthenticator;
 import com.authoritypro.platform.identity.domain.LoginName;
 import com.authoritypro.platform.identity.domain.ProvisioningRefusedException;
 import com.authoritypro.platform.identity.infrastructure.persistence.JdbcIdentityDirectory;
+import com.authoritypro.platform.identity.infrastructure.persistence.JdbcIdentityGateway;
 import com.authoritypro.platform.identity.infrastructure.persistence.JdbcProvisioningAudit;
 import com.authoritypro.platform.identity.infrastructure.persistence.JdbcProvisioningStore;
 import com.authoritypro.platform.identity.infrastructure.security.SpringPasswordHasher;
@@ -142,6 +146,7 @@ public final class IdentityQualification {
                 labelChecks(runtime, migrator);
                 isolationChecks(runtime);
                 rlsConcurrencyChecks(runtime, migrator);
+                revocationChecks(runtime, migrator);
                 provisioningChecks(runtime, migrator, provisionerPassword);
                 denialChecks(runtime);
                 check("final_runtime_validation", () -> LocalDatabase.verifyRuntime(runtime));
@@ -831,6 +836,70 @@ public final class IdentityQualification {
             } finally {
                 runtime.setMaximumPoolSize(1);
             }
+        });
+    }
+
+    private static void revocationChecks(HikariDataSource runtime, HikariDataSource migrator) throws Exception {
+        var gateway = new JdbcIdentityGateway(runtime);
+        var audit = new JdbcAuditAccessPolicy(runtime);
+        var scoped = new JdbcScopedAccessReader(runtime);
+        var catalog = new JdbcAuthorizationCatalog();
+        check("revoked_account_denies_all_access", () -> {
+            require(audit.decide(USER_A, TENANT_A, COMPANY_A) == AuditAccessPolicy.Decision.GRANTED);
+            require(scoped.read(USER_A, TENANT_A, COMPANY_A).isPresent());
+            require(gateway.read(USER_A).isPresent());
+            eq(1, raw(runtime, false, true, c -> {
+                context(c, USER_A, null);
+                return catalog.assignments(c, USER_A).size();
+            }));
+            raw(migrator, false, false, c -> {
+                update(c, "UPDATE identity.users SET status = 'disabled' WHERE user_id = ?", USER_A);
+                return null;
+            });
+            try {
+                require(gateway.read(USER_A).isEmpty());
+                require(audit.decide(USER_A, TENANT_A, COMPANY_A) == AuditAccessPolicy.Decision.DENIED);
+                require(scoped.read(USER_A, TENANT_A, COMPANY_A).isEmpty());
+                eq(0, raw(runtime, false, true, c -> {
+                    context(c, USER_A, null);
+                    return catalog.assignments(c, USER_A).size();
+                }));
+                eq(0, raw(runtime, false, true, c -> {
+                    context(c, USER_A, null);
+                    return catalog.activeMembershipRevision(c, USER_A, TENANT_A).orElse(0);
+                }));
+            } finally {
+                raw(migrator, false, false, c -> {
+                    update(c, "UPDATE identity.users SET status = 'active' WHERE user_id = ?", USER_A);
+                    return null;
+                });
+            }
+            require(audit.decide(USER_A, TENANT_A, COMPANY_A) == AuditAccessPolicy.Decision.GRANTED);
+            require(scoped.read(USER_A, TENANT_A, COMPANY_A).isPresent());
+        });
+        check("revoked_membership_denies_scope", () -> {
+            require(audit.decide(USER_B, TENANT_B, null) == AuditAccessPolicy.Decision.GRANTED);
+            require(scoped.read(USER_B, TENANT_B, null).isPresent());
+            raw(migrator, false, false, c -> {
+                context(c, USER_B, TENANT_B);
+                update(c, "UPDATE tenancy.memberships SET disabled_at = clock_timestamp() "
+                        + "WHERE user_id = ? AND tenant_id = ?", USER_B, TENANT_B);
+                return null;
+            });
+            try {
+                require(audit.decide(USER_B, TENANT_B, null) == AuditAccessPolicy.Decision.DENIED);
+                require(scoped.read(USER_B, TENANT_B, null).isEmpty());
+                eq(0, gateway.read(USER_B).orElseThrow().memberships().size());
+            } finally {
+                raw(migrator, false, false, c -> {
+                    context(c, USER_B, TENANT_B);
+                    update(c, "UPDATE tenancy.memberships SET disabled_at = NULL "
+                            + "WHERE user_id = ? AND tenant_id = ?", USER_B, TENANT_B);
+                    return null;
+                });
+            }
+            require(audit.decide(USER_B, TENANT_B, null) == AuditAccessPolicy.Decision.GRANTED);
+            eq(1, gateway.read(USER_B).orElseThrow().memberships().size());
         });
     }
 

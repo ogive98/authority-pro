@@ -22,8 +22,9 @@ public final class JdbcAuthorizationCatalog {
     public OptionalInt activeMembershipRevision(Connection connection, UUID userId, UUID tenantId)
             throws SQLException {
         try (PreparedStatement statement = connection.prepareStatement(
-                "SELECT authorization_revision FROM tenancy.memberships "
-                        + "WHERE user_id = ? AND tenant_id = ? AND active AND disabled_at IS NULL")) {
+                "SELECT m.authorization_revision FROM tenancy.memberships m "
+                        + "JOIN identity.users u ON u.user_id = m.user_id AND u.status = 'active' "
+                        + "WHERE m.user_id = ? AND m.tenant_id = ? AND m.active AND m.disabled_at IS NULL")) {
             statement.setQueryTimeout(5);
             statement.setObject(1, userId);
             statement.setObject(2, tenantId);
@@ -58,6 +59,7 @@ public final class JdbcAuthorizationCatalog {
                 "SELECT mr.tenant_id, mr.company_id, mr.site_id, mr.role_code, mr.authorization_revision "
                         + "FROM access.membership_roles mr "
                         + "JOIN tenancy.memberships m ON m.user_id = mr.user_id AND m.tenant_id = mr.tenant_id "
+                        + "JOIN identity.users u ON u.user_id = mr.user_id AND u.status = 'active' "
                         + "WHERE mr.user_id = ? AND m.active AND m.disabled_at IS NULL "
                         + "ORDER BY mr.tenant_id, mr.role_code")) {
             statement.setQueryTimeout(5);
