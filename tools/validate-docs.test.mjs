@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { resolve } from 'node:path';
-import { root, readJson, manifestErrors, markdownAnchors, linkErrors, counterErrors } from './validate-docs.mjs';
+import { root, readJson, manifestErrors, markdownAnchors, linkErrors, counterErrors, backendCountErrors } from './validate-docs.mjs';
 
 const valid = () => readJson('MODULE-MANIFEST-TEMPLATE.json');
 
@@ -58,4 +58,34 @@ test('stale documentation counters are rejected with actual totals', () => {
 });
 test('documents without counters are rejected', () => {
   assert.deepEqual(counterErrors('No counters here', { documents: 7, links: 9, diagrams: 2 }), ['Missing documentation counters']);
+});
+test('agreeing backend test counts pass across files', () => {
+  assert.deepEqual(backendCountErrors([
+    ['README.md', '182 unit/architecture/contract tests and 7 packaged integration tests'],
+    ['CURRENT-STATE.md', '182 unit/architecture/contract tests plus 7 packaged\n  integration tests'],
+  ]), []);
+});
+test('diverging backend test counts are rejected with both claims', () => {
+  const errors = backendCountErrors([
+    ['README.md', '182 unit/architecture/contract tests and 7 packaged integration tests'],
+    ['CURRENT-STATE.md', '181 unit/architecture/contract tests plus 7 packaged integration tests'],
+  ]);
+  assert.equal(errors.length, 1);
+  assert.ok(errors[0].includes('README.md 182 unit/7 packaged'));
+  assert.ok(errors[0].includes('CURRENT-STATE.md 181 unit/7 packaged'));
+});
+test('inconsistent counts inside one document are rejected', () => {
+  const errors = backendCountErrors([
+    ['README.md', '182 unit/architecture/contract tests and 7 packaged integration tests, again 182 unit/architecture/contract tests and 8 packaged integration tests'],
+    ['CURRENT-STATE.md', '182 unit/architecture/contract tests plus 7 packaged integration tests'],
+  ]);
+  assert.ok(errors.some((error) => error.includes('inconsistent packaged integration counts')));
+});
+test('missing backend test counts are rejected', () => {
+  const errors = backendCountErrors([
+    ['README.md', 'No backend claims'],
+    ['CURRENT-STATE.md', '182 unit/architecture/contract tests plus 7 packaged integration tests'],
+  ]);
+  assert.ok(errors.some((error) => error.includes('README.md: missing backend unit test count')));
+  assert.ok(errors.some((error) => error.includes('README.md: missing packaged integration count')));
 });

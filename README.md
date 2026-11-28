@@ -7,7 +7,7 @@ modular monolith, DDD, hexagonal architecture and Plugin-Based Components.
 identity/access surface, the L06 protected inventory and the L07 Angular
 application are locally implemented and tested.** Main V1 has four empty technical
 tables; L04–L06 run only against their isolated test databases (V1→V5 for L06).
-The backend verifies 182 unit/architecture/contract tests and seven packaged
+The backend verifies 182 unit/architecture/contract tests and 7 packaged
 integration tests locally and in the GitHub Foundation checks (2026-11-28 at
 `c8400cb`); the Angular application passes 100 unit tests. Authenticated browser
 journeys remain unverified.
@@ -73,7 +73,7 @@ earlier Angular 21 fallback remains the historical L01 finding.
 65 unit/HTTP/architecture/contract tests and four packaged-JAR integration tests,
 all passing both a clean build and an offline clean repeat with the same JAR hash.
 These are the historical L02 counts; the current backend verifies 182 unit tests and
-seven packaged integration tests in the same clean verify, both locally and in the
+7 packaged integration tests in the same clean verify, both locally and in the
 Foundation checks run of 2026-11-28 at `c8400cb`. This is a closed technical
 skeleton, not a usable tenant application.
 

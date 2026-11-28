@@ -77,6 +77,27 @@ export function counterErrors(text, counts) {
   });
 }
 
+export function backendCountErrors(documents) {
+  const errors = [];
+  const claims = [];
+  for (const [label, text] of documents) {
+    const unit = [...text.matchAll(/(\d+) unit\/architecture\/contract tests/g)].map((match) => Number(match[1]));
+    const packaged = [...text.matchAll(/(\d+) packaged\s+integration tests/g)].map((match) => Number(match[1]));
+    if (!unit.length) errors.push(`${label}: missing backend unit test count`);
+    if (!packaged.length) errors.push(`${label}: missing packaged integration count`);
+    if (new Set(unit).size > 1) errors.push(`${label}: inconsistent backend unit test counts`);
+    if (new Set(packaged).size > 1) errors.push(`${label}: inconsistent packaged integration counts`);
+    claims.push([label, unit[0], packaged[0]]);
+  }
+  const complete = claims.every(([, unit, packaged]) => unit !== undefined && packaged !== undefined);
+  const distinct = new Set(claims.map(([, unit, packaged]) => `${unit}/${packaged}`));
+  if (complete && distinct.size > 1) {
+    errors.push(`backend test counts disagree: ${claims
+      .map(([label, unit, packaged]) => `${label} ${unit} unit/${packaged} packaged`).join(', ')}`);
+  }
+  return errors;
+}
+
 function filesIn(directory) {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const path = resolve(directory, entry.name);
@@ -115,6 +136,11 @@ export async function checkDocuments() {
     const text = readFileSync(resolve(docs, '15-FOUNDATION-9.5', name), 'utf8');
     errors.push(...counterErrors(text, counts).map((error) => `15-FOUNDATION-9.5/${name}: ${error}`));
   }
+  errors.push(...backendCountErrors([
+    ['README.md', readFileSync(resolve(root, 'README.md'), 'utf8')],
+    ['15-FOUNDATION-9.5/CURRENT-STATE.md',
+      readFileSync(resolve(docs, '15-FOUNDATION-9.5', 'CURRENT-STATE.md'), 'utf8')],
+  ]));
   return { errors, documents: files.length, markdown: markdown.length, links, diagrams };
 }
 
