@@ -2,7 +2,7 @@
 
 **Decision status:** N/A — read-only audit output.
 **Delivery status:** PHASE 0 OUTPUT. Evidence is dated and tied to revision `27e9b14`;
-the Phase 3 increments and the isolated re-qualifications below are tied to `606104f`.
+the Phase 3 increments are tied to `606104f` and the L05 isolation checks to `9e19a2b`.
 **Document validation status:** DRAFT — awaiting Gate G0 owner approval.
 
 ## 1. Evidence hierarchy used by the Foundation 9.5 programme
@@ -30,7 +30,7 @@ highest level actually observed on 2026-11-28.
 | Database environment | Dedicated PostgreSQL 16.15 container, distinct roles and DPAPI secret | `tools/local-environment.mjs`, README evidence sections | E4 local | Restore drill not run |
 | Data model | V1–V5 migrations, RLS FORCE, tenant context checks | Isolated qualification scripts L03–L06 | E4/E5 isolated | Main database at V1 only |
 | Audit engine | Atomic audit with protected state, attempt stream | L04 isolated qualification, 36 checks, rerun 2026-11-28 at `606104f` | E5 isolated | Retention, integrity and redaction not proven |
-| Identity and access | JDBC sessions, CSRF, operator-only provisioning, scoped grants | L05 isolated qualification, `checks=36`, rerun 2026-11-28 at `606104f` | E5 isolated | Session cap race, throttle distribution, cookie profile untested |
+| Identity and access | JDBC sessions, CSRF, operator-only provisioning, scoped grants | L05 isolated qualification, `checks=39`, rerun 2026-11-28 at `9e19a2b` | E5 isolated | Session cap race, throttle distribution, cookie profile untested |
 | Protected inventory | Compiled descriptors, permissioned read | L06 isolated qualification, 19 checks, rerun 2026-11-28 at `606104f` | E5 isolated | Dynamic lifecycle deferred |
 | Frontend shell | Login, scope selection, overview, inventory, audit, preferences, i18n, RTL | 100 unit tests at this revision | E3 | Authenticated journeys never observed in a real browser (E0) |
 | Public screens | Login, not-found, responsive and accessibility checks | Earlier browser qualification, commit `4573701` | E4 local | Not reproducible in CI |
@@ -49,11 +49,11 @@ highest level actually observed on 2026-11-28.
 | Suite | Result | Command |
 |---|---|---|
 | Backend unit/architecture/contract | 181 passing, 0 failures (2026-11-28) | `mvnw test` |
-| Backend packaged integration | 7 passing at `27e9b14`; not rerun for the headers increment | `check:backend` (clean verify) |
+| Backend packaged integration | 7 passing (clean verify, 2026-11-28 at `9e19a2b`) | `check:backend` (clean verify) |
 | Frontend unit | 100 passing across 16 files | `frontend: npm test` |
 | Documentation tooling | 70 passing | `npm test` |
 | Documentation validation | 0 errors, 73 documents, 903 links, 12 diagrams | `npm run check:docs` |
-| Isolated qualifications | L04 36 checks, L05 36 checks, L06 19 checks; main database and protected containers unchanged | `npm run audit:l04`, `identity:l05`, `inventory:l06`, `environment:verify` |
+| Isolated qualifications | L04 36 checks, L05 39 checks, L06 19 checks; main database and protected containers unchanged | `npm run audit:l04`, `identity:l05`, `inventory:l06`, `environment:verify` |
 
 The backend numbers replace earlier counts of 65/4 (L02) and 151/7 (L06) still present
 in some documents; the drift is recorded in the
@@ -61,8 +61,9 @@ in some documents; the drift is recorded in the
 
 ## 4. What is explicitly not proven
 
-- Tenant isolation under reused pool connections, rollback, exception paths and
-  concurrent requests (E2 code inspection only).
+- Tenant isolation under concurrent requests (E2 code inspection only); single-connection
+  pool reuse, commit/rollback clearing and cross-tenant write denial are now covered
+  by the L05 isolation checks (E5).
 - The three-session cap under concurrent logins (find-then-delete is not atomic).
 - Login throttling across instances or restarts (in-memory, bounded at 1024 sources).
 - Production cookie flags and HTTPS enforcement (`Secure=false` in local profile).

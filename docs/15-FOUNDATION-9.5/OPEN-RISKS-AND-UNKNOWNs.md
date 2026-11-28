@@ -16,7 +16,7 @@ DOCUMENTED CLAIM ONLY, INFERRED — VERIFY, UNKNOWN, NOT VERIFIED.
 | R-001 | Blueprint identifies AUTHORITY ONLINE | Critical | Drift D-01 | CONFIRMED FROM SOURCE | Phase 1 identity correction with preserved history |
 | R-002 | README claims no frontend | High | Drift D-02 | CONFIRMED FROM SOURCE | Phase 1 correction |
 | R-003 | Status drift between code, tests and documents | High | Drift D-03, D-04, D-09 | CONFIRMED FROM SOURCE | Single current-state source plus validator checks |
-| R-004 | RLS unproven under pool reuse and concurrency | Critical | No concurrency suite in the repository | CONFIRMED FROM SOURCE | Phase 3 restricted-role concurrency suite |
+| R-004 | RLS unproven under pool reuse and concurrency | Critical | Partially mitigated 2026-11-28: L05 isolation checks prove no stale tenant context after commit/rollback on a reused single-connection pool and cross-tenant writes rejected; parallel concurrency still unproven | CONFIRMED BY TEST EVIDENCE (partial) | Phase 3 restricted-role concurrency suite |
 | R-005 | Concurrent session cap race | High | `JdbcSessionLimiter` reads then deletes without a transaction spanning the new session | CONFIRMED FROM SOURCE | Atomic design plus concurrency test |
 | R-006 | Login throttle is not distributed | High | `LoginThrottle` is an in-memory bounded map, 1024 sources, reset on restart | CONFIRMED FROM SOURCE | Bounded policy decision and multi-instance test |
 | R-007 | Production cookie profile incomplete | Critical | `Secure=false`, SameSite Lax, loopback HTTP only | CONFIRMED FROM SOURCE | TLS profile, secure cookie, browser test |
@@ -46,7 +46,7 @@ DOCUMENTED CLAIM ONLY, INFERRED — VERIFY, UNKNOWN, NOT VERIFIED.
 
 | ID | Unknown | Label | How it will be resolved |
 |---|---|---|---|
-| U-01 | Actual behavior of RLS under a reused pooled connection across tenants | UNKNOWN | Phase 3 integration suite with restricted role |
+| U-01 | Actual behavior of RLS under a reused pooled connection across tenants | RESOLVED FOR ONE CONNECTION (2026-11-28, L05 `checks=39`); parallel connections still unknown | Phase 3 concurrency suite with restricted role |
 | U-02 | Maximum concurrent sessions under parallel logins | UNKNOWN | Concurrency test |
 | U-03 | Restore duration and integrity for the real data volume | UNKNOWN | Isolated restore drill |
 | U-04 | Audit retention needs and legal constraints | UNKNOWN | Owner decision, then policy |
