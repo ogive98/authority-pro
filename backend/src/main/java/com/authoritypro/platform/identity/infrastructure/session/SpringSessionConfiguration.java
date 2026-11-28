@@ -45,10 +45,12 @@ public class SpringSessionConfiguration {
 
     @Bean
     FilterRegistrationBean<SessionRepositoryFilter<?>> springSessionFilter(
-            JdbcIndexedSessionRepository sessionRepository) {
+            DataSource dataSource, JdbcIndexedSessionRepository sessionRepository) {
         var resolver = new CookieHttpSessionIdResolver();
         resolver.setCookieSerializer(sessionCookieSerializer());
-        var filter = new SessionRepositoryFilter<>(sessionRepository);
+        var transactions = new TransactionTemplate(new DataSourceTransactionManager(dataSource));
+        var filter = new SessionRepositoryFilter<>(
+                new CappedSessionRepository(dataSource, sessionRepository, transactions));
         filter.setHttpSessionIdResolver(resolver);
         var registration = new FilterRegistrationBean<SessionRepositoryFilter<?>>(filter);
         registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 50);

@@ -7,7 +7,10 @@ import java.util.Map;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 
-/** D2: three concurrent sessions per user; a fourth login invalidates the oldest one. */
+/**
+ * D2 best-effort pre-eviction before authentication completes; the authoritative cap is
+ * enforced atomically by {@link CappedSessionRepository} in the insert transaction.
+ */
 public final class JdbcSessionLimiter implements SessionLimiter {
     public static final int MAX_CONCURRENT = 3;
 

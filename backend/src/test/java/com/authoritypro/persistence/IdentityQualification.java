@@ -15,6 +15,7 @@ import com.authoritypro.platform.identity.infrastructure.persistence.JdbcProvisi
 import com.authoritypro.platform.identity.infrastructure.persistence.JdbcProvisioningStore;
 import com.authoritypro.platform.identity.infrastructure.security.SpringPasswordHasher;
 import com.authoritypro.platform.identity.infrastructure.security.SpringPasswordVerifier;
+import com.authoritypro.platform.identity.infrastructure.session.CappedSessionRepository;
 import com.authoritypro.platform.runtime.infrastructure.persistence.LocalDatabase;
 import com.zaxxer.hikari.HikariDataSource;
 import java.io.BufferedReader;
@@ -26,14 +27,24 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.session.FindByIndexNameSessionRepository;
+import org.springframework.session.Session;
 import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -126,6 +137,7 @@ public final class IdentityQualification {
                 schemaChecks(runtime);
                 repositoryChecks(runtime, migrator);
                 sessionChecks(runtime);
+                capCheck(runtime);
                 labelChecks(runtime, migrator);
                 isolationChecks(runtime);
                 provisioningChecks(runtime, migrator, provisionerPassword);
@@ -366,6 +378,65 @@ public final class IdentityQualification {
                     "SELECT has_table_privilege(current_user, 'identity.provisioning_guard', 'INSERT')::text")));
             return null;
         }));
+    }
+
+    private static void capCheck(HikariDataSource runtime) throws Exception {
+        check("session_cap_concurrent", () -> {
+            var repository = new JdbcIndexedSessionRepository(new JdbcTemplate(runtime),
+                    new TransactionTemplate(new DataSourceTransactionManager(runtime)));
+            repository.setTableName("identity.spring_session");
+            repository.setDefaultMaxInactiveInterval(java.time.Duration.ofMinutes(30));
+            repository.afterPropertiesSet();
+            runtime.setMaximumPoolSize(4);
+            try {
+                var capped = new CappedSessionRepository(runtime, repository,
+                        new TransactionTemplate(new DataSourceTransactionManager(runtime)));
+                String principal = "cap-" + UUID.randomUUID();
+                int logins = 4;
+                List<Session> created = Collections.synchronizedList(new ArrayList<>());
+                var failures = new ConcurrentLinkedQueue<Throwable>();
+                var ready = new CyclicBarrier(logins);
+                var executor = Executors.newFixedThreadPool(logins);
+                try {
+                    for (int index = 0; index < logins; index++) {
+                        int delay = index;
+                        executor.execute(() -> {
+                            try {
+                                ready.await(10, TimeUnit.SECONDS);
+                                Thread.sleep(delay * 25L);
+                                Session session = capped.createSession();
+                                session.setAttribute(
+                                        FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, principal);
+                                session.setAttribute("authority.userId", USER_A.toString());
+                                capped.save(session);
+                                created.add(session);
+                            } catch (Throwable failure) {
+                                failures.add(failure);
+                            }
+                        });
+                    }
+                } finally {
+                    executor.shutdown();
+                    require(executor.awaitTermination(30, TimeUnit.SECONDS));
+                }
+                require(failures.isEmpty());
+                eq(logins, created.size());
+                Map<String, Session> live = capped.findByPrincipalName(principal);
+                eq(CappedSessionRepository.MAX_CONCURRENT, live.size());
+                Comparator<Session> age = Comparator.comparing(Session::getLastAccessedTime)
+                        .thenComparing(Session::getCreationTime)
+                        .thenComparing(Session::getId);
+                Set<String> newest = created.stream().sorted(age.reversed())
+                        .limit(CappedSessionRepository.MAX_CONCURRENT)
+                        .map(Session::getId).collect(Collectors.toSet());
+                require(newest.equals(live.keySet()));
+                for (String id : new ArrayList<>(live.keySet())) capped.deleteById(id);
+                eq(0, capped.findByPrincipalName(principal).size());
+            } finally {
+                repository.destroy();
+                runtime.setMaximumPoolSize(1);
+            }
+        });
     }
 
     private static void provisioningChecks(HikariDataSource runtime, HikariDataSource migrator,
