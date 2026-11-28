@@ -39,7 +39,7 @@ untrusted; the database is trusted only through the restricted runtime role.
 
 | Control | Current (2026-11-28) | Target (PROPOSED) |
 |---|---|---|
-| Content-Security-Policy | `frame-ancestors 'none'` on all application responses | strict policy for the Angular build; no inline script |
+| Content-Security-Policy | API: `default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'` | strict policy for the Angular document; no inline script |
 | Strict-Transport-Security | absent | only under TLS, with a reviewed max-age |
 | X-Frame-Options / frame-ancestors | `DENY` / `frame-ancestors 'none'` on all application responses | deny framing (met; TRACE is container-terminated) |
 | Referrer-Policy | `no-referrer` on all application responses | `no-referrer` (met) |
@@ -60,7 +60,7 @@ untrusted; the database is trusted only through the restricted runtime role.
 9. Login throttling behavior is documented per instance and bounded in memory.
 10. Security headers are present on every response, including problems. Partial:
     application responses are covered and tested; TRACE is container-terminated and
-    script-restricting CSP/HSTS remain open (see
+    the Angular document CSP/HSTS remain open (see
     [headers gate](../phase-3/00-SECURITY-HEADERS-GATE.md)).
 
 ## 5. Explicit non-goals
