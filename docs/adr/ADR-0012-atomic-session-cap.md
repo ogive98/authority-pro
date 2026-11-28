@@ -1,6 +1,17 @@
 # ADR-0012 — Atomic enforcement of the concurrent session cap
 
-- **Status:** PROPOSED — no implementation exists. The current limiter is best-effort.
+- **Status:** APPROVED — implemented 2026-11-28 at `56e5662`; the transaction-scoped
+  advisory lock now covers the session insert itself.
+- **Implementation note (2026-11-28):** `CappedSessionRepository` wraps the JDBC session
+  repository used by the session filter. For a new session it opens one transaction,
+  takes `pg_try_advisory_xact_lock(hashtextextended(principal, 0))` with a bounded
+  2-second wait, evicts deterministically (last access, then creation, then identifier)
+  so the newest three survive, and inserts the row inside the same transaction.
+  `JdbcSessionLimiter` remains only as a best-effort pre-eviction before
+  authentication. No schema change. Proof: L05 isolated qualification `checks=40`,
+  four parallel fresh sessions leave exactly the three newest, reproduced on three
+  consecutive runs. Lock-timeout and rotation-specific paths remain untested.
+  The original PROPOSED text below is preserved as the decision record.
 - **Scope:** Browser session creation for a single principal. Distributed throttling
   of failed logins is a separate decision.
 - **Risk addressed:** R-005 (session cap not atomic).
