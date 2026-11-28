@@ -156,17 +156,31 @@ class HttpBoundaryTest {
         for (String path : List.of(PROBES.get(0), PROBES.get(1), "/api/v1/auth/login")) {
             HttpResponse<String> response = send(method, path);
             assertEquals(403, response.statusCode(), method + " " + path);
-            assertClosedHeaders(response);
+            assertClosedHeaders(response, !method.equals("TRACE"));
             if (method.equals("HEAD")) {
                 assertTrue(response.body().isEmpty());
                 assertTrue(response.headers().firstValue("Content-Type").orElse("")
                         .startsWith(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
+            } else if (method.equals("TRACE")) {
+                // Tomcat terminates TRACE before the filter chain; it must not echo the request.
+                assertTrue(response.headers().firstValue("Content-Type").orElse("")
+                        .startsWith(MediaType.APPLICATION_PROBLEM_JSON_VALUE));
+                assertEnvelope(response.body(), 403, "ACCESS_DENIED");
             } else {
                 String code = Set.of("POST", "PUT", "PATCH", "DELETE").contains(method)
                         ? "CSRF_REJECTED" : "ACCESS_DENIED";
                 assertProblem(response, 403, code);
             }
         }
+    }
+
+    @Test
+    void traceCannotEchoRequestHeaders() throws Exception {
+        HttpResponse<String> response = send("TRACE", PROBES.get(0), "X-Trace-Probe", "secret-value");
+        assertEquals(403, response.statusCode());
+        assertTrue(response.headers().allValues("X-Trace-Probe").isEmpty());
+        assertFalse(response.body().contains("secret-value"));
+        assertEnvelope(response.body(), 403, "ACCESS_DENIED");
     }
 
     @Test
@@ -397,10 +411,28 @@ class HttpBoundaryTest {
     }
 
     private void assertClosedHeaders(HttpResponse<String> response) {
+        assertClosedHeaders(response, true);
+    }
+
+    private void assertClosedHeaders(HttpResponse<String> response, boolean hardeningHeaders) {
         assertTrue(response.headers().allValues("WWW-Authenticate").isEmpty());
         assertTrue(response.headers().allValues("Location").isEmpty());
         assertTrue(response.headers().map().keySet().stream()
                 .noneMatch(name -> name.toLowerCase(java.util.Locale.ROOT).startsWith("access-control-allow-")));
+        if (hardeningHeaders) {
+            assertEquals("DENY", response.headers().firstValue("X-Frame-Options").orElse(""),
+                    "X-Frame-Options");
+            assertEquals("frame-ancestors 'none'",
+                    response.headers().firstValue("Content-Security-Policy").orElse(""),
+                    "Content-Security-Policy");
+            assertEquals("no-referrer", response.headers().firstValue("Referrer-Policy").orElse(""),
+                    "Referrer-Policy");
+            assertEquals("nosniff", response.headers().firstValue("X-Content-Type-Options").orElse(""),
+                    "X-Content-Type-Options");
+            assertEquals("camera=(), geolocation=(), microphone=(), payment=(), usb=()",
+                    response.headers().firstValue("Permissions-Policy").orElse(""),
+                    "Permissions-Policy");
+        }
         for (String cookie : response.headers().allValues("Set-Cookie")) {
             assertTrue(cookie.startsWith("XSRF-TOKEN="), cookie);
             assertFalse(cookie.toUpperCase(java.util.Locale.ROOT).contains("JSESSIONID"));

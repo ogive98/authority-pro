@@ -8,8 +8,9 @@ choices are approved; other technical recommendations remain PROPOSED. See the
 [current state](15-FOUNDATION-9.5/CURRENT-STATE.md) and the
 [L02 execution evidence](PACK-INVENTORY.md#l02-execution-evidence--2026-11-18)
 for the historical clean verification of 65 unit tests and 4 packaged integration
-tests. The current revision verifies 180 backend tests and seven packaged integration
-tests, plus 100 Angular unit tests. No PostgreSQL was touched by those test runs; no
+tests. The current revision verifies 181 backend unit tests, plus 100 Angular unit
+tests; the seven packaged integration tests were last verified at `27e9b14`, before
+the security-headers increment. No PostgreSQL was touched by those test runs; no
 business feature is implemented. The main database remains at V1, while identity,
 audit and protected inventory run against isolated databases. Local document checks
 are not runtime tests; the integrated foundation and deployment gates remain open.
@@ -97,6 +98,10 @@ still requires separate owner approval.
 
 Nothing in Phase 2 is implemented or approved: it describes the observed contract at
 `27e9b14`, proposed target rules and dated ADRs.
+
+### Phase 3 — security qualification
+
+- [Security headers gate (increment 1, implemented)](15-FOUNDATION-9.5/phase-3/00-SECURITY-HEADERS-GATE.md)
 
 ## Templates and fixtures
 

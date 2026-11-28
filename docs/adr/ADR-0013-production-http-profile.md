@@ -1,6 +1,12 @@
 # ADR-0013 — Production HTTP profile
 
 - **Status:** PROPOSED — no production profile exists (risk X-02, X-07).
+- **Implementation note (2026-11-28):** framing, `nosniff`, referrer, permissions and
+  `frame-ancestors` headers are now emitted on every application response and tested
+  in isolation; HSTS, script-restricting CSP, Secure cookies and proxy trust remain
+  unimplemented. See
+  [Phase 3 headers gate](../15-FOUNDATION-9.5/phase-3/00-SECURITY-HEADERS-GATE.md).
+  The status above stays PROPOSED for the production profile as a whole.
 - **Scope:** HTTP transport, cookie flags, security headers and proxy trust for a
   production deployment. Local development behaviour is unchanged.
 - **Risk addressed:** R-007 (cookie not Secure), X-07 (security headers absent).

@@ -37,14 +37,14 @@ untrusted; the database is trusted only through the restricted runtime role.
 
 ## 3. HTTP hardening gaps
 
-| Control | Current | Target (PROPOSED) |
+| Control | Current (2026-11-28) | Target (PROPOSED) |
 |---|---|---|
-| Content-Security-Policy | absent | strict policy for the Angular build; no inline script |
+| Content-Security-Policy | `frame-ancestors 'none'` on all application responses | strict policy for the Angular build; no inline script |
 | Strict-Transport-Security | absent | only under TLS, with a reviewed max-age |
-| X-Frame-Options / frame-ancestors | absent | deny framing |
-| Referrer-Policy | absent | `no-referrer` |
-| Permissions-Policy | absent | deny unused features |
-| X-Content-Type-Options | present on problem responses | present on all responses |
+| X-Frame-Options / frame-ancestors | `DENY` / `frame-ancestors 'none'` on all application responses | deny framing (met; TRACE is container-terminated) |
+| Referrer-Policy | `no-referrer` on all application responses | `no-referrer` (met) |
+| Permissions-Policy | unused features denied on all application responses | deny unused features (met) |
+| X-Content-Type-Options | `nosniff` on all application responses | present on all responses (met) |
 | Cache-Control | `no-store` on authenticated payloads | keep, test every route |
 
 ## 4. Threat scenarios that must pass before any production claim
@@ -58,7 +58,10 @@ untrusted; the database is trusted only through the restricted runtime role.
 7. Ordinary runtime credentials cannot UPDATE or DELETE audit rows.
 8. Audit metadata is redacted and bounded; no secret appears in logs.
 9. Login throttling behavior is documented per instance and bounded in memory.
-10. Security headers are present on every response, including problems.
+10. Security headers are present on every response, including problems. Partial:
+    application responses are covered and tested; TRACE is container-terminated and
+    script-restricting CSP/HSTS remain open (see
+    [headers gate](../phase-3/00-SECURITY-HEADERS-GATE.md)).
 
 ## 5. Explicit non-goals
 

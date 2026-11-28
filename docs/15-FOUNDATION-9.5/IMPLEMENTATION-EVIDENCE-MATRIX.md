@@ -47,11 +47,11 @@ highest level actually observed on 2026-11-28.
 
 | Suite | Result | Command |
 |---|---|---|
-| Backend unit/architecture/contract | 180 passing, 0 failures | `check:backend` (clean verify) |
-| Backend packaged integration | 7 passing | same verify, JDK 21.0.13+9 |
+| Backend unit/architecture/contract | 181 passing, 0 failures (2026-11-28) | `mvnw test` |
+| Backend packaged integration | 7 passing at `27e9b14`; not rerun for the headers increment | `check:backend` (clean verify) |
 | Frontend unit | 100 passing across 16 files | `frontend: npm test` |
 | Documentation tooling | 67 passing | `npm test` |
-| Documentation validation | 0 errors, 72 documents, 896 links, 12 diagrams | `npm run check:docs` |
+| Documentation validation | 0 errors, 73 documents, 903 links, 12 diagrams | `npm run check:docs` |
 
 The backend numbers replace earlier counts of 65/4 (L02) and 151/7 (L06) still present
 in some documents; the drift is recorded in the

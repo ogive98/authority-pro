@@ -7,9 +7,10 @@ modular monolith, DDD, hexagonal architecture and Plugin-Based Components.
 identity/access surface, the L06 protected inventory and the L07 Angular
 application are locally implemented and tested.** Main V1 has four empty technical
 tables; L04–L06 run only against their isolated test databases (V1→V5 for L06).
-The backend verifies 180 unit/architecture/contract tests and seven packaged
-integration tests; the Angular application passes 100 unit tests. Authenticated
-browser journeys remain unverified.
+The backend verifies 181 unit/architecture/contract tests (security-headers increment,
+2026-11-28) and seven packaged integration tests verified at the previous revision;
+the Angular application passes 100 unit tests. Authenticated browser journeys remain
+unverified.
 See the [recovery evidence and retained failure](docs/PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20),
 the [L05 implementation evidence](docs/04-PLATFORM-ENGINES/IDENTITY-AND-ACCESS.md#1013-isolated-implementation-evidence--2026-11-23),
 the [L06 evidence](docs/PACK-INVENTORY.md#l06-protected-inventory-evidence--2026-11-24),

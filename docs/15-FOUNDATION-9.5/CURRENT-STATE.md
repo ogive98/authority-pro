@@ -29,15 +29,21 @@ the same package, with its evidence link and date.
 
 ## 3. What is true at this revision
 
-- The backend builds and passes 180 unit/architecture/contract tests and 7 packaged
-  integration tests, with five closed Modulith roots and zero inter-module edges.
+- The backend builds and passes 181 unit/architecture/contract tests (headers
+  increment, 2026-11-28), with five closed Modulith roots and zero inter-module
+  edges; the 7 packaged integration tests were last verified at `27e9b14` and were
+  not rerun for this increment.
 - The frontend builds and passes 100 unit tests across 16 files, with FR/EN/IT/AR and
   RTL support.
-- Documentation checks pass with 0 errors: 72 documents, 896 links, 12 diagrams, plus
+- Documentation checks pass with 0 errors: 73 documents, 903 links, 12 diagrams, plus
   67 tool tests.
 - The Phase 2 blueprint exists as DESIGN ONLY in
-  [phase-2](phase-2/00-TARGET-BLUEPRINT.md); nothing in it is implemented or approved,
-  and Gate G2 is pending.
+  [phase-2](phase-2/00-TARGET-BLUEPRINT.md); nothing in it is approved, and Gate G2
+  remains pending.
+- Phase 3 increment 1 is implemented and tested: every application response carries
+  framing, `nosniff`, referrer and permissions headers; HSTS, script CSP, Secure
+  cookies and all database-dependent scenarios remain open
+  ([headers gate](phase-3/00-SECURITY-HEADERS-GATE.md)).
 - The main database remains at V1; V2–V5 exist only as migrations and in isolated
   qualification databases.
 - No production profile, TLS termination, backup drill, performance measurement or

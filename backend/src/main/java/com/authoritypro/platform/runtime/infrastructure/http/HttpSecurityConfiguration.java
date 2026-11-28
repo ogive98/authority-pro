@@ -3,8 +3,11 @@ package com.authoritypro.platform.runtime.infrastructure.http;
 import java.util.List;
 
 import jakarta.servlet.DispatcherType;
+import jakarta.servlet.Filter;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -30,6 +33,13 @@ public class HttpSecurityConfiguration {
         // The SPA reads this value and echoes it in X-XSRF-TOKEN; the session cookie stays HttpOnly.
         repository.setCookieCustomizer(cookie -> cookie.httpOnly(false).sameSite("Lax"));
         return repository;
+    }
+
+    @Bean
+    FilterRegistrationBean<Filter> securityHeadersFilter() {
+        var registration = new FilterRegistrationBean<Filter>(new SecurityHeadersFilter());
+        registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 5);
+        return registration;
     }
 
     @Bean

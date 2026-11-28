@@ -39,7 +39,7 @@ DOCUMENTED CLAIM ONLY, INFERRED — VERIFY, UNKNOWN, NOT VERIFIED.
 | X-04 | Authenticated browser journeys never observed | High | No test account, no session evidence | CONFIRMED FROM SOURCE | Separate authorized disposable environment |
 | X-05 | Validator cannot detect stale status claims | Medium | `validate-docs.mjs` checks links, index, Mermaid, fixtures only | CONFIRMED FROM SOURCE | Phase 1 validator extension |
 | X-06 | No lint, formatting or coverage gate in either application | Medium | No ESLint, Checkstyle/Spotless or JaCoCo/Vitest coverage thresholds configured | CONFIRMED FROM SOURCE | Quality package |
-| X-07 | Security response headers incomplete | High | Only `nosniff` on problem responses; no CSP, HSTS, frame or referrer policy | CONFIRMED FROM SOURCE | Phase 2 design, Phase 3 tests |
+| X-07 | Security response headers incomplete | High | Partially mitigated 2026-11-28: frame, referrer, permissions, nosniff and `frame-ancestors` on all application responses (tested); script CSP and HSTS still absent | CONFIRMED FROM SOURCE | Phase 3 headers gate; ADR-0013 for CSP/HSTS |
 | X-08 | Session throttling has no persistence or edge limit | High | Same as R-006 plus no reverse-proxy configuration | CONFIRMED FROM SOURCE | Deployment profile decision |
 
 ## 4. Unknowns that must not be guessed
