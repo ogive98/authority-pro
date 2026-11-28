@@ -52,7 +52,7 @@ DOCUMENTED CLAIM ONLY, INFERRED — VERIFY, UNKNOWN, NOT VERIFIED.
 | U-03 | Restore duration and integrity for the real data volume | UNKNOWN | Isolated restore drill |
 | U-04 | Audit retention needs and legal constraints | UNKNOWN | Owner decision, then policy |
 | U-05 | Production topology and RPO/RTO | UNKNOWN | Owner decision (DEC-006) |
-| U-06 | Remote CI results at HEAD | NOT VERIFIED | Observe the workflow run separately |
+| U-06 | Remote CI results at HEAD | RESOLVED (2026-11-28, `c8400cb`): both Foundation checks jobs green, backend clean verify included; earlier runs failed before the backend step on an unavailable Java version string | Closed |
 | U-07 | Angular advisory status at the pinned versions | NOT VERIFIED | Dependency scan in the CI security package |
 | U-08 | API latency, throughput and memory under representative load | UNKNOWN | Phase 10 baseline |
 | U-09 | Whether the disposable `authority_pro_l07_ui_test` database exists | NOT VERIFIED | Checked only inside an authorized L07 package |

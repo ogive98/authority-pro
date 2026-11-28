@@ -7,10 +7,10 @@ modular monolith, DDD, hexagonal architecture and Plugin-Based Components.
 identity/access surface, the L06 protected inventory and the L07 Angular
 application are locally implemented and tested.** Main V1 has four empty technical
 tables; L04–L06 run only against their isolated test databases (V1→V5 for L06).
-The backend verifies 181 unit/architecture/contract tests (security-headers increment,
-2026-11-28) and seven packaged integration tests verified at the previous revision;
-the Angular application passes 100 unit tests. Authenticated browser journeys remain
-unverified.
+The backend verifies 182 unit/architecture/contract tests and seven packaged
+integration tests locally and in the GitHub Foundation checks (2026-11-28 at
+`c8400cb`); the Angular application passes 100 unit tests. Authenticated browser
+journeys remain unverified.
 See the [recovery evidence and retained failure](docs/PACK-INVENTORY.md#l03-main-recovery-evidence--2026-11-20),
 the [L05 implementation evidence](docs/04-PLATFORM-ENGINES/IDENTITY-AND-ACCESS.md#1013-isolated-implementation-evidence--2026-11-23),
 the [L06 evidence](docs/PACK-INVENTORY.md#l06-protected-inventory-evidence--2026-11-24),
@@ -72,10 +72,10 @@ earlier Angular 21 fallback remains the historical L01 finding.
 [Execution evidence](docs/PACK-INVENTORY.md#l02-execution-evidence--2026-11-18) records
 65 unit/HTTP/architecture/contract tests and four packaged-JAR integration tests,
 all passing both a clean build and an offline clean repeat with the same JAR hash.
-These are the historical L02 counts; the current backend verifies 181 unit tests
-(security-headers increment); seven packaged integration tests were last verified at
-the previous revision. This is a closed technical skeleton, not a usable
-tenant application.
+These are the historical L02 counts; the current backend verifies 182 unit tests and
+seven packaged integration tests in the same clean verify, both locally and in the
+Foundation checks run of 2026-11-28 at `c8400cb`. This is a closed technical
+skeleton, not a usable tenant application.
 
 Requirements: Node.js 24 and publisher-verified **Temurin 21.0.13+9** (release 21).
 Use a portable JDK and a process-local `JAVA_HOME`, not a system-wide Java change.

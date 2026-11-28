@@ -1,11 +1,13 @@
 # Implementation Evidence Matrix
 
 **Decision status:** N/A — read-only audit output.
-**Delivery status:** PHASE 0 OUTPUT. Evidence is dated and tied to revision `27e9b14`;
-the Phase 3 increments are tied to `606104f`, the L05 isolation checks to `9e19a2b`,
-the atomic session cap to `56e5662`, its lock-timeout and rotation checks to
-`dfaf1f8`, the parallel RLS concurrency checks to `9def7f2`, the revocation
-checks to `55ba979`, and the nested transaction checks to `131eb81`.
+**Delivery status:** PHASE 0 OUTPUT. Evidence is dated and anchored to the Phase 0
+baseline `27e9b14`; each phase increment below cites its own evidence revision. These
+revisions are evidence anchors, not the current HEAD: the Phase 3 increments are tied
+to `606104f`, the L05 isolation checks to `9e19a2b`, the atomic session cap to
+`56e5662`, its lock-timeout and rotation checks to `dfaf1f8`, the parallel RLS
+concurrency checks to `9def7f2`, the revocation checks to `55ba979`, the nested
+transaction checks to `131eb81`, and the green CI run to `c8400cb`.
 **Document validation status:** DRAFT — awaiting Gate G0 owner approval.
 
 ## 1. Evidence hierarchy used by the Foundation 9.5 programme
@@ -39,7 +41,7 @@ highest level actually observed on 2026-11-28.
 | Public screens | Login, not-found, responsive and accessibility checks | Earlier browser qualification, commit `4573701` | E4 local | Not reproducible in CI |
 | Observability | Correlation ID and structured JSON access logs | Source inspection, unit coverage | E2/E3 | No metrics endpoint or alerting |
 | Documentation tooling | Links, index, Mermaid, manifest fixtures and current counters validated | `validate-docs`, 70/70 tool tests, 0 errors | E4 local | Does not detect stale status claims |
-| CI | Documentation and backend jobs defined | `foundation.yml` inspection | E2 | Remote results not verified; no frontend job; actions unpinned |
+| CI | Documentation and backend jobs defined, and both green remotely | `Foundation checks` run at `c8400cb`, 2026-11-28 | E4 remote | No frontend job; `checkout`/`setup-node` unpinned; no security scans, SBOM or migration qualification |
 | Backend quality gates | Compiler, ArchUnit, unit and packaged tests | Clean verify | E4 local | No lint, format, coverage or mutation threshold |
 | Frontend quality gates | TypeScript build and Vitest | `ng build`, `ng test` | E3/E4 local | No lint, coverage threshold or E2E |
 | Supply chain | Version pins in manifests and Maven wrapper checksum | Manifest inspection | E2 | No SBOM, vulnerability, secret or license scan |
@@ -51,8 +53,8 @@ highest level actually observed on 2026-11-28.
 
 | Suite | Result | Command |
 |---|---|---|
-| Backend unit/architecture/contract | 182 passing, 0 failures (2026-11-28 at `55ba979`) | `mvnw test` |
-| Backend packaged integration | 7 passing (clean verify, 2026-11-28 at `9e19a2b`) | `check:backend` (clean verify) |
+| Backend unit/architecture/contract | 182 passing, 0 failures (local verify at `131eb81`, CI at `c8400cb`, 2026-11-28) | `mvnw test` |
+| Backend packaged integration | 7 passing (clean verify locally at `131eb81` and in CI at `c8400cb`, 2026-11-28) | `check:backend` (clean verify) |
 | Frontend unit | 100 passing across 16 files | `frontend: npm test` |
 | Documentation tooling | 70 passing | `npm test` |
 | Documentation validation | 0 errors, 73 documents, 903 links, 12 diagrams | `npm run check:docs` |

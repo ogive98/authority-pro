@@ -1,7 +1,7 @@
 # Identity and Access
 
-**Document status: Approved high-level orientations; detailed L05 contract section 10 with D1–D6 APPROVED 2026-11-21; isolated V3 schema and read-only identity/access foundations VERIFIED 2026-11-21 (29 checks); HTTP/session implementation NOT AUTHORIZED.**\
-**Capability status: NOT IMPLEMENTED — schema-only foundation exists in an isolated test database; no identity service, session store or tenant policy is deployed.**  
+**Document status: Approved high-level orientations; detailed L05 contract section 10 with D1–D6 APPROVED 2026-11-21; isolated V3 schema, identity/access surface and JDBC cookie sessions IMPLEMENTED and QUALIFIED IN ISOLATION (L05 `checks=47`, `131eb81`, 2026-11-28). No production deployment, production HTTP profile or main-database migration is authorized.**\
+**Capability status: IMPLEMENTED AND TESTED IN ISOLATION — schema, identity service, JDBC session store, CSRF, operator provisioning and scoped access run against disposable qualification databases; the main database remains at V1 and nothing is deployed.**  
 **Governance: N0. Proposed owners: identity/access maintainers and security lead; approval authority: project owner.**
 
 ## 1. Purpose, source, scope and non-scope

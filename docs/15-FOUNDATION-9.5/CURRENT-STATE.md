@@ -1,7 +1,7 @@
 # Authority Pro — Current State
 
 **Decision status:** Status snapshot; no new decision is taken here.
-**Delivery status:** Authoritative status summary for revision `27e9b14`, 2026-11-28.
+**Delivery status:** Authoritative status summary. The Phase 0 baseline is revision `27e9b14`; the latest isolated qualification is `131eb81` (L05, 2026-11-28) and the latest green CI run is `c8400cb`. Revision numbers elsewhere in this package are evidence anchors, not the current HEAD.
 **Document validation status:** DRAFT — awaiting Gate G0 owner approval. Until approved, the Pack Inventory remains the historical evidence record and this document is a proposed single source of truth.
 
 ## 1. Purpose
@@ -30,8 +30,12 @@ the same package, with its evidence link and date.
 ## 3. What is true at this revision
 
 - The backend builds and passes 182 unit/architecture/contract tests plus 7 packaged
-  integration tests (verify at `55ba979`, 2026-11-28), with five closed Modulith
-  roots and zero inter-module edges.
+  integration tests (local verify at `131eb81`, CI at `c8400cb`, 2026-11-28), with five
+  closed Modulith roots and zero inter-module edges.
+- Both Foundation checks jobs are green in GitHub Actions at `c8400cb` (2026-11-28):
+  documentation and backend, including the 7 packaged tests. Every earlier run in the
+  programme failed before the backend step on an unavailable Java version string
+  (`21.0.13+9` instead of the published `21.0.13+9.0.LTS`).
 - The frontend builds and passes 100 unit tests across 16 files, with FR/EN/IT/AR and
   RTL support.
 - Documentation checks pass with 0 errors: 73 documents, 903 links, 12 diagrams, plus
