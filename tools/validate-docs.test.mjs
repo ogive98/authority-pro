@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { resolve } from 'node:path';
-import { root, readJson, manifestErrors, markdownAnchors, linkErrors } from './validate-docs.mjs';
+import { root, readJson, manifestErrors, markdownAnchors, linkErrors, counterErrors } from './validate-docs.mjs';
 
 const valid = () => readJson('MODULE-MANIFEST-TEMPLATE.json');
 
@@ -47,4 +47,15 @@ test('broken relative links are rejected without visiting external URLs', () => 
 });
 test('valid local links and anchors pass', () => {
   assert.deepEqual(linkErrors(resolve(root, 'README.md'), '[docs](docs/README.md)\n[title](README.md#authority-pro)'), []);
+});
+test('matching documentation counters pass', () => {
+  assert.deepEqual(counterErrors('0 errors: 7 documents, 9 links, 2 diagrams', { documents: 7, links: 9, diagrams: 2 }), []);
+});
+test('stale documentation counters are rejected with actual totals', () => {
+  const errors = counterErrors('0 errors: 6 documents, 9 links, 2 diagrams', { documents: 7, links: 9, diagrams: 2 });
+  assert.equal(errors.length, 1);
+  assert.ok(errors[0].includes('actual 7 documents, 9 links, 2 diagrams'));
+});
+test('documents without counters are rejected', () => {
+  assert.deepEqual(counterErrors('No counters here', { documents: 7, links: 9, diagrams: 2 }), ['Missing documentation counters']);
 });

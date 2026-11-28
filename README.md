@@ -72,8 +72,9 @@ earlier Angular 21 fallback remains the historical L01 finding.
 [Execution evidence](docs/PACK-INVENTORY.md#l02-execution-evidence--2026-11-18) records
 65 unit/HTTP/architecture/contract tests and four packaged-JAR integration tests,
 all passing both a clean build and an offline clean repeat with the same JAR hash.
-These are the historical L02 counts; the current backend verifies 180 unit tests and
-seven packaged integration tests. This is a closed technical skeleton, not a usable
+These are the historical L02 counts; the current backend verifies 181 unit tests
+(security-headers increment); seven packaged integration tests were last verified at
+the previous revision. This is a closed technical skeleton, not a usable
 tenant application.
 
 Requirements: Node.js 24 and publisher-verified **Temurin 21.0.13+9** (release 21).

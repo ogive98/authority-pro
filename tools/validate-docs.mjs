@@ -66,6 +66,17 @@ export function linkErrors(file, text) {
   return errors;
 }
 
+export function counterErrors(text, counts) {
+  const matches = [...text.matchAll(/(\d+) documents, (\d+) links, (\d+) diagrams/g)];
+  if (!matches.length) return ['Missing documentation counters'];
+  return matches.flatMap((match) => {
+    const [documents, links, diagrams] = match.slice(1).map(Number);
+    return documents === counts.documents && links === counts.links && diagrams === counts.diagrams
+      ? []
+      : [`Stale counters: ${match[0]} (actual ${counts.documents} documents, ${counts.links} links, ${counts.diagrams} diagrams)`];
+  });
+}
+
 function filesIn(directory) {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const path = resolve(directory, entry.name);
@@ -98,6 +109,11 @@ export async function checkDocuments() {
   for (const file of files.filter((file) => /\.(md|json)$/.test(file) && file !== resolve(docs, 'README.md'))) {
     const path = relative(docs, file).replaceAll('\\', '/');
     if (!index.includes(`](${path})`)) errors.push(`Unindexed document: ${path}`);
+  }
+  const counts = { documents: files.length, links, diagrams };
+  for (const name of ['CURRENT-STATE.md', 'IMPLEMENTATION-EVIDENCE-MATRIX.md']) {
+    const text = readFileSync(resolve(docs, '15-FOUNDATION-9.5', name), 'utf8');
+    errors.push(...counterErrors(text, counts).map((error) => `15-FOUNDATION-9.5/${name}: ${error}`));
   }
   return { errors, documents: files.length, markdown: markdown.length, links, diagrams };
 }

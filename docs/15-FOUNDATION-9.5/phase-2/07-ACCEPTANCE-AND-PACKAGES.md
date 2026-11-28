@@ -50,7 +50,7 @@ on document checks only.
 | Check | Command | Expected |
 |---|---|---|
 | Documentation | `npm run check:docs` | 0 errors, all documents indexed |
-| Tool tests | `npm test` | 67 passing, 0 failing |
+| Tool tests | `npm test` | 70 passing, 0 failing |
 | Backend | `npm run check:backend` | 181 unit (2026-11-28); 7 packaged at `27e9b14`, not rerun since |
 | Frontend | `npm --prefix frontend test` | 100 passing |
 

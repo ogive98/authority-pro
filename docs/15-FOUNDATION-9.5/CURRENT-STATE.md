@@ -36,7 +36,7 @@ the same package, with its evidence link and date.
 - The frontend builds and passes 100 unit tests across 16 files, with FR/EN/IT/AR and
   RTL support.
 - Documentation checks pass with 0 errors: 73 documents, 903 links, 12 diagrams, plus
-  67 tool tests.
+  70 tool tests.
 - The Phase 2 blueprint exists as DESIGN ONLY in
   [phase-2](phase-2/00-TARGET-BLUEPRINT.md); nothing in it is approved, and Gate G2
   remains pending.

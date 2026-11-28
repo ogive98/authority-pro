@@ -34,7 +34,7 @@ highest level actually observed on 2026-11-28.
 | Frontend shell | Login, scope selection, overview, inventory, audit, preferences, i18n, RTL | 100 unit tests at this revision | E3 | Authenticated journeys never observed in a real browser (E0) |
 | Public screens | Login, not-found, responsive and accessibility checks | Earlier browser qualification, commit `4573701` | E4 local | Not reproducible in CI |
 | Observability | Correlation ID and structured JSON access logs | Source inspection, unit coverage | E2/E3 | No metrics endpoint or alerting |
-| Documentation tooling | Links, index, Mermaid and manifest fixtures validated | `validate-docs`, 67/67 tool tests, 0 errors | E4 local | Does not detect stale status claims |
+| Documentation tooling | Links, index, Mermaid, manifest fixtures and current counters validated | `validate-docs`, 70/70 tool tests, 0 errors | E4 local | Does not detect stale status claims |
 | CI | Documentation and backend jobs defined | `foundation.yml` inspection | E2 | Remote results not verified; no frontend job; actions unpinned |
 | Backend quality gates | Compiler, ArchUnit, unit and packaged tests | Clean verify | E4 local | No lint, format, coverage or mutation threshold |
 | Frontend quality gates | TypeScript build and Vitest | `ng build`, `ng test` | E3/E4 local | No lint, coverage threshold or E2E |
@@ -50,7 +50,7 @@ highest level actually observed on 2026-11-28.
 | Backend unit/architecture/contract | 181 passing, 0 failures (2026-11-28) | `mvnw test` |
 | Backend packaged integration | 7 passing at `27e9b14`; not rerun for the headers increment | `check:backend` (clean verify) |
 | Frontend unit | 100 passing across 16 files | `frontend: npm test` |
-| Documentation tooling | 67 passing | `npm test` |
+| Documentation tooling | 70 passing | `npm test` |
 | Documentation validation | 0 errors, 73 documents, 903 links, 12 diagrams | `npm run check:docs` |
 
 The backend numbers replace earlier counts of 65/4 (L02) and 151/7 (L06) still present
